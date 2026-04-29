@@ -49,7 +49,15 @@ Follow these principles strictly:
   - Use lightweight state management unless complexity truly demands otherwise.
   - Keep configuration, navigation, and logic easy to understand and modify.
 
-8. Developer Experience
+8. State Management & Networking
+
+- Use Provider for state management.
+- Keep state logic inside providers, not inside UI widgets.
+- Use Provider for handling API state (loading, success, error).
+- Use the http package for making network/API calls.
+- Keep API logic in separate service classes and call them via providers.
+
+9. Developer Experience
 
 - Provide clear explanations along with code when needed.
 - Suggest better alternatives if the requested approach is suboptimal.
