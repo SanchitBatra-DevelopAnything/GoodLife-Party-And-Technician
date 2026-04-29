@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/l10n/app_localizations.dart';
 import 'package:goodlife_party/screens/home_screen.dart';
 import 'package:goodlife_party/widgets/primary_button.dart';
 
@@ -13,10 +14,11 @@ class ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (selectedRole == null) return const SizedBox();
 
     final loginButton = PrimaryButton(
-      text: "Login",
+      text: l10n.login,
       onPressed: () {
         // TODO: Navigate to login
       },
@@ -24,7 +26,7 @@ class ActionButtons extends StatelessWidget {
     );
 
     final signupButton = SecondaryButton(
-      text: "Sign Up",
+      text: l10n.signUp,
       onPressed: () {
         // TODO: Navigate to signup
       },
