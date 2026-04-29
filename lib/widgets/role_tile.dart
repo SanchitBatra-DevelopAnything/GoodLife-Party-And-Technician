@@ -39,17 +39,14 @@ class RoleTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              /// 🔹 FIX: Prevent overflow
               Expanded(
                 child: Text(
-                  title,
+                  title, // ✅ already supports localized string
                   style: Theme.of(context).textTheme.titleMedium,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-
-              /// 🔹 Selection icon
               if (isSelected) ...[
                 const SizedBox(width: 8),
                 const Icon(
@@ -64,11 +61,10 @@ class RoleTile extends StatelessWidget {
       );
     }
 
-    /// 🔹 Android (Material)
     return RadioListTile<UserRole>(
       contentPadding: const EdgeInsets.symmetric(horizontal: 8),
       title: Text(
-        title,
+        title, // ✅ already supports localized string
         style: Theme.of(context).textTheme.titleMedium,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,

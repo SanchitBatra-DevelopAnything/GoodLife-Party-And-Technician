@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:goodlife_party/widgets/action_button.dart';
 import 'package:goodlife_party/widgets/app_logo.dart';
+import 'package:goodlife_party/widgets/language_dropdown.dart';
 import 'package:goodlife_party/widgets/role_selector.dart';
 
 enum UserRole { technician, user }
@@ -44,13 +45,16 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
 
+            const SizedBox(height: 20),
+
+            LanguageDropdown(),
+
+            const SizedBox(height: 20),
+
             const Spacer(),
 
             /// 🔹 ACTION BUTTONS
-            ActionButtons(
-              selectedRole: selectedRole,
-              isIOS: isIOS,
-            ),
+            ActionButtons(selectedRole: selectedRole, isIOS: isIOS),
 
             const SizedBox(height: 40),
           ],
