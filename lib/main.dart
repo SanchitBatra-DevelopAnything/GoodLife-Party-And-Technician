@@ -1,9 +1,13 @@
 import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:goodlife_party/screens/home_screen.dart';
+import 'package:goodlife_party/routes/app_routes.dart';
+import 'package:goodlife_party/routes/route_generator.dart';
+import 'package:goodlife_party/theme/app_theme.dart';
 import 'package:provider/provider.dart';
+
 import 'providers/locale_provider.dart';
 import 'l10n/app_localizations.dart';
 
@@ -28,30 +32,25 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
 
-    final isIOS = Platform.isIOS;
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
 
-    return isIOS
-        ? CupertinoApp(
-            debugShowCheckedModeBanner: false,
-            locale: provider.locale,
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-            ],
-            home: const HomeScreen(),
-          )
-        : MaterialApp(
-            debugShowCheckedModeBanner: false,
-            locale: provider.locale,
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            home: const HomeScreen(),
-          );
+      // ✅ KEEP YOUR THEME EXACTLY SAME
+      theme: AppTheme.getMaterialTheme(),
+
+      // ✅ KEEP YOUR ROUTING EXACTLY SAME
+      initialRoute: AppRoutes.home,
+      onGenerateRoute: RouteGenerator.generateRoute,
+
+      // ✅ ADD ONLY LOCALIZATION
+      locale: provider.locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+    );
   }
 }

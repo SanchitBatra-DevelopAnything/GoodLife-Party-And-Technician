@@ -8,9 +8,9 @@ class RoleTile extends StatelessWidget {
   final UserRole? groupValue;
   final Function(UserRole) onChanged;
   final bool isIOS;
-  
 
   const RoleTile({
+    super.key,
     required this.title,
     required this.value,
     required this.groupValue,
@@ -20,25 +20,41 @@ class RoleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSelected = groupValue == value;
+
     if (isIOS) {
       return GestureDetector(
         onTap: () => onChanged(value),
         child: Container(
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: groupValue == value
+              color: isSelected
                   ? CupertinoColors.activeBlue
-                  : CupertinoColors.systemGrey,
+                  : CupertinoColors.systemGrey4,
+              width: 1.2,
             ),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title),
-              if (groupValue == value)
-                const Icon(CupertinoIcons.check_mark),
+              Expanded(
+                child: Text(
+                  title, // ✅ already supports localized string
+                  style: Theme.of(context).textTheme.titleMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (isSelected) ...[
+                const SizedBox(width: 8),
+                const Icon(
+                  CupertinoIcons.check_mark,
+                  size: 20,
+                  color: CupertinoColors.activeBlue,
+                ),
+              ],
             ],
           ),
         ),
@@ -46,7 +62,13 @@ class RoleTile extends StatelessWidget {
     }
 
     return RadioListTile<UserRole>(
-      title: Text(title),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+      title: Text(
+        title, // ✅ already supports localized string
+        style: Theme.of(context).textTheme.titleMedium,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       value: value,
       groupValue: groupValue,
       onChanged: (val) {
