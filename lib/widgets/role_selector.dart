@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/l10n/app_localizations.dart';
 import 'package:goodlife_party/screens/home_screen.dart';
 import 'package:goodlife_party/widgets/role_tile.dart';
 
@@ -16,11 +17,12 @@ class RoleSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isIOS = Platform.isIOS;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       children: [
         RoleTile(
-          title: "I am a technician",
+          title: l10n.technician,
           value: UserRole.technician,
           groupValue: selectedRole,
           onChanged: onChanged,
@@ -28,7 +30,7 @@ class RoleSelector extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         RoleTile(
-          title: "I am a user",
+          title: l10n.user,
           value: UserRole.user,
           groupValue: selectedRole,
           onChanged: onChanged,
