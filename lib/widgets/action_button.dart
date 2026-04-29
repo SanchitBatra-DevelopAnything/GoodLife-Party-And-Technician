@@ -28,7 +28,7 @@ class ActionButtons extends StatelessWidget {
     final signupButton = SecondaryButton(
       text: l10n.signUp,
       onPressed: () {
-        // TODO: Navigate to signup
+        Navigator.pushNamed(context, '/signup');
       },
       isIOS: isIOS,
     );
