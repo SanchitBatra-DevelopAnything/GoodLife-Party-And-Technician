@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/area_provider.dart';
@@ -24,8 +25,9 @@ class SignupScreenState extends State<SignupScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<AreaProvider>(context, listen: false).loadAreas());
+    Future.microtask(
+      () => Provider.of<AreaProvider>(context, listen: false).loadAreas(),
+    );
   }
 
   void onSignup() {
@@ -34,9 +36,9 @@ class SignupScreenState extends State<SignupScreen> {
         contactController.text.isEmpty ||
         selectedArea == null ||
         selectedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
 
@@ -68,6 +70,12 @@ class SignupScreenState extends State<SignupScreen> {
               TextField(
                 controller: contactController,
                 keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly, // ✅ only numbers
+                  LengthLimitingTextInputFormatter(
+                    10,
+                  ), // ✅ limit (adjust if needed)
+                ],
                 decoration: const InputDecoration(labelText: 'Contact'),
               ),
 
@@ -79,10 +87,12 @@ class SignupScreenState extends State<SignupScreen> {
                       value: selectedArea,
                       hint: const Text('Select Area'),
                       items: provider.areas
-                          .map((area) => DropdownMenuItem(
-                                value: area,
-                                child: Text(area.name),
-                              ))
+                          .map(
+                            (area) => DropdownMenuItem(
+                              value: area,
+                              child: Text(area.name),
+                            ),
+                          )
                           .toList(),
                       onChanged: (value) {
                         setState(() => selectedArea = value);
@@ -90,6 +100,14 @@ class SignupScreenState extends State<SignupScreen> {
                     ),
 
               const SizedBox(height: 20),
+
+              const Text(
+                'Please upload a photo of the machine along with your selfie. '
+                'Without this, your request will not be approved.',
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 12),
 
               ImagePickerWidget(
                 onImageSelected: (file) {
