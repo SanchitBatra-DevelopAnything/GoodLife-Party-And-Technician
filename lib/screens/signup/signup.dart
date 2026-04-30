@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:goodlife_party/providers/signup_provider.dart';
+import 'package:goodlife_party/screens/signup_success.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/area_provider.dart';
@@ -55,6 +56,12 @@ class SignupScreenState extends State<SignupScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Signup successful')));
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const SignupSuccessScreen()),
+        (route) => false, // 🔥 clears entire stack
+      );
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -137,7 +144,9 @@ class SignupScreenState extends State<SignupScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: onSignup,
+                  onPressed: Provider.of<SignupProvider>(context).isLoading
+    ? null
+    : onSignup,
                   child: Consumer<SignupProvider>(
                     builder: (_, signupProvider, __) {
                       if (signupProvider.isLoading) {
