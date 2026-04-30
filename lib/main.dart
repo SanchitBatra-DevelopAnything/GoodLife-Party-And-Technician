@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:goodlife_party/providers/area_provider.dart';
+import 'package:goodlife_party/providers/signup_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:goodlife_party/routes/route_generator.dart';
 import 'package:goodlife_party/theme/app_theme.dart';
@@ -27,6 +28,7 @@ void main() async {
     providers: [
       ChangeNotifierProvider.value(value: localeProvider),
       ChangeNotifierProvider(create: (_) => AreaProvider()),
+      ChangeNotifierProvider(create: (_) => SignupProvider()),
     ],
     child: const MyApp(),
   ),

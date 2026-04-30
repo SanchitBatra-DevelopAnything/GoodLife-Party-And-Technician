@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:goodlife_party/providers/signup_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/area_provider.dart';
@@ -30,20 +31,37 @@ class SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  void onSignup() {
-    // Simple validation
-    if (usernameController.text.isEmpty ||
-        contactController.text.isEmpty ||
-        selectedArea == null ||
-        selectedImage == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
-      return;
-    }
-
-    // TODO: Call signup API
+  void onSignup() async {
+  if (usernameController.text.isEmpty ||
+      contactController.text.isEmpty ||
+      selectedArea == null ||
+      selectedImage == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please fill all fields')),
+    );
+    return;
   }
+
+  final signupProvider =
+      Provider.of<SignupProvider>(context, listen: false);
+
+  try {
+    await signupProvider.signup(
+      username: usernameController.text,
+      contact: contactController.text,
+      area: selectedArea!.name,
+      image: selectedImage!,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Signup successful')),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: ${e.toString()}')),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +139,18 @@ class SignupScreenState extends State<SignupScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: onSignup,
-                  child: const Text('Sign Up'),
+                  child: Consumer<SignupProvider>(
+                    builder: (_, signupProvider, __) {
+                      if (signupProvider.isLoading) {
+                        final percent = (signupProvider.uploadProgress * 100)
+                            .toStringAsFixed(0);
+
+                        return Text('Uploading... $percent%');
+                      }
+
+                      return const Text('Sign Up');
+                    },
+                  ),
                 ),
               ),
             ],
