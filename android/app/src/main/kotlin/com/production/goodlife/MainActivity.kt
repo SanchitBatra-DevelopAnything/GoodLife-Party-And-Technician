@@ -1,4 +1,4 @@
-package com.example.goodlife_party
+package com.production.goodlife
 
 import io.flutter.embedding.android.FlutterActivity
 

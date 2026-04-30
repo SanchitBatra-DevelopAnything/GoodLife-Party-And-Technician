@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:goodlife_party/providers/area_provider.dart';
+import 'package:goodlife_party/providers/signup_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:goodlife_party/routes/route_generator.dart';
 import 'package:goodlife_party/theme/app_theme.dart';
@@ -17,12 +20,19 @@ void main() async {
   final localeProvider = LocaleProvider();
   await localeProvider.loadLocale();
 
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(
-    ChangeNotifierProvider.value(
-      value: localeProvider,
-      child: const MyApp(),
-    ),
-  );
+  MultiProvider(
+    providers: [
+      ChangeNotifierProvider.value(value: localeProvider),
+      ChangeNotifierProvider(create: (_) => AreaProvider()),
+      ChangeNotifierProvider(create: (_) => SignupProvider()),
+    ],
+    child: const MyApp(),
+  ),
+);
 }
 
 class MyApp extends StatelessWidget {

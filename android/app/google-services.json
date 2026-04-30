@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "102870497357",
+    "firebase_url": "https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "goodlifeadminapp",
+    "storage_bucket": "goodlifeadminapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102870497357:android:1f5d75bf60504db1a48404",
+        "android_client_info": {
+          "package_name": "com.production.goodlife"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3s5dQRS8eQa_QbG08nlK_VnDQ71NSS-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
