@@ -10,58 +10,63 @@ class SignupProvider with ChangeNotifier {
 
   bool isLoading = false;
   double uploadProgress = 0.0;
+  bool isSubmitting = false;
 
   Future<void> signup({
-    required String username,
-    required String contact,
-    required String area,
-    required File image,
-  }) async {
-    try {
-      isLoading = true;
-      uploadProgress = 0.0;
-      notifyListeners();
+  required String username,
+  required String contact,
+  required String area,
+  required File image,
+}) async {
+  try {
+    isLoading = true;
+    isSubmitting = false;
+    uploadProgress = 0.0;
+    notifyListeners();
 
-      // ✅ 1. Upload image
-      final imageUrl = await storageService.uploadImageWithProgress(
-        image,
-        (progress) {
-          uploadProgress = progress;
-          notifyListeners();
-        },
-      );
+    // ✅ PHASE 1: Upload
+    final imageUrl = await storageService.uploadImageWithProgress(
+      image,
+      (progress) {
+        uploadProgress = progress;
+        notifyListeners();
+      },
+    );
 
-      // ✅ 2. Send POST request directly
-      final url = Uri.parse(
-        'https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/DistributorNotifications.json',
-      );
+    // ✅ Switch to submitting phase
+    isSubmitting = true;
+    notifyListeners();
 
-      final payload = {
-        "distributorName": username,
-        "imgUrl": imageUrl,
-        "area": area,
-        "contact": contact,
-        "deviceToken": "random_token_123",
-        "createdAt": DateTime.now().toIso8601String(),
-      };
+    // ✅ PHASE 2: POST request
+    final url = Uri.parse(
+      'https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/DistributorNotifications.json',
+    );
 
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(payload),
-      );
+    final payload = {
+      "distributorName": username,
+      "imgUrl": imageUrl,
+      "area": area,
+      "contact": contact,
+      "deviceToken": "random_token_123",
+      "createdAt": DateTime.now().toIso8601String(),
+    };
 
-      if (response.statusCode != 200) {
-        throw Exception('Signup failed: ${response.statusCode}');
-      }
-    } catch (e) {
-      rethrow;
-    } finally {
-      isLoading = false;
-      uploadProgress = 0.0;
-      notifyListeners();
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Signup failed: ${response.statusCode}');
     }
+  } catch (e) {
+    rethrow;
+  } finally {
+    isLoading = false;
+    isSubmitting = false;
+    uploadProgress = 0.0;
+    notifyListeners();
   }
+}
 }

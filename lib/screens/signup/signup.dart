@@ -32,36 +32,35 @@ class SignupScreenState extends State<SignupScreen> {
   }
 
   void onSignup() async {
-  if (usernameController.text.isEmpty ||
-      contactController.text.isEmpty ||
-      selectedArea == null ||
-      selectedImage == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please fill all fields')),
-    );
-    return;
+    if (usernameController.text.isEmpty ||
+        contactController.text.isEmpty ||
+        selectedArea == null ||
+        selectedImage == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      return;
+    }
+
+    final signupProvider = Provider.of<SignupProvider>(context, listen: false);
+
+    try {
+      await signupProvider.signup(
+        username: usernameController.text,
+        contact: contactController.text,
+        area: selectedArea!.name,
+        image: selectedImage!,
+      );
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Signup successful')));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+    }
   }
-
-  final signupProvider =
-      Provider.of<SignupProvider>(context, listen: false);
-
-  try {
-    await signupProvider.signup(
-      username: usernameController.text,
-      contact: contactController.text,
-      area: selectedArea!.name,
-      image: selectedImage!,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Signup successful')),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: ${e.toString()}')),
-    );
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +141,16 @@ class SignupScreenState extends State<SignupScreen> {
                   child: Consumer<SignupProvider>(
                     builder: (_, signupProvider, __) {
                       if (signupProvider.isLoading) {
+                        // ✅ Phase 2: Submitting (after upload complete)
+                        if (signupProvider.isSubmitting) {
+                          return const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          );
+                        }
+
+                        // ✅ Phase 1: Upload progress
                         final percent = (signupProvider.uploadProgress * 100)
                             .toStringAsFixed(0);
 
