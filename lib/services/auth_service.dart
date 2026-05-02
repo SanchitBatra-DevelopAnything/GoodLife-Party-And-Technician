@@ -8,7 +8,7 @@ class AuthService {
     required String areaName,
   }) async {
     final response = await http.post(
-      Uri.parse("YOUR_FIREBASE_FUNCTION_URL"),
+      Uri.parse("https://loginparty-kind2bfhcq-as.a.run.app"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "mobile": mobile,
@@ -17,6 +17,7 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
+      
       final data = jsonDecode(response.body);
       return UserModel.fromJson(data);
     } else {

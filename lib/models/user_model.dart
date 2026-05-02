@@ -15,7 +15,7 @@ class UserModel {
     return UserModel(
       distributorName: json['distributorName'],
       contact: json['contact'],
-      deviceToken: json['deviceToken'],
+      deviceToken: json['deviceToken'] ?? '',
       area: json['area'],
     );
   }
