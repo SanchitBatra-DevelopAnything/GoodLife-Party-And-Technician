@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:goodlife_party/providers/signup_provider.dart';
-import 'package:goodlife_party/screens/signup_success.dart';
+import 'package:goodlife_party/screens/signup/signup_success.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/area_provider.dart';
