@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // 👈 IMPORTANT
 import 'package:goodlife_party/providers/categories_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,86 +45,118 @@ class CategoriesScreenState extends State<CategoriesScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<CategoryProvider>(context);
 
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+    return PopScope(
+      canPop: false, // 👈 block default back
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
 
-      // 🔴 AppBar
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          'Hello, $userName',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
+        final shouldExit = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Exit App"),
+            content: const Text("Do you want to close the app?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("No"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Yes"),
+              ),
+            ],
           ),
-        ),
-      ),
+        );
 
-      body: GestureDetector(
-  behavior: HitTestBehavior.opaque, // 👈 IMPORTANT
-  onTap: () {
-    FocusScope.of(context).unfocus();
-  },
-  child: Column(
-    children: [
-      // 🔍 Search Bar
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: TextField(
-          onChanged: provider.search,
-          decoration: InputDecoration(
-            hintText: 'Search categories...',
-            prefixIcon: const Icon(Icons.search),
-            filled: true,
-            fillColor: Colors.grey.shade100,
-            contentPadding: const EdgeInsets.symmetric(vertical: 0),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide.none,
+        if (shouldExit == true) {
+          SystemNavigator.pop(); // ✅ closes app properly
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade50,
+
+        // 🔴 AppBar
+        appBar: AppBar(
+          elevation: 0,
+          centerTitle: true,
+          title: Text(
+            'Hello, $userName',
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
             ),
           ),
         ),
-      ),
 
-      // 📦 Categories Grid
-      Expanded(
-        child: provider.isLoading
-            ? const CategoryShimmer()
-            : GridView.builder(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 10),
-                itemCount: provider.categories.length,
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 14,
-                  childAspectRatio: 0.85,
+        // 🧠 Body
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Column(
+            children: [
+              // 🔍 Search Bar
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: TextField(
+                  onChanged: provider.search,
+                  decoration: InputDecoration(
+                    hintText: 'Search machines...',
+                    prefixIcon: const Icon(Icons.search),
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
                 ),
-                itemBuilder: (context, index) {
-                  final category = provider.categories[index];
-
-                  return CategoryItem(
-                    category: category,
-                    onTap: () {
-                      FocusScope.of(context).unfocus(); // 👈 also dismiss here
-                      debugPrint("Clicked ${category.name}");
-                    },
-                  );
-                },
               ),
-      ),
-    ],
-  ),
-),
 
-      // 🔻 Bottom Navigation
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: 1,
-        onTap: (index) {
-          // TODO: Navigation logic later
-        },
+              // 📦 Categories Grid
+              Expanded(
+                child: provider.isLoading
+                    ? const CategoryShimmer()
+                    : GridView.builder(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                        itemCount: provider.categories.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 14,
+                          childAspectRatio: 0.85,
+                        ),
+                        itemBuilder: (context, index) {
+                          final category = provider.categories[index];
+
+                          return CategoryItem(
+                            category: category,
+                            onTap: () {
+                              FocusScope.of(context).unfocus();
+                              debugPrint(
+                                  "Clicked ${category.name}");
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ),
+
+        // 🔻 Bottom Navigation
+        bottomNavigationBar: AppBottomNavBar(
+          currentIndex: 1,
+          onTap: (index) {
+            // TODO: Navigation logic
+          },
+        ),
       ),
     );
   }
