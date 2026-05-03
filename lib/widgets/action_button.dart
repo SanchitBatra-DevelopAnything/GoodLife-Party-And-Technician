@@ -21,6 +21,11 @@ class ActionButtons extends StatelessWidget {
       text: l10n.login,
       onPressed: () {
         // TODO: Navigate to login
+        if(selectedRole == UserRole.technician) {
+          Navigator.pushNamed(context, '/technician-login');
+          return;
+        }
+        Navigator.pushNamed(context, '/login');
       },
       isIOS: isIOS,
     );
