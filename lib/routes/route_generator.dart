@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:goodlife_party/screens/categories_screen.dart';
 import 'package:goodlife_party/screens/login/login_screen.dart';
 import 'package:goodlife_party/screens/signup/signup.dart';
 
@@ -22,6 +23,9 @@ class RouteGenerator {
 
       case AppRoutes.login:
         return _buildRoute(const LoginScreen());
+
+      case AppRoutes.categories:
+        return _buildRoute(const CategoriesScreen());
 
       default:
         return _errorRoute();
