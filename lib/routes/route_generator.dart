@@ -1,19 +1,21 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:goodlife_party/screens/categories_screen.dart';
+import 'package:goodlife_party/screens/home_screen.dart';
+import 'package:goodlife_party/screens/items_screen.dart';
 import 'package:goodlife_party/screens/login/login_screen.dart';
 import 'package:goodlife_party/screens/signup/signup.dart';
 
-import '../screens/home_screen.dart';
-// import '../screens/login_screen.dart';
-// import '../screens/profile_screen.dart';
 import 'app_routes.dart';
 
 class RouteGenerator {
-  const RouteGenerator._(); // Prevent instantiation
+  const RouteGenerator._();
 
-  static Route<dynamic> generateRoute(RouteSettings settings) {
+  static Route<dynamic> generateRoute(
+    RouteSettings settings,
+  ) {
     switch (settings.name) {
       case AppRoutes.home:
         return _buildRoute(const HomeScreen());
@@ -27,25 +29,36 @@ class RouteGenerator {
       case AppRoutes.categories:
         return _buildRoute(const CategoriesScreen());
 
+      case AppRoutes.items:
+        final args =
+            settings.arguments as Map<String, dynamic>;
+
+        return _buildRoute(
+          ItemsScreen(
+            categoryId: args['categoryId'],
+            categoryName: args['categoryName'],
+          ),
+        );
+
       default:
         return _errorRoute();
     }
   }
 
-  /// 🔹 Platform-aware route builder
-  static Route<dynamic> _buildRoute(Widget child) {
+  static Route<dynamic> _buildRoute(
+    Widget child,
+  ) {
     if (Platform.isIOS) {
       return CupertinoPageRoute(
         builder: (_) => child,
       );
-    } else {
-      return MaterialPageRoute(
-        builder: (_) => child,
-      );
     }
+
+    return MaterialPageRoute(
+      builder: (_) => child,
+    );
   }
 
-  /// 🔹 Fallback route (safe & clean)
   static Route<dynamic> _errorRoute() {
     return _buildRoute(
       const Scaffold(
@@ -59,5 +72,3 @@ class RouteGenerator {
     );
   }
 }
-
-//Navigator.pushReplacementNamed(context, AppRoutes.home);

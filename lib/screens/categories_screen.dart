@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // 👈 IMPORTANT
 import 'package:goodlife_party/providers/categories_provider.dart';
+import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/category_item.dart';
@@ -23,9 +24,12 @@ class CategoriesScreenState extends State<CategoriesScreen> {
     super.initState();
     loadUser();
 
-    Future.microtask(() =>
-        Provider.of<CategoryProvider>(context, listen: false)
-            .fetchCategories());
+    Future.microtask(
+      () => Provider.of<CategoryProvider>(
+        context,
+        listen: false,
+      ).fetchCategories(),
+    );
   }
 
   Future<void> loadUser() async {
@@ -81,10 +85,7 @@ class CategoriesScreenState extends State<CategoriesScreen> {
           centerTitle: true,
           title: Text(
             'Hello, $userName',
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 18,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
           ),
         ),
 
@@ -98,8 +99,10 @@ class CategoriesScreenState extends State<CategoriesScreen> {
             children: [
               // 🔍 Search Bar
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 child: TextField(
                   onChanged: provider.search,
                   decoration: InputDecoration(
@@ -107,8 +110,7 @@ class CategoriesScreenState extends State<CategoriesScreen> {
                     prefixIcon: const Icon(Icons.search),
                     filled: true,
                     fillColor: Colors.grey.shade100,
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 0),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none,
@@ -123,24 +125,31 @@ class CategoriesScreenState extends State<CategoriesScreen> {
                     ? const CategoryShimmer()
                     : GridView.builder(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         itemCount: provider.categories.length,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 14,
-                          mainAxisSpacing: 14,
-                          childAspectRatio: 0.85,
-                        ),
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 14,
+                              mainAxisSpacing: 14,
+                              childAspectRatio: 0.85,
+                            ),
                         itemBuilder: (context, index) {
                           final category = provider.categories[index];
 
                           return CategoryItem(
                             category: category,
                             onTap: () {
-                              FocusScope.of(context).unfocus();
-                              debugPrint(
-                                  "Clicked ${category.name}");
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.items,
+                                arguments: {
+                                  'categoryId': category.id,
+                                  'categoryName': category.name,
+                                },
+                              );
                             },
                           );
                         },

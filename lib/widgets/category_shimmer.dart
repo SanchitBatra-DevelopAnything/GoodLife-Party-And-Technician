@@ -10,7 +10,7 @@ class CategoryShimmer extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       itemCount: 9,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
+        crossAxisCount: 2,
         crossAxisSpacing: 14,
         mainAxisSpacing: 14,
         childAspectRatio: 0.85,
