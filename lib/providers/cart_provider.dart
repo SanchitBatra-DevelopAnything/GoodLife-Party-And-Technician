@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-// import '../models/distributorOrderItem.dart';
-
 class CartItem {
   final String id;
   final String title;
@@ -148,35 +146,6 @@ class CartProvider with ChangeNotifier {
     print("ADDED ITEM");
   }
 
-  // Future<void> PlaceDistributorOrder(String area, String loggedInDistributor,
-  //     String time, String activePriceList, String deviceToken) async {
-  //   var todaysDate = DateTime.now();
-  //   var year = todaysDate.year.toString();
-  //   var month = todaysDate.month.toString();
-  //   var day = todaysDate.day.toString();
-  //   var date = day + month + year;
-  //   var url =
-  //       "https://kidysadminapp-default-rtdb.firebaseio.com/activeDistributorOrders/${area}/${loggedInDistributor}.json";
-  //   try {
-  //     await http.post(Uri.parse(url),
-  //         body: json.encode({
-  //           "area": area,
-  //           "orderedBy": loggedInDistributor,
-  //           "orderTime": time,
-  //           "orderDate": date,
-  //           "dispatchDate": dispatchDateSelected,
-  //           "priceList": activePriceList,
-  //           "items": formOrderItemList(),
-  //           "deviceToken": deviceToken,
-  //           "totalPrice": getTotalOrderPrice(),
-  //         }));
-  //   } catch (error) {
-  //     print("ERROR IS");
-  //     print(error);
-  //     throw error;
-  //   }
-  // }
-
   Future<void> deleteCartOnDB(String distributor, String area) async {
     var url =
         "https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/cart/${area}/${distributor}.json";
@@ -217,15 +186,6 @@ class CartProvider with ChangeNotifier {
         return;
       }
       extractedData.forEach((cartItem) {
-        // loadedItems.add(CartItem(
-        //     id: cartItem['id'],
-        //     imageUrl: cartItem['imageUrl'],
-        //     parentCategoryType: cartItem['parentCategoryType'],
-        //     parentSubcategoryType: cartItem['parentSubcategoryType'],
-        //     price: cartItem['price'],
-        //     quantity: cartItem['quantity'],
-        //     title: cartItem['title'],
-        //     totalPrice: cartItem['totalPrice']));
         addItem(
           cartItem['id'],
           cartItem['price'],
@@ -250,18 +210,4 @@ class CartProvider with ChangeNotifier {
     });
     return items;
   }
-
-  // formOrderItemList() {
-  //   var items = [];
-  //   _itemList.forEach((cartItem) {
-  //     items.add(DistributorOrderItem(
-  //             item: cartItem.title,
-  //             imageUrl: cartItem.imageUrl,
-  //             CategoryName: cartItem.parentCategoryType,
-  //             quantity: cartItem.quantity,
-  //             price: cartItem.totalPrice)
-  //         .toJson());
-  //   });
-  //   return items;
-  // }
 }
