@@ -53,7 +53,11 @@ class LoginScreenState extends State<LoginScreen> {
       );
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, "/categories");
+      Navigator.pushNamedAndRemoveUntil(
+  context,
+  '/categories',
+  (route) => false,
+);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Login failed")),
