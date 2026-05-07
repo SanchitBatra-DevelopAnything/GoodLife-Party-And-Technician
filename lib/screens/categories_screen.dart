@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // 👈 IMPORTANT
+import 'package:goodlife_party/providers/cart_provider.dart';
 import 'package:goodlife_party/providers/categories_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:provider/provider.dart';
@@ -20,17 +21,23 @@ class CategoriesScreenState extends State<CategoriesScreen> {
   String userName = '';
 
   @override
-  void initState() {
-    super.initState();
-    loadUser();
+void initState() {
+  super.initState();
 
-    Future.microtask(
-      () => Provider.of<CategoryProvider>(
-        context,
-        listen: false,
-      ).fetchCategories(),
-    );
-  }
+  loadUser();
+
+  Future.microtask(() async {
+    await Provider.of<CartProvider>(
+      context,
+      listen: false,
+    ).loadLocalCart();
+
+    await Provider.of<CategoryProvider>(
+      context,
+      listen: false,
+    ).fetchCategories();
+  });
+}
 
   Future<void> loadUser() async {
     final prefs = await SharedPreferences.getInstance();

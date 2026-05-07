@@ -13,6 +13,8 @@ import 'package:goodlife_party/providers/signup_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:goodlife_party/routes/route_generator.dart';
 import 'package:goodlife_party/theme/app_theme.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/locale_provider.dart';
@@ -25,6 +27,7 @@ void main() async {
   await localeProvider.loadLocale();
 
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   await Firebase.initializeApp();
 
   runApp(

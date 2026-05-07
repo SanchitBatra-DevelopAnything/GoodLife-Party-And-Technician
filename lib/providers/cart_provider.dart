@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:goodlife_party/services/cart_local_service.dart';
 
 class CartItem {
   final String id;
@@ -12,35 +13,43 @@ class CartItem {
   final String parentCategoryType;
   final num totalPrice;
 
-  CartItem(
-      {required this.id,
-      required this.title,
-      required this.imageUrl,
-      required this.parentCategoryType,
-      required this.quantity,
-      required this.totalPrice,
-      required this.customizedMessage,
-      required this.price});
+  CartItem({
+    required this.id,
+    required this.title,
+    required this.imageUrl,
+    required this.parentCategoryType,
+    required this.quantity,
+    required this.totalPrice,
+    required this.customizedMessage,
+    required this.price,
+  });
 
-  Map toJson() => {
-        'id': this.id,
-        'title': this.title,
-        'customizedMessage': this.customizedMessage,
-        'quantity': this.quantity,
-        'price': this.price,
-        'imageUrl': this.imageUrl,
-        'parentCategoryType': this.parentCategoryType,
-        'totalPrice': this.totalPrice
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'customizedMessage': customizedMessage,
+      'quantity': quantity,
+      'price': price,
+      'imageUrl': imageUrl,
+      'parentCategoryType': parentCategoryType,
+      'totalPrice': totalPrice,
+    };
+  }
 }
 
 class CartProvider with ChangeNotifier {
-  Map<String, CartItem>? _items = {}; //product db id as key.
+  final CartLocalService _localService =
+      CartLocalService();
+
+  final Map<String, CartItem> _items = {};
 
   List<CartItem> _itemList = [];
 
+  Timer? _saveDebounce;
+
   Map<String, CartItem> get items {
-    return {..._items!};
+    return {..._items};
   }
 
   List<CartItem> get itemList {
@@ -48,166 +57,147 @@ class CartProvider with ChangeNotifier {
   }
 
   int get itemCount {
-    if (_items == null) {
-      return 0;
-    }
-    return _items!.length;
+    return _items.length;
   }
 
   bool checkInCart(String itemId) {
-    return _items!.containsKey(itemId);
+    return _items.containsKey(itemId);
   }
 
-  dynamic getQuantity(String itemId) {
-    if (checkInCart(itemId)) {
-      CartItem? item = _items![itemId];
-      return item!.quantity;
-    } else {
-      return 0;
-    }
-  }
-
-  void clearCart() {
-    _items = {};
-    _itemList = [];
-    notifyListeners();
+  num getQuantity(String itemId) {
+    return _items[itemId]?.quantity ?? 0;
   }
 
   num getTotalOrderPrice() {
     double totalPrice = 0;
-    _itemList.forEach((element) {
-      totalPrice += element.totalPrice;
-    });
+
+    for (final item in _itemList) {
+      totalPrice += item.totalPrice;
+    }
+
     return totalPrice;
+  }
+
+  Future<void> loadLocalCart() async {
+    final cartData =
+        await _localService.fetchCart();
+
+    _items.clear();
+
+    for (final item in cartData) {
+      _items[item['id']] = CartItem(
+        id: item['id'],
+        title: item['title'],
+        customizedMessage:
+            item['customizedMessage'] ?? '',
+        quantity: item['quantity'],
+        price: item['price'],
+        imageUrl: item['imageUrl'],
+        parentCategoryType:
+            item['parentCategoryType'],
+        totalPrice: item['totalPrice'],
+      );
+    }
+
+    formCartList();
+
+    notifyListeners();
+  }
+
+  void addItem(
+    String itemId,
+    num price,
+    num quantity,
+    String title,
+    String imgPath,
+    String parentCategory,
+    String customizedMessage,
+  ) {
+    debugPrint(
+      "REQUEST TO ADD $title with quantity $quantity",
+    );
+
+    if (_items.containsKey(itemId)) {
+      final existingItem = _items[itemId]!;
+
+      _items.update(
+        itemId,
+        (existingCartItem) => CartItem(
+          id: existingItem.id,
+          title: existingItem.title,
+          imageUrl: existingItem.imageUrl,
+          parentCategoryType:
+              existingItem.parentCategoryType,
+          quantity: quantity,
+          totalPrice:
+              existingItem.price * quantity,
+          customizedMessage:
+              existingItem.customizedMessage,
+          price: existingItem.price,
+        ),
+      );
+    } else {
+      _items[itemId] = CartItem(
+        id: itemId,
+        title: title,
+        imageUrl: imgPath,
+        parentCategoryType: parentCategory,
+        quantity: quantity,
+        totalPrice: price * quantity,
+        customizedMessage: customizedMessage,
+        price: price,
+      );
+    }
+
+    formCartList();
+
+    _scheduleSave();
+
+    notifyListeners();
   }
 
   void removeItem(String itemId) {
     if (checkInCart(itemId)) {
-      _items!.remove(itemId);
+      _items.remove(itemId);
+
       formCartList();
+
+      _scheduleSave();
+
       notifyListeners();
     }
   }
 
-  void formCartList() {
+  void clearCart() {
+    _items.clear();
+
     _itemList = [];
-    this._items!.forEach((key, value) {
-      _itemList.add(CartItem(
-          id: key,
-          totalPrice: value.totalPrice,
-          imageUrl: value.imageUrl,
-          parentCategoryType: value.parentCategoryType,
-          price: value.price,
-          customizedMessage: value.customizedMessage??'',
-          quantity: value.quantity,
-          title: value.title));
-    });
-    print("LIST OF CART BECOMES = ");
-    _itemList.forEach((ci) => print(
-        "${ci.id} , has quantity ${ci.quantity} , title ${ci.title} ,Total =  ${ci.totalPrice}"));
+
+    _scheduleSave();
+
     notifyListeners();
   }
 
-  void addItem(String itemId, num price, num quantity, String title,
-      String imgPath, String parentCategory , String customizedMessage) {
-    print(
-        "REQUEST TO ADD ${title} with price ${price.toString()} and quantity ${quantity} , making total = ${(price * quantity).toString()}");
-    if (_items!.containsKey(itemId)) {
-      //change quantity..
-      print("Found update quantity = ${quantity}");
-      _items!.update(
-          itemId,
-          (existingCartItem) => CartItem(
-              id: existingCartItem.id,
-              customizedMessage: existingCartItem.customizedMessage,
-              totalPrice: existingCartItem.price * quantity,
-              title: existingCartItem.title,
-              imageUrl: existingCartItem.imageUrl,
-              parentCategoryType: existingCartItem.parentCategoryType,
-              price: existingCartItem.price,
-              quantity: quantity));
-    } else {
-      _items!.putIfAbsent(
-          itemId,
-          () => CartItem(
-              id: itemId + "-CART",
-              totalPrice: price * quantity,
-              price: price,
-              title: title,
-              customizedMessage: customizedMessage,
-              quantity: 1,
-              imageUrl: imgPath,
-              parentCategoryType: parentCategory));
-    }
-    print("Formin list");
-    formCartList();
-    notifyListeners();
-
-    print("ADDED ITEM");
+  void formCartList() {
+    _itemList = _items.values.toList();
   }
 
-  Future<void> deleteCartOnDB(String distributor, String area) async {
-    var url =
-        "https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/cart/${area}/${distributor}.json";
-    try {
-      await http.delete(Uri.parse(url));
-    } catch (error) {
-      print("ERROR IS");
-      print(error);
-      throw error;
-    }
+  void _scheduleSave() {
+    _saveDebounce?.cancel();
+
+    _saveDebounce = Timer(
+      const Duration(milliseconds: 300),
+      () async {
+        await _saveCartLocally();
+      },
+    );
   }
 
-  Future<void> saveCart(String distributor, String area) async {
-    var url =
-        "https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/cart/${area}/${distributor}.json";
-    try {
-      await http.put(Uri.parse(url),
-          body: json.encode({"items": formSaveCartList()}));
-    } catch (error) {
-      print("ERROR IS");
-      print(error);
-      throw error;
-    }
-  }
-
-  Future<void> fetchCartFromDB(String distributor, String area) async {
-    var url =
-        "https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/cart/${area}/${distributor}/items.json";
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.body == 'null') {
-        print("NULLL AAGYI DB WALE CART");
-        return;
-      }
-      // final List<CartItem> loadedItems = [];
-      final extractedData = json.decode(response.body) as List<dynamic>;
-      if (extractedData == null) {
-        return;
-      }
-      extractedData.forEach((cartItem) {
-        addItem(
-          cartItem['id'],
-          cartItem['price'],
-          cartItem['quantity'],
-          cartItem['title'],
-          cartItem['imageUrl'],
-          cartItem['parentCategoryType'],
-          cartItem['customizedMessage']??'',
-        );
-      });
-    } catch (error) {
-      print("ERROR IS");
-      print(error);
-      throw error;
-    }
-  }
-
-  formSaveCartList() {
-    var items = [];
-    itemList.forEach((cartItem) {
-      items.add(cartItem.toJson());
-    });
-    return items;
+  Future<void> _saveCartLocally() async {
+    await _localService.saveCart(
+      itemList
+          .map((item) => item.toJson())
+          .toList(),
+    );
   }
 }
