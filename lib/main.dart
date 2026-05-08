@@ -6,11 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:goodlife_party/providers/area_provider.dart';
 import 'package:goodlife_party/providers/auth_provider.dart';
+import 'package:goodlife_party/providers/cart_provider.dart';
 import 'package:goodlife_party/providers/categories_provider.dart';
+import 'package:goodlife_party/providers/items_provider.dart';
 import 'package:goodlife_party/providers/signup_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:goodlife_party/routes/route_generator.dart';
 import 'package:goodlife_party/theme/app_theme.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/locale_provider.dart';
@@ -23,6 +27,7 @@ void main() async {
   await localeProvider.loadLocale();
 
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   await Firebase.initializeApp();
 
   runApp(
@@ -32,7 +37,9 @@ void main() async {
       ChangeNotifierProvider(create: (_) => AreaProvider()),
       ChangeNotifierProvider(create: (_) => SignupProvider()),
       ChangeNotifierProvider(create: (_)=> AuthProvider()),
-      ChangeNotifierProvider(create: (_)=> CategoryProvider())
+      ChangeNotifierProvider(create: (_)=> CartProvider()),
+      ChangeNotifierProvider(create: (_)=> CategoryProvider()),
+      ChangeNotifierProvider(create: (_)=>ItemsProvider())
     ],
     child: const MyApp(),
   ),
