@@ -44,10 +44,9 @@ class AppBottomNavBar extends StatelessWidget {
             break;
 
           case 2:
-            Navigator.pushNamedAndRemoveUntil(
+            Navigator.pushNamed(
               context,
               AppRoutes.cart,
-              (route) => false,
             );
             break;
 
@@ -71,12 +70,12 @@ class AppBottomNavBar extends StatelessWidget {
 
       items: [
         const BottomNavigationBarItem(
-          icon: Icon(Icons.home),
+          icon: Icon(Icons.camera_alt),
           label: '',
         ),
 
         const BottomNavigationBarItem(
-          icon: Icon(Icons.category),
+          icon: Icon(Icons.precision_manufacturing_rounded),
           label: '',
         ),
 
@@ -135,7 +134,7 @@ class AppBottomNavBar extends StatelessWidget {
         ),
 
         const BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
+          icon: Icon(Icons.miscellaneous_services_rounded),
           label: '',
         ),
 
