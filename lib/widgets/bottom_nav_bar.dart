@@ -71,16 +71,16 @@ class AppBottomNavBar extends StatelessWidget {
       items: [
         const BottomNavigationBarItem(
           icon: Icon(Icons.camera_alt),
-          label: '',
+          label: 'Inquiry',
         ),
 
         const BottomNavigationBarItem(
           icon: Icon(Icons.precision_manufacturing_rounded),
-          label: '',
+          label: 'Inventory',
         ),
 
         BottomNavigationBarItem(
-          label: '',
+          label: 'Cart',
 
           icon: Stack(
             clipBehavior: Clip.none,
@@ -134,13 +134,13 @@ class AppBottomNavBar extends StatelessWidget {
         ),
 
         const BottomNavigationBarItem(
-          icon: Icon(Icons.miscellaneous_services_rounded),
-          label: '',
+          icon: Icon(Icons.build_rounded),
+          label: 'Service',
         ),
 
         const BottomNavigationBarItem(
           icon: Icon(Icons.person),
-          label: '',
+          label: 'Profile',
         ),
       ],
     );
