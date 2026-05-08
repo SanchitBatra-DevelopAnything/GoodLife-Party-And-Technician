@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/screens/cart/cart_screen.dart';
 import 'package:goodlife_party/screens/categories_screen.dart';
 import 'package:goodlife_party/screens/home_screen.dart';
 import 'package:goodlife_party/screens/items_screen.dart';
@@ -28,6 +29,9 @@ class RouteGenerator {
 
       case AppRoutes.categories:
         return _buildRoute(const CategoriesScreen());
+
+      case AppRoutes.cart:
+        return _buildRoute(const CartScreen());
 
       case AppRoutes.items:
         final args =

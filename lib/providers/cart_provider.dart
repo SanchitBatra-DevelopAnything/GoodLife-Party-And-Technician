@@ -200,4 +200,32 @@ class CartProvider with ChangeNotifier {
           .toList(),
     );
   }
+
+  double get subtotal {
+  double total = 0;
+
+  _items?.forEach((key, cartItem) {
+    total +=
+        cartItem.price * cartItem.quantity;
+  });
+
+  return total;
+}
+
+double get gst {
+  return subtotal * 0.18;
+}
+
+double get freightCharges {
+  if ((_items?.isEmpty ?? true)) {
+    return 0;
+  }
+
+  return subtotal * 0.05;
+}
+
+double get grandTotal {
+  return subtotal + gst + freightCharges;
+}
+
 }

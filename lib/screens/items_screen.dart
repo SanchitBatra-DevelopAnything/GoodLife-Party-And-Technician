@@ -95,9 +95,6 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
 bottomNavigationBar: AppBottomNavBar(
   currentIndex: 1,
-  onTap: (index) {
-    // TODO: Navigation logic
-  },
 ),
 
     );

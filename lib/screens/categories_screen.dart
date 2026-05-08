@@ -169,9 +169,6 @@ void initState() {
         // 🔻 Bottom Navigation
         bottomNavigationBar: AppBottomNavBar(
           currentIndex: 1,
-          onTap: (index) {
-            // TODO: Navigation logic
-          },
         ),
       ),
     );
