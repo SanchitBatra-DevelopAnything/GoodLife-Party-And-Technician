@@ -87,14 +87,100 @@ void initState() {
         backgroundColor: Colors.grey.shade50,
 
         // 🔴 AppBar
-        appBar: AppBar(
-          elevation: 0,
-          centerTitle: true,
-          title: Text(
-            'Hello, $userName',
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-          ),
+        // 🔴 Professional AppBar
+// 🔴 Professional Themed AppBar
+appBar: PreferredSize(
+  preferredSize: const Size.fromHeight(90),
+  child: Container(
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.primary,
+      borderRadius: const BorderRadius.vertical(
+        bottom: Radius.circular(26),
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Theme.of(
+            context,
+          ).colorScheme.primary.withOpacity(0.18),
+          blurRadius: 14,
+          offset: const Offset(0, 6),
         ),
+      ],
+    ),
+    child: SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 14,
+        ),
+        child: Row(
+          children: [
+            // 🏭 Logo/Icon Section
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.precision_manufacturing_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+
+            const SizedBox(width: 16),
+
+            // 📝 Title Section
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Goodlife Machines',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    'Hello, $userName',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.85),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // 🔔 Optional Action Button
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(
+                Icons.build,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+),
 
         // 🧠 Body
         body: GestureDetector(
