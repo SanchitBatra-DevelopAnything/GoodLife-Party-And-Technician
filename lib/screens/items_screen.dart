@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:goodlife_party/providers/items_provider.dart';
+import 'package:goodlife_party/widgets/bottom_nav_bar.dart';
 import 'package:goodlife_party/widgets/category_shimmer.dart';
 import 'package:goodlife_party/widgets/item_card.dart';
 import 'package:provider/provider.dart';
@@ -91,6 +92,14 @@ class _ItemsScreenState extends State<ItemsScreen> {
     ],
   ),
 ),
+
+bottomNavigationBar: AppBottomNavBar(
+  currentIndex: 1,
+  onTap: (index) {
+    // TODO: Navigation logic
+  },
+),
+
     );
   }
 }
