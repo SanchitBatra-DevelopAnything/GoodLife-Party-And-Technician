@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // 👈 IMPORTANT
 import 'package:goodlife_party/providers/cart_provider.dart';
 import 'package:goodlife_party/providers/categories_provider.dart';
+import 'package:goodlife_party/providers/whats_new_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
+import 'package:goodlife_party/widgets/whats_new_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/category_item.dart';
@@ -27,16 +29,36 @@ void initState() {
   loadUser();
 
   Future.microtask(() async {
-    await Provider.of<CartProvider>(
-      context,
-      listen: false,
-    ).loadLocalCart();
+  await Provider.of<CartProvider>(
+    context,
+    listen: false,
+  ).loadLocalCart();
 
-    await Provider.of<CategoryProvider>(
-      context,
-      listen: false,
-    ).fetchCategories();
-  });
+  await Provider.of<CategoryProvider>(
+    context,
+    listen: false,
+  ).fetchCategories();
+
+  final whatsNewProvider =
+      Provider.of<WhatsNewProvider>(
+    context,
+    listen: false,
+  );
+
+  await whatsNewProvider.fetchWhatsNew();
+
+  if (!mounted) return;
+
+  if (whatsNewProvider.items.isNotEmpty) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WhatsNewDialog(
+        items: whatsNewProvider.items,
+      ),
+    );
+  }
+});
 }
 
   Future<void> loadUser() async {
