@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goodlife_party/widgets/bottom_nav_bar.dart';
+import 'package:goodlife_party/widgets/payment_option_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/cart_provider.dart';
@@ -12,88 +13,54 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(
-      builder: (
-        context,
-        cartProvider,
-        child,
-      ) {
-        final cartItems =
-            cartProvider.items.values.toList();
+      builder: (context, cartProvider, child) {
+        final cartItems = cartProvider.items.values.toList();
 
         return Scaffold(
-          backgroundColor:
-              Colors.grey.shade100,
+          backgroundColor: Colors.grey.shade100,
 
-          appBar: AppBar(
-            title: const Text('My Cart'),
-            centerTitle: true,
-          ),
+          appBar: AppBar(title: const Text('My Cart'), centerTitle: true),
 
-          bottomNavigationBar:
-              AppBottomNavBar(
-            currentIndex: 2,
-            
-          ),
+          bottomNavigationBar: AppBottomNavBar(currentIndex: 2),
 
           body: cartItems.isEmpty
-              ? const Center(
-                  child: Text(
-                    'Your cart is empty',
-                  ),
-                )
+              ? const Center(child: Text('Your cart is empty'))
               : Column(
                   children: [
                     Expanded(
                       child: ListView.builder(
-                        padding:
-                            const EdgeInsets.all(
-                          16,
-                        ),
-                        itemCount:
-                            cartItems.length,
-                        itemBuilder:
-                            (context, index) {
-                          final cartItem =
-                              cartItems[index];
+                        padding: const EdgeInsets.all(16),
+                        itemCount: cartItems.length,
+                        itemBuilder: (context, index) {
+                          final cartItem = cartItems[index];
 
                           return CartItemCard(
                             cartItem: cartItem,
 
                             onAdd: () {
-                              cartProvider
-                                  .addItem(
+                              cartProvider.addItem(
                                 cartItem.id,
                                 cartItem.price,
-                                cartItem.quantity +
-                                    1,
+                                cartItem.quantity + 1,
                                 cartItem.title,
                                 cartItem.imageUrl,
                                 '',
-                                cartItem
-                                    .customizedMessage,
+                                cartItem.customizedMessage,
                               );
                             },
 
                             onRemove: () {
-                              if (cartItem
-                                      .quantity <=
-                                  1) {
-                                cartProvider
-                                    .removeItem(
-                                  cartItem.id,
-                                );
+                              if (cartItem.quantity <= 1) {
+                                cartProvider.removeItem(cartItem.id);
                               } else {
-                                cartProvider
-                                    .addItem(
+                                cartProvider.addItem(
                                   cartItem.id,
                                   cartItem.price,
-                                  cartItem.quantity -
-                                      1,
+                                  cartItem.quantity - 1,
                                   cartItem.title,
                                   cartItem.imageUrl,
                                   '',
-                                  cartItem
-                                      .customizedMessage,
+                                  cartItem.customizedMessage,
                                 );
                               }
                             },
@@ -103,141 +70,109 @@ class CartScreen extends StatelessWidget {
                     ),
 
                     Container(
-                      padding:
-                          const EdgeInsets.all(
-                        20,
-                      ),
+                      padding: const EdgeInsets.all(20),
 
-                      decoration:
-                          const BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.white,
 
-                        borderRadius:
-                            BorderRadius.vertical(
-                          top:
-                              Radius.circular(28),
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(28),
                         ),
                       ),
 
                       child: Column(
                         children: [
-                          buildPriceRow(
-                            'Subtotal',
-                            cartProvider
-                                .subtotal,
-                          ),
+                          buildPriceRow('Subtotal', cartProvider.subtotal),
 
-                          const SizedBox(
-                            height: 10,
-                          ),
+                          const SizedBox(height: 10),
 
-                          buildPriceRow(
-                            'GST (18%)',
-                            cartProvider.gst,
-                          ),
+                          buildPriceRow('GST (18%)', cartProvider.gst),
 
-                          const SizedBox(
-                            height: 10,
-                          ),
+                          const SizedBox(height: 10),
 
                           buildPriceRow(
                             'Freight Charges',
-                            cartProvider
-                                .freightCharges,
+                            cartProvider.freightCharges,
                           ),
 
                           const Padding(
-                            padding:
-                                EdgeInsets.symmetric(
-                              vertical: 16,
-                            ),
+                            padding: EdgeInsets.symmetric(vertical: 16),
                             child: Divider(),
                           ),
 
                           buildPriceRow(
                             'Grand Total',
-                            cartProvider
-                                .grandTotal,
+                            cartProvider.grandTotal,
                             isBold: true,
                           ),
 
-                          const SizedBox(
-                            height: 22,
-                          ),
+                          const SizedBox(height: 22),
 
                           SizedBox(
-                            width:
-                                double.infinity,
+                            width: double.infinity,
                             height: 60,
-                            child:
-                                ElevatedButton(
-                              onPressed: () {},
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(24),
+                                    ),
+                                  ),
+                                  builder: (context) {
+                                    return PaymentOptionBottomSheet(
+                                      grandTotal: cartProvider.grandTotal,
+                                    );
+                                  },
+                                );
+                              },
 
-                              style:
-                                  ElevatedButton.styleFrom(
+                              style: ElevatedButton.styleFrom(
                                 elevation: 0,
 
-                                backgroundColor:
-                                    Theme.of(
-                                  context,
-                                ).primaryColor,
+                                backgroundColor: Theme.of(context).primaryColor,
 
-                                shape:
-                                    RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                    20,
-                                  ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
 
-                                padding:
-                                    const EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 20,
                                 ),
                               ),
 
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
 
                                 children: [
                                   Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
 
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
 
                                     children: [
                                       const Text(
                                         'Total Amount',
 
-                                        style:
-                                            TextStyle(
-                                          color: Colors
-                                              .white70,
-                                          fontSize:
-                                              13,
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 13,
                                         ),
                                       ),
 
                                       Text(
                                         '₹${cartProvider.grandTotal.toStringAsFixed(0)}',
 
-                                        style:
-                                            const TextStyle(
-                                          color: Colors
-                                              .white,
+                                        style: const TextStyle(
+                                          color: Colors.white,
 
-                                          fontSize:
-                                              20,
+                                          fontSize: 20,
 
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
@@ -248,30 +183,21 @@ class CartScreen extends StatelessWidget {
                                       Text(
                                         'Place Order',
 
-                                        style:
-                                            TextStyle(
-                                          fontSize:
-                                              17,
+                                        style: TextStyle(
+                                          fontSize: 17,
 
-                                          fontWeight:
-                                              FontWeight
-                                                  .w700,
+                                          fontWeight: FontWeight.w700,
 
-                                          color: Colors
-                                              .white,
+                                          color: Colors.white,
                                         ),
                                       ),
 
-                                      SizedBox(
-                                        width: 8,
-                                      ),
+                                      SizedBox(width: 8),
 
                                       Icon(
-                                        Icons
-                                            .arrow_forward_rounded,
+                                        Icons.arrow_forward_rounded,
 
-                                        color: Colors
-                                            .white,
+                                        color: Colors.white,
                                       ),
                                     ],
                                   ),
@@ -289,31 +215,20 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget buildPriceRow(
-    String title,
-    double value, {
-    bool isBold = false,
-  }) {
+  Widget buildPriceRow(String title, double value, {bool isBold = false}) {
     final style = TextStyle(
       fontSize: isBold ? 18 : 15,
 
-      fontWeight: isBold
-          ? FontWeight.bold
-          : FontWeight.w500,
+      fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
     );
 
     return Row(
-      mainAxisAlignment:
-          MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
       children: [
         Text(title, style: style),
 
-        Text(
-          '₹${value.toStringAsFixed(0)}',
-
-          style: style,
-        ),
+        Text('₹${value.toStringAsFixed(0)}', style: style),
       ],
     );
   }
