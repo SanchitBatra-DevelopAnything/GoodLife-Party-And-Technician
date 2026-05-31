@@ -1,15 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/user_model.dart';
+
+import '../models/login_context.dart';
 
 class AuthService {
-  Future<UserModel> login({
+  Future<LoginContext> login({
     required String mobile,
     required String areaName,
   }) async {
     final response = await http.post(
-      Uri.parse("https://loginparty-kind2bfhcq-as.a.run.app"),
-      headers: {"Content-Type": "application/json"},
+      Uri.parse(
+        "https://loginparty-kind2bfhcq-as.a.run.app",
+      ),
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: jsonEncode({
         "mobile": mobile,
         "areaName": areaName,
@@ -17,11 +22,11 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      
       final data = jsonDecode(response.body);
-      return UserModel.fromJson(data);
-    } else {
-      throw Exception("Login failed");
+
+      return LoginContext.fromJson(data);
     }
+
+    throw Exception("Login failed");
   }
 }

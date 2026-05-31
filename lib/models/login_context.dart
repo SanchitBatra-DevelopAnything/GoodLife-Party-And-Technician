@@ -1,0 +1,111 @@
+// models/login_context.dart
+
+class LoginContext {
+  final DistributorDetails distributorDetails;
+  final AreaDetails areaDetails;
+
+  LoginContext({
+    required this.distributorDetails,
+    required this.areaDetails,
+  });
+
+  factory LoginContext.fromJson(Map<String, dynamic> json) {
+    return LoginContext(
+      distributorDetails: DistributorDetails.fromJson(
+        json['distributorDetails'],
+      ),
+      areaDetails: AreaDetails.fromJson(
+        json['areaDetails'],
+      ),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'distributorDetails': distributorDetails.toJson(),
+      'areaDetails': areaDetails.toJson(),
+    };
+  }
+}
+
+class DistributorDetails {
+  final bool allowPayLater;
+  final String area;
+  final String contact;
+  final String deviceToken;
+  final String distributorName;
+  final List<String> machineIds;
+
+  DistributorDetails({
+    required this.allowPayLater,
+    required this.area,
+    required this.contact,
+    required this.deviceToken,
+    required this.distributorName,
+    required this.machineIds,
+  });
+
+  factory DistributorDetails.fromJson(Map<String, dynamic> json) {
+    return DistributorDetails(
+      allowPayLater: json['allowPayLater'] ?? false,
+      area: json['area'] ?? '',
+      contact: json['contact'] ?? '',
+      deviceToken: json['deviceToken'] ?? '',
+      distributorName: json['distributorName'] ?? '',
+      machineIds: List<String>.from(
+        json['machineIds'] ?? [],
+      ),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'allowPayLater': allowPayLater,
+      'area': area,
+      'contact': contact,
+      'deviceToken': deviceToken,
+      'distributorName': distributorName,
+      'machineIds': machineIds,
+    };
+  }
+}
+
+class AreaDetails {
+  final int amcPrice;
+  final int amcServices;
+  final String areaName;
+  final int freightPercentage;
+  final int salesContact;
+  final String salesPerson;
+
+  AreaDetails({
+    required this.amcPrice,
+    required this.amcServices,
+    required this.areaName,
+    required this.freightPercentage,
+    required this.salesContact,
+    required this.salesPerson,
+  });
+
+  factory AreaDetails.fromJson(Map<String, dynamic> json) {
+    return AreaDetails(
+      amcPrice: json['amcPrice'] ?? 0,
+      amcServices: json['amcServices'] ?? 0,
+      areaName: json['areaName'] ?? '',
+      freightPercentage: json['freightPercentage'] ?? 0,
+      salesContact: json['salesContact'] ?? 0,
+      salesPerson: json['salesPerson'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'amcPrice': amcPrice,
+      'amcServices': amcServices,
+      'areaName': areaName,
+      'freightPercentage': freightPercentage,
+      'salesContact': salesContact,
+      'salesPerson': salesPerson,
+    };
+  }
+}
