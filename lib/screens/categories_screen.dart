@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/providers/auth_provider.dart';
 import 'package:goodlife_party/providers/cart_provider.dart';
 import 'package:goodlife_party/providers/categories_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
@@ -22,36 +23,38 @@ class CategoriesScreenState extends State<CategoriesScreen> {
   String userName = '';
 
   @override
-  void initState() {
-    super.initState();
+void initState() {
+  super.initState();
 
-    loadUser();
+  loadUser();
 
-    Future.microtask(() async {
-      await Provider.of<CartProvider>(
-        context,
-        listen: false,
-      ).loadLocalCart();
+  Future.microtask(() async {
+    await Provider.of<CartProvider>(
+      context,
+      listen: false,
+    ).loadLocalCart();
 
-      await Provider.of<CategoryProvider>(
-        context,
-        listen: false,
-      ).fetchCategories();
-    });
-  }
+    final authProvider = Provider.of<AuthProvider>(
+      context,
+      listen: false,
+    );
+
+    await Provider.of<CategoryProvider>(
+      context,
+      listen: false,
+    ).fetchCategories(
+      machineIds: authProvider.machineIds,
+    );
+  });
+}
 
   Future<void> loadUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userString = prefs.getString('logged_in_user');
+  final authProvider = context.read<AuthProvider>();
 
-    if (userString != null) {
-      final userMap = jsonDecode(userString);
-
-      setState(() {
-        userName = userMap['distributorName'] ?? '';
-      });
-    }
-  }
+  setState(() {
+    userName = authProvider.distributorName;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +114,7 @@ class CategoriesScreenState extends State<CategoriesScreen> {
                           CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Machine Categories',
+                          'My Machines',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 22,
@@ -123,7 +126,7 @@ class CategoriesScreenState extends State<CategoriesScreen> {
                         const SizedBox(height: 4),
 
                         Text(
-                          'Select a machine category',
+                          'Welcome back, $userName',
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color:
