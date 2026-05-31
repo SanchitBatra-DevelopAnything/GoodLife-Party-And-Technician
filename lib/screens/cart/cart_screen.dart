@@ -21,7 +21,7 @@ class CartScreen extends StatelessWidget {
 
           appBar: AppBar(title: const Text('My Cart'), centerTitle: true),
 
-          bottomNavigationBar: AppBottomNavBar(currentIndex: 2),
+          bottomNavigationBar: AppBottomNavBar(currentIndex: 2 , showCartBar: false,),
 
           body: cartItems.isEmpty
               ? const Center(child: Text('Your cart is empty'))
