@@ -50,8 +50,15 @@ class CartProvider with ChangeNotifier {
   Timer? _saveDebounce;
   double _freightPercentage = 0;
 
-  void setFreightPercentage(double percentage) {
+double get freightPercentage => _freightPercentage;
+
+void setFreightPercentage(double percentage) {
+  if (_freightPercentage == percentage) {
+    return;
+  }
+
   _freightPercentage = percentage;
+
   notifyListeners();
 }
 
@@ -228,11 +235,8 @@ double get freightCharges {
     return 0;
   }
 
-  final percentageFreight =
-      subtotal * (_freightPercentage / 100);
-
   return math.max(
-    percentageFreight,
+    (subtotal+gst).toDouble() * (_freightPercentage / 100),
     100.0,
   );
 }

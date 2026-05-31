@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/providers/auth_provider.dart';
 import 'package:goodlife_party/providers/cart_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:provider/provider.dart';
