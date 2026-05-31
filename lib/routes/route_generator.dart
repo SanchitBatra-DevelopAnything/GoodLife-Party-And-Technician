@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:goodlife_party/screens/cart/cart_screen.dart';
 import 'package:goodlife_party/screens/categories_screen.dart';
 import 'package:goodlife_party/screens/home_screen.dart';
+import 'package:goodlife_party/screens/inventory_screen.dart';
 import 'package:goodlife_party/screens/items_screen.dart';
 import 'package:goodlife_party/screens/login/login_screen.dart';
 import 'package:goodlife_party/screens/signup/signup.dart';
@@ -20,6 +21,9 @@ class RouteGenerator {
     switch (settings.name) {
       case AppRoutes.home:
         return _buildRoute(const HomeScreen());
+
+      case AppRoutes.inventory:
+        return _buildRoute(const InventoryScreen());
 
       case AppRoutes.signup:
         return _buildRoute(const SignupScreen());

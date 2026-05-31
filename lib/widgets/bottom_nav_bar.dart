@@ -78,9 +78,7 @@ class AppBottomNavBar extends StatelessWidget {
                             ),
                           ),
                         ),
-
                         const SizedBox(width: 12),
-
                         Expanded(
                           child: Text(
                             '$cartCount item${cartCount > 1 ? 's' : ''}',
@@ -91,7 +89,6 @@ class AppBottomNavBar extends StatelessWidget {
                             ),
                           ),
                         ),
-
                         const Text(
                           'View Cart',
                           style: TextStyle(
@@ -100,9 +97,7 @@ class AppBottomNavBar extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-
                         const SizedBox(width: 6),
-
                         const Icon(
                           Icons.arrow_forward_ios_rounded,
                           color: Colors.white,
@@ -128,7 +123,7 @@ class AppBottomNavBar extends StatelessWidget {
               case 0:
                 Navigator.pushNamedAndRemoveUntil(
                   context,
-                  AppRoutes.home,
+                  AppRoutes.inventory,
                   (route) => false,
                 );
                 break;
@@ -142,9 +137,10 @@ class AppBottomNavBar extends StatelessWidget {
                 break;
 
               case 2:
-                Navigator.pushNamed(
+                Navigator.pushNamedAndRemoveUntil(
                   context,
-                  AppRoutes.cart,
+                  AppRoutes.categories,
+                  (route) => false,
                 );
                 break;
 
@@ -165,64 +161,26 @@ class AppBottomNavBar extends StatelessWidget {
                 break;
             }
           },
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.camera_alt),
-              label: 'Inquiry',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(
-                Icons.precision_manufacturing_rounded,
-              ),
-              label: 'Inventory',
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_rounded),
+              label: 'Home',
             ),
             BottomNavigationBarItem(
-              label: 'Cart',
-              icon: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  const Icon(
-                    Icons.shopping_cart,
-                  ),
-                  if (cartCount > 0)
-                    Positioned(
-                      right: -6,
-                      top: -6,
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(
-                            100,
-                          ),
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 18,
-                          minHeight: 18,
-                        ),
-                        child: Text(
-                          cartCount > 99
-                              ? '99+'
-                              : cartCount.toString(),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+              icon: Icon(Icons.point_of_sale_rounded),
+              label: 'Sales',
             ),
-            const BottomNavigationBarItem(
+            BottomNavigationBarItem(
+              icon: Icon(Icons.inventory_2_rounded),
+              label: 'Spare Parts',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.build_rounded),
               label: 'Service',
             ),
-            const BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: Icon(Icons.person),
-              label: 'Profile',
+              label: 'My Profile',
             ),
           ],
         ),
