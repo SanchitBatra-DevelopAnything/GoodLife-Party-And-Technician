@@ -71,10 +71,10 @@ class DistributorDetails {
 }
 
 class AreaDetails {
-  final int amcPrice;
+  final double amcPrice;
   final int amcServices;
   final String areaName;
-  final int freightPercentage;
+  final double freightPercentage;
   final int salesContact;
   final String salesPerson;
 
@@ -87,16 +87,30 @@ class AreaDetails {
     required this.salesPerson,
   });
 
-  factory AreaDetails.fromJson(Map<String, dynamic> json) {
-    return AreaDetails(
-      amcPrice: json['amcPrice'] ?? 0,
-      amcServices: json['amcServices'] ?? 0,
-      areaName: json['areaName'] ?? '',
-      freightPercentage: json['freightPercentage'] ?? 0,
-      salesContact: json['salesContact'] ?? 0,
-      salesPerson: json['salesPerson'] ?? '',
-    );
-  }
+  factory AreaDetails.fromJson(
+  Map<String, dynamic> json,
+) {
+  return AreaDetails(
+    amcPrice:
+        (json['amcPrice'] ?? 0).toDouble(),
+
+    amcServices:
+        json['amcServices'] ?? 0,
+
+    areaName:
+        json['areaName'] ?? '',
+
+    freightPercentage:
+        (json['freightPercentage'] ?? 0)
+            .toDouble(),
+
+    salesContact:
+        json['salesContact'] ?? 0,
+
+    salesPerson:
+        json['salesPerson'] ?? '',
+  );
+}
 
   Map<String, dynamic> toJson() {
     return {

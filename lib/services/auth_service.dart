@@ -24,6 +24,8 @@ class AuthService {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
+      print("Received login response: $data");
+
       return LoginContext.fromJson(data);
     }
 

@@ -27,7 +27,7 @@ class AuthProvider extends ChangeNotifier {
         mobile: mobile,
         areaName: areaName,
       );
-
+      print("Context Received");
       await LocalStorageService.saveLoginContext(context);
 
       _loginContext = context;
@@ -84,13 +84,13 @@ class AuthProvider extends ChangeNotifier {
   String get deviceToken =>
       distributorDetails?.deviceToken ?? '';
 
-  int get amcPrice =>
+  double get amcPrice =>
       areaDetails?.amcPrice ?? 0;
 
   int get amcServices =>
       areaDetails?.amcServices ?? 0;
 
-  int get freightPercentage =>
+  double get freightPercentage =>
       areaDetails?.freightPercentage ?? 0;
 
   String get areaName =>
