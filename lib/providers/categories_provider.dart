@@ -12,31 +12,44 @@ class CategoryProvider extends ChangeNotifier {
 
   List<CategoryModel> get categories => _filteredCategories;
 
+
+  //null from InventoryPage , emptyList can come from Categories Page , categoriesPage can also send machineIds for filtering
   Future<void> fetchCategories({
-    List<String>? machineIds,
-  }) async {
-    isLoading = true;
-    notifyListeners();
+  List<String>? machineIds,
+}) async {
+  isLoading = true;
+  notifyListeners();
 
-    try {
-      final categories = await _service.fetchCategories();
+  try {
+    final categories = await _service.fetchCategories();
 
-      if (machineIds != null && machineIds.isNotEmpty) {
-        _allCategories = categories
-            .where((category) => machineIds.contains(category.id))
-            .toList();
-      } else {
-        _allCategories = categories;
-      }
+    if (machineIds == null) {
 
-      _filteredCategories = List.from(_allCategories);
-    } catch (e) {
-      debugPrint(e.toString());
+      // Inventory screen
+      // No filtering requested
+      _allCategories = categories;
+
+    } else if (machineIds.isEmpty) {
+
+      // User has access to nothing
+      _allCategories = [];
+
+    } else {
+
+      _allCategories = categories
+          .where((category) => machineIds.contains(category.id))
+          .toList();
     }
 
-    isLoading = false;
-    notifyListeners();
+    _filteredCategories = List.from(_allCategories);
+
+  } catch (e) {
+    debugPrint(e.toString());
   }
+
+  isLoading = false;
+  notifyListeners();
+}
 
   void search(String query) {
     if (query.trim().isEmpty) {
