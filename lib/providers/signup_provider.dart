@@ -17,6 +17,7 @@ class SignupProvider with ChangeNotifier {
   required String contact,
   required String area,
   required File image,
+  required String areaId,
 }) async {
   try {
     isLoading = true;
@@ -46,6 +47,7 @@ class SignupProvider with ChangeNotifier {
       "distributorName": username,
       "imgUrl": imageUrl,
       "area": area,
+      "areaId": areaId,
       "contact": contact,
       "deviceToken": "random_token_123",
       "createdAt": DateTime.now().toIso8601String(),
