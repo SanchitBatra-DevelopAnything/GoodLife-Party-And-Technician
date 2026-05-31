@@ -18,6 +18,11 @@ class AppBottomNavBar extends StatelessWidget {
     final cartProvider = context.watch<CartProvider>();
     final cartCount = cartProvider.itemCount;
 
+    // Allows screens to pass -1, 100, etc.
+    // No tab will appear selected.
+    final bool hasSelectedTab =
+        currentIndex >= 0 && currentIndex <= 4;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -111,78 +116,93 @@ class AppBottomNavBar extends StatelessWidget {
             ),
           ),
 
-        BottomNavigationBar(
-          currentIndex: currentIndex,
-          type: BottomNavigationBarType.fixed,
-          onTap: (index) {
-            if (index == currentIndex) {
-              return;
-            }
+        Theme(
+          data: Theme.of(context).copyWith(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+          ),
+          child: BottomNavigationBar(
+            currentIndex:
+                hasSelectedTab ? currentIndex : 0,
+            type: BottomNavigationBarType.fixed,
 
-            switch (index) {
-              case 0:
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.inventory,
-                  (route) => false,
-                );
-                break;
+            selectedItemColor: hasSelectedTab
+                ? Theme.of(context).colorScheme.primary
+                : Colors.grey,
 
-              case 1:
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.sales,
-                  (route) => false,
-                );
-                break;
+            unselectedItemColor: Colors.grey,
 
-              case 2:
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.sparePartOptions,
-                  (route) => false,
-                );
-                break;
+            onTap: (index) {
+              if (index == currentIndex) {
+                return;
+              }
 
-              case 3:
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.categories,
-                  (route) => false,
-                );
-                break;
+              switch (index) {
+                case 0:
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRoutes.inventory,
+                    (route) => false,
+                  );
+                  break;
 
-              case 4:
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.profile,
-                  (route) => false,
-                );
-                break;
-            }
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.point_of_sale_rounded),
-              label: 'Sales',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2_rounded),
-              label: 'Spare Parts',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.build_rounded),
-              label: 'Service',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'My Profile',
-            ),
-          ],
+                case 1:
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRoutes.sales,
+                    (route) => false,
+                  );
+                  break;
+
+                case 2:
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRoutes.sparePartOptions,
+                    (route) => false,
+                  );
+                  break;
+
+                case 3:
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRoutes.categories,
+                    (route) => false,
+                  );
+                  break;
+
+                case 4:
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRoutes.profile,
+                    (route) => false,
+                  );
+                  break;
+              }
+            },
+
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_rounded),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.point_of_sale_rounded),
+                label: 'Sales',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.inventory_2_rounded),
+                label: 'Spare Parts',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.build_rounded),
+                label: 'Service',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'My Profile',
+              ),
+            ],
+          ),
         ),
       ],
     );

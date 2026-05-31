@@ -126,7 +126,12 @@ class SparePartsOrderOptionsScreen extends StatelessWidget {
               title: 'Place Express Delivery Order',
               description:
                   'Choose spare parts of your machines that are already available in our catalogue and get them delivered quickly.',
-              onTap: () {},
+              onTap: () {
+  Navigator.pushNamed(
+    context,
+    '/categories',
+  );
+},
             ),
 
             const SizedBox(height: 16),
