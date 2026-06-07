@@ -17,21 +17,17 @@ class ExecutiveOrderCard extends StatelessWidget {
       return 'Payment Rejected';
     }
 
-    if (order.status ==
-        'PAYMENT_VERIFICATION') {
-      return 'Payment Verification In Progress';
+    if (order.status == 'PAYMENT_VERIFICATION') {
+      return 'Payment Verification';
     }
 
-    if (order.status ==
-            'PAYMENT_VERIFIED' &&
+    if (order.status == 'PAYMENT_VERIFIED' &&
         order.dispatchedOn == null) {
       return 'Payment Verified';
     }
 
-    if ((order.status ==
-                'PAYMENT_VERIFIED' ||
-            order.status ==
-                'DISPATCHED') &&
+    if ((order.status == 'PAYMENT_VERIFIED' ||
+            order.status == 'DISPATCHED') &&
         order.dispatchedOn != null) {
       return 'Order Dispatched';
     }
@@ -44,8 +40,7 @@ class ExecutiveOrderCard extends StatelessWidget {
       return Colors.red;
     }
 
-    if (order.status ==
-        'PAYMENT_VERIFICATION') {
+    if (order.status == 'PAYMENT_VERIFICATION') {
       return Colors.orange;
     }
 
@@ -58,152 +53,193 @@ class ExecutiveOrderCard extends StatelessWidget {
 
   IconData getStatusIcon() {
     if (order.status == 'PENDING') {
-      return Icons.cancel;
+      return Icons.cancel_rounded;
     }
 
-    if (order.status ==
-        'PAYMENT_VERIFICATION') {
-      return Icons.hourglass_bottom;
+    if (order.status == 'PAYMENT_VERIFICATION') {
+      return Icons.hourglass_bottom_rounded;
     }
 
     if (order.dispatchedOn != null) {
-      return Icons.local_shipping;
+      return Icons.local_shipping_rounded;
     }
 
-    return Icons.check_circle;
+    return Icons.check_circle_rounded;
   }
 
   @override
   Widget build(BuildContext context) {
-    final statusColor =
-        getStatusColor();
+    final statusColor = getStatusColor();
+
+    final shortOrderId =
+        order.orderId.length > 8
+            ? order.orderId.substring(0, 8)
+            : order.orderId;
 
     return Padding(
-      padding:
-          const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
+      ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius:
-              BorderRadius.circular(20),
           onTap: onTap,
+          borderRadius:
+              BorderRadius.circular(24),
           child: Ink(
             decoration: BoxDecoration(
-              color: Theme.of(
-                context,
-              ).cardColor,
+              color: Theme.of(context)
+                  .colorScheme
+                  .surface,
               borderRadius:
-                  BorderRadius.circular(
-                    20,
-                  ),
+                  BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black
-                      .withOpacity(
-                        0.05,
-                      ),
-                  blurRadius: 10,
-                  offset: const Offset(
-                    0,
-                    4,
+                  color: Colors.black.withOpacity(
+                    0.05,
                   ),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
             child: Padding(
               padding:
-                  const EdgeInsets.all(
-                    18,
-                  ),
+                  const EdgeInsets.all(18),
               child: Column(
                 crossAxisAlignment:
-                    CrossAxisAlignment
-                        .start,
+                    CrossAxisAlignment.start,
                 children: [
+                  /// STATUS
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration:
+                        BoxDecoration(
+                      color: statusColor
+                          .withOpacity(0.12),
+                      borderRadius:
+                          BorderRadius.circular(
+                        30,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize:
+                          MainAxisSize.min,
+                      children: [
+                        Icon(
+                          getStatusIcon(),
+                          size: 16,
+                          color: statusColor,
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          getStatusText(),
+                          style: TextStyle(
+                            color:
+                                statusColor,
+                            fontWeight:
+                                FontWeight
+                                    .w700,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 18,
+                  ),
+
+                  /// AMOUNT
+                  Text(
+                    '₹${order.totalPrice.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      fontSize: 30,
+                      fontWeight:
+                          FontWeight.w800,
+                      height: 1,
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 4,
+                  ),
+
+                  Text(
+                    '${order.items.length} Items',
+                    style: TextStyle(
+                      color:
+                          Colors.grey.shade600,
+                      fontWeight:
+                          FontWeight.w500,
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 20,
+                  ),
+
+                  /// CUSTOMER
                   Row(
                     children: [
-                      Expanded(
-                        child: Text(
-                          'Order #${order.orderId.length > 8 ? order.orderId.substring(0, 8) : order.orderId}',
-                          style:
-                              const TextStyle(
-                                fontSize:
-                                    18,
-                                fontWeight:
-                                    FontWeight
-                                        .bold,
-                              ),
-                        ),
-                      ),
-
                       Container(
                         padding:
-                            const EdgeInsets.symmetric(
-                              horizontal:
-                                  12,
-                              vertical:
-                                  6,
-                            ),
+                            const EdgeInsets
+                                .all(8),
                         decoration:
                             BoxDecoration(
-                              color: statusColor
-                                  .withOpacity(
-                                    0.12,
-                                  ),
-                              borderRadius:
-                                  BorderRadius.circular(
-                                    20,
-                                  ),
-                            ),
-                        child: Row(
-                          mainAxisSize:
-                              MainAxisSize
-                                  .min,
-                          children: [
-                            Icon(
-                              getStatusIcon(),
-                              size: 14,
-                              color:
-                                  statusColor,
-                            ),
-                            const SizedBox(
-                              width: 6,
-                            ),
-                            Text(
-                              getStatusText(),
-                              style:
-                                  TextStyle(
-                                    color:
-                                        statusColor,
-                                    fontSize:
-                                        12,
-                                    fontWeight:
-                                        FontWeight
-                                            .w600,
-                                  ),
-                            ),
-                          ],
+                          color: Colors
+                              .grey.shade100,
+                          shape:
+                              BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons
+                              .person_outline_rounded,
+                          size: 18,
+                          color: Colors
+                              .grey.shade700,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Text(
+                          order.orderedBy,
+                          style:
+                              const TextStyle(
+                            fontWeight:
+                                FontWeight
+                                    .w600,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ],
                   ),
 
                   const SizedBox(
-                    height: 14,
+                    height: 12,
                   ),
 
+                  /// DATE
                   Row(
                     children: [
                       Icon(
                         Icons
-                            .calendar_today_outlined,
-                        size: 16,
+                            .schedule_rounded,
+                        size: 18,
                         color: Colors
-                            .grey
-                            .shade600,
+                            .grey.shade600,
                       ),
                       const SizedBox(
                         width: 8,
@@ -213,41 +249,10 @@ class ExecutiveOrderCard extends StatelessWidget {
                           '${order.orderDate} • ${order.orderTime}',
                           style:
                               TextStyle(
-                                color: Colors
-                                    .grey
-                                    .shade700,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(
-                    height: 10,
-                  ),
-
-                  Row(
-                    children: [
-                      Icon(
-                        Icons
-                            .person_outline,
-                        size: 16,
-                        color: Colors
-                            .grey
-                            .shade600,
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                        child: Text(
-                          order.orderedBy,
-                          style:
-                              TextStyle(
-                                color: Colors
-                                    .grey
-                                    .shade700,
-                              ),
+                            color: Colors
+                                .grey
+                                .shade700,
+                          ),
                         ),
                       ),
                     ],
@@ -257,103 +262,121 @@ class ExecutiveOrderCard extends StatelessWidget {
                     height: 18,
                   ),
 
+                  /// ORDER ID BADGE
                   Container(
                     padding:
-                        const EdgeInsets.all(
-                          14,
-                        ),
+                        const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration:
                         BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          )
-                              .colorScheme
-                              .surface
-                              .withOpacity(
-                                0.5,
-                              ),
-                          borderRadius:
-                              BorderRadius.circular(
-                                16,
-                              ),
-                        ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child:
-                              _InfoTile(
-                                title:
-                                    'Items',
-                                value:
-                                    '${order.items.length}',
-                                icon:
-                                    Icons.inventory_2_outlined,
-                              ),
-                        ),
-
-                        Container(
-                          height: 40,
-                          width: 1,
-                          color:
-                              Colors.grey.shade300,
-                        ),
-
-                        Expanded(
-                          child:
-                              _InfoTile(
-                                title:
-                                    'Amount',
-                                value:
-                                    '₹${order.totalPrice.toStringAsFixed(2)}',
-                                icon:
-                                    Icons.currency_rupee,
-                              ),
-                        ),
-                      ],
+                      color: Colors
+                          .grey.shade100,
+                      borderRadius:
+                          BorderRadius.circular(
+                        20,
+                      ),
+                    ),
+                    child: Text(
+                      '#$shortOrderId',
+                      style: TextStyle(
+                        color: Colors
+                            .grey.shade700,
+                        fontWeight:
+                            FontWeight.w700,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
+
+                  if (order.dispatchedOn !=
+                      null) ...[
+                    const SizedBox(
+                      height: 14,
+                    ),
+                    Container(
+                      width:
+                          double.infinity,
+                      padding:
+                          const EdgeInsets
+                              .all(12),
+                      decoration:
+                          BoxDecoration(
+                        color: Colors.blue
+                            .withOpacity(
+                          0.08,
+                        ),
+                        borderRadius:
+                            BorderRadius
+                                .circular(
+                          12,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons
+                                .local_shipping_rounded,
+                            size: 18,
+                            color:
+                                Colors.blue,
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Dispatched on ${order.dispatchedOn}',
+                              style:
+                                  const TextStyle(
+                                fontWeight:
+                                    FontWeight
+                                        .w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   const SizedBox(
                     height: 16,
                   ),
 
-                  Row(
-                    children: [
-                      if (order.dispatchedOn !=
-                          null)
-                        Expanded(
-                          child: Text(
-                            'Dispatched on ${order.dispatchedOn}',
-                            style:
-                                const TextStyle(
-                                  fontWeight:
-                                      FontWeight
-                                          .w500,
-                                ),
+                  const Divider(),
+
+                  const SizedBox(
+                    height: 8,
+                  ),
+
+                  Align(
+                    alignment:
+                        Alignment.centerRight,
+                    child: Row(
+                      mainAxisSize:
+                          MainAxisSize.min,
+                      children: const [
+                        Text(
+                          'View Details',
+                          style:
+                              TextStyle(
+                            fontWeight:
+                                FontWeight
+                                    .w700,
                           ),
-                        )
-                      else
-                        const Spacer(),
-
-                      const Text(
-                        'View Details',
-                        style: TextStyle(
-                          fontWeight:
-                              FontWeight
-                                  .bold,
                         ),
-                      ),
-
-                      const SizedBox(
-                        width: 6,
-                      ),
-
-                      const Icon(
-                        Icons
-                            .arrow_forward_ios,
-                        size: 14,
-                      ),
-                    ],
+                        SizedBox(
+                          width: 6,
+                        ),
+                        Icon(
+                          Icons
+                              .arrow_forward_ios_rounded,
+                          size: 14,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -361,54 +384,6 @@ class ExecutiveOrderCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _InfoTile extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-
-  const _InfoTile({
-    required this.title,
-    required this.value,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Theme.of(
-            context,
-          ).colorScheme.primary,
-        ),
-        const SizedBox(
-          height: 6,
-        ),
-        Text(
-          title,
-          style: TextStyle(
-            color: Colors.grey.shade600,
-            fontSize: 12,
-          ),
-        ),
-        const SizedBox(
-          height: 4,
-        ),
-        Text(
-          value,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontWeight:
-                FontWeight.bold,
-          ),
-        ),
-      ],
     );
   }
 }
