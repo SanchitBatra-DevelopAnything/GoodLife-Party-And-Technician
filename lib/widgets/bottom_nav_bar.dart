@@ -173,7 +173,7 @@ class AppBottomNavBar extends StatelessWidget {
                 case 4:
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    AppRoutes.profile,
+                    AppRoutes.myOrdersSpareParts,
                     (route) => false,
                   );
                   break;

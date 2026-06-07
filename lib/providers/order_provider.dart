@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/models/login_context.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -8,94 +9,76 @@ import '../models/order_item_model.dart';
 import '../models/order_model.dart';
 import '../providers/cart_provider.dart';
 import '../services/order_service.dart';
+import '../models/executive_delivery_order.dart';
 
-class OrderProvider
-    with ChangeNotifier {
-  final OrderService
-      _orderService =
-      OrderService();
+class OrderProvider with ChangeNotifier {
+  final OrderService _orderService = OrderService();
 
   bool _isPlacingOrder = false;
 
-  bool get isPlacingOrder =>
-      _isPlacingOrder;
+  bool get isPlacingOrder => _isPlacingOrder;
+
+  bool executiveOrdersLoading = false;
+
+  String? executiveOrdersError;
+
+  List<ExecutiveDeliveryOrder> executiveOrders = [];
 
   Future<void> placeOrder({
-    required CartProvider
-        cartProvider,
-    required bool
-        paymentDone,
-    String?
-        paymentScreenshotUrl,
+    required CartProvider cartProvider,
+    required bool paymentDone,
+    String? paymentScreenshotUrl,
   }) async {
     try {
       _isPlacingOrder = true;
 
       notifyListeners();
 
-      final prefs =
-          await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
 
-      final loggedInUser =
-          jsonDecode(
-                prefs.getString(
-                      'logged_in_user',
-                    ) ??
-                    '{}',
-              )
-              as Map<String, dynamic>;
+      final loginContextString = prefs.getString('login_context');
 
-      final username =
-          loggedInUser['distributorName'] ??
-          'UNKNOWN_USER';
+      String username = 'UNKNOWN_USER';
+      String area = '';
+      String contact = '';
+      String deviceToken = '';
 
-      final now =
-          DateTime.now();
+      if (loginContextString != null) {
+        final loginContext = LoginContext.fromJson(
+          jsonDecode(loginContextString),
+        );
 
-      final order =
-          OrderModel(
-        orderId:
-            const Uuid().v4(),
+        username = loginContext.distributorDetails.distributorName;
+        area = loginContext.distributorDetails.area;
+        contact = loginContext.distributorDetails.contact;
+        deviceToken = loginContext.distributorDetails.deviceToken;
+      }
 
-        totalPrice:
-            cartProvider
-                .grandTotal,
+      final now = DateTime.now();
 
-        area:
-            loggedInUser['area'] ??
-            '',
+      final order = OrderModel(
+        orderId: const Uuid().v4(),
 
-        contact:
-            loggedInUser[
-                    'contact'] ??
-                '',
+        totalPrice: cartProvider.grandTotal,
 
-        deviceToken:
-            loggedInUser[
-                    'deviceToken'] ??
-                'TEMP_DEVICE_TOKEN',
+        area: area,
 
-        items: cartProvider
-            .itemList
+        contact: contact,
+
+        deviceToken: deviceToken,
+
+        items: cartProvider.itemList
             .map(
-              (cartItem) =>
-                  OrderItemModel(
-                name:
-                    cartItem.title,
+              (cartItem) => OrderItemModel(
+                name: cartItem.title,
 
-                price:
-                    cartItem.price,
+                price: cartItem.price,
 
-                quantity:
-                    cartItem.quantity,
+                quantity: cartItem.quantity,
 
-                totalPrice:
-                    cartItem
-                        .totalPrice,
+                totalPrice: cartItem.totalPrice,
 
-                customizationMessage:
-                    cartItem
-                        .customizedMessage,
+                customizationMessage: cartItem.customizedMessage,
               ),
             )
             .toList(),
@@ -106,40 +89,24 @@ class OrderProvider
         orderTime:
             "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}",
 
-        orderedBy:
-            username,
+        orderedBy: username,
 
-        gstAmount:
-            cartProvider.gst,
+        gstAmount: cartProvider.gst,
 
-        freightCharges:
-            cartProvider
-                .freightCharges,
+        freightCharges: cartProvider.freightCharges,
 
-        freightPercentage:
-            5,
+        freightPercentage: 5,
 
-        itemTotal:
-            cartProvider.subtotal,
+        itemTotal: cartProvider.subtotal,
 
-        status: paymentDone
-            ? "PAYMENT_VERIFICATION"
-            : "PENDING",
+        status: paymentDone ? "PAYMENT_VERIFICATION" : "PENDING",
 
-        documents:
-            paymentScreenshotUrl !=
-                    null
-                ? [
-                    paymentScreenshotUrl,
-                  ]
-                : [],
+        documents: paymentScreenshotUrl != null ? [paymentScreenshotUrl] : [],
 
-        partyClaimedPaymentComplete:
-            paymentDone,
+        partyClaimedPaymentComplete: paymentDone,
       );
 
-      await _orderService
-          .placeOrder(order);
+      await _orderService.placeOrder(order);
 
       cartProvider.clearCart();
     } finally {
@@ -147,5 +114,28 @@ class OrderProvider
 
       notifyListeners();
     }
+  }
+
+  Future<void> fetchExecutiveDeliveryOrders(String distributorName) async {
+    executiveOrdersLoading = true;
+    executiveOrdersError = null;
+
+    notifyListeners();
+
+    print(
+      "Fetching executive delivery orders for distributor: $distributorName",
+    );
+
+    try {
+      executiveOrders = await _orderService.getExecutiveDeliveryOrders(
+        distributorName,
+      );
+    } catch (e) {
+      executiveOrdersError = e.toString();
+    }
+
+    executiveOrdersLoading = false;
+
+    notifyListeners();
   }
 }

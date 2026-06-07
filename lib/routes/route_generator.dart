@@ -8,6 +8,7 @@ import 'package:goodlife_party/screens/home_screen.dart';
 import 'package:goodlife_party/screens/inventory_screen.dart';
 import 'package:goodlife_party/screens/items_screen.dart';
 import 'package:goodlife_party/screens/login/login_screen.dart';
+import 'package:goodlife_party/screens/my_orders_spare_parts.dart';
 import 'package:goodlife_party/screens/sales_screen.dart';
 import 'package:goodlife_party/screens/signup/signup.dart';
 import 'package:goodlife_party/screens/spare_part_order_options.dart';
@@ -44,6 +45,9 @@ class RouteGenerator {
 
       case AppRoutes.cart:
         return _buildRoute(const CartScreen());
+      
+      case AppRoutes.myOrdersSpareParts:
+        return _buildRoute(const SparePartsOrdersScreen());
 
       case AppRoutes.items:
         final args =
