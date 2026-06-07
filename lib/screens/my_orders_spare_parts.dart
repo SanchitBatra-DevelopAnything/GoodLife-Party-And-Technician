@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/widgets/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -235,6 +236,10 @@ class SparePartsOrdersScreenState
           ),
         ],
       ),
+      bottomNavigationBar: AppBottomNavBar(
+          currentIndex: 4,
+          showCartBar: false,
+        ),
     );
   }
 
