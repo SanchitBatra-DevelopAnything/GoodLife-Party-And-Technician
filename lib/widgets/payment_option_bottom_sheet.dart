@@ -123,26 +123,26 @@ class PaymentOptionBottomSheetState extends State<PaymentOptionBottomSheet> {
               ),
             ),
 
-            const SizedBox(height: 14),
+            // const SizedBox(height: 14),
 
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: OutlinedButton(
-                onPressed: isPayLaterLoading
-                    ? null
-                    : () async {
-                        await placePayLaterOrder();
-                      },
-                child: isPayLaterLoading
-                    ? const SizedBox(
-                        height: 22,
-                        width: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2.5),
-                      )
-                    : const Text('Pay Later'),
-              ),
-            ),
+            // SizedBox(
+            //   width: double.infinity,
+            //   height: 55,
+            //   child: OutlinedButton(
+            //     onPressed: isPayLaterLoading
+            //         ? null
+            //         : () async {
+            //             await placePayLaterOrder();
+            //           },
+            //     child: isPayLaterLoading
+            //         ? const SizedBox(
+            //             height: 22,
+            //             width: 22,
+            //             child: CircularProgressIndicator(strokeWidth: 2.5),
+            //           )
+            //         : const Text('Pay Later'),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -448,12 +448,78 @@ class QRCodeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('QR Code Payment')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Image.asset('assets/images/qr_code.png'),
+      appBar: AppBar(
+        title: const Text('QR Code Payment'),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Scan QR Code to Pay',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: screenWidth * 0.9,
+                    maxHeight: 500,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: const [
+                      BoxShadow(
+                        blurRadius: 10,
+                        spreadRadius: 1,
+                        offset: Offset(0, 3),
+                        color: Colors.black12,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: InteractiveViewer(
+                      minScale: 1,
+                      maxScale: 4,
+                      child: Image.asset(
+                        'assets/qr_code.jpeg',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                const SelectableText(
+                  'goodlife32461@fbl',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                const Text(
+                  'Scan using PhonePe, Google Pay, Paytm, BHIM or any UPI app',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -466,46 +532,101 @@ class BankTransferScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Bank Transfer')),
-      body: Padding(
+      appBar: AppBar(
+        title: const Text('Bank Transfer'),
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('Account Name', style: TextStyle(fontWeight: FontWeight.bold)),
+        child: Card(
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: const [
+                _InfoTile(
+                  title: 'Account Name',
+                  value: 'GOOD LIFE TECHNOLOGIES PVT LTD',
+                ),
+                Divider(),
 
-            SizedBox(height: 6),
+                _InfoTile(
+                  title: 'Bank Name',
+                  value: 'Federal Bank',
+                ),
+                Divider(),
 
-            Text('Good Life Party'),
+                _InfoTile(
+                  title: 'Branch',
+                  value: 'Noida',
+                ),
+                Divider(),
 
-            SizedBox(height: 20),
+                _InfoTile(
+                  title: 'Account Number',
+                  value: '134020200032461',
+                ),
+                Divider(),
 
-            Text(
-              'Account Number',
-              style: TextStyle(fontWeight: FontWeight.bold),
+                _InfoTile(
+                  title: 'IFSC Code',
+                  value: 'FDRL0001340',
+                ),
+                Divider(),
+
+                _InfoTile(
+                  title: 'Account Type',
+                  value: 'Current',
+                ),
+                Divider(),
+
+                _InfoTile(
+                  title: 'SWIFT Code',
+                  value: 'FDRLINBBIBD',
+                ),
+              ],
             ),
-
-            SizedBox(height: 6),
-
-            Text('1234567890'),
-
-            SizedBox(height: 20),
-
-            Text('IFSC Code', style: TextStyle(fontWeight: FontWeight.bold)),
-
-            SizedBox(height: 6),
-
-            Text('SBIN0001234'),
-
-            SizedBox(height: 20),
-
-            Text('Bank Name', style: TextStyle(fontWeight: FontWeight.bold)),
-
-            SizedBox(height: 6),
-
-            Text('State Bank of India'),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const _InfoTile({
+    required this.title,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 130,
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const Text(': '),
+          Expanded(
+            child: SelectableText(
+              value,
+              style: const TextStyle(
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
