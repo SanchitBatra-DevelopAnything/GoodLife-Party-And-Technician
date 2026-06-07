@@ -83,6 +83,7 @@ class ExecutiveOrderItemsSection
                       Text(
                         'Total : ₹${item.totalPrice}',
                       ),
+                      item.customizationMessage!=''? Text('Customizations : ${item.customizationMessage}') : const SizedBox(),
                     ],
                   ),
                 );
