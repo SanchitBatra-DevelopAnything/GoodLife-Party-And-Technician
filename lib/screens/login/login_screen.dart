@@ -55,7 +55,7 @@ class LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
   context,
-  '/categories',
+  '/inventory',
   (route) => false,
 );
     } catch (e) {

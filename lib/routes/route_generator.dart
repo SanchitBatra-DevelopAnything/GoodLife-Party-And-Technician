@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:goodlife_party/screens/cart/cart_screen.dart';
 import 'package:goodlife_party/screens/categories_screen.dart';
 import 'package:goodlife_party/screens/home_screen.dart';
+import 'package:goodlife_party/screens/inventory_screen.dart';
 import 'package:goodlife_party/screens/items_screen.dart';
 import 'package:goodlife_party/screens/login/login_screen.dart';
+import 'package:goodlife_party/screens/my_orders_spare_parts.dart';
+import 'package:goodlife_party/screens/sales_screen.dart';
 import 'package:goodlife_party/screens/signup/signup.dart';
+import 'package:goodlife_party/screens/spare_part_order_options.dart';
 
 import 'app_routes.dart';
 
@@ -21,6 +25,15 @@ class RouteGenerator {
       case AppRoutes.home:
         return _buildRoute(const HomeScreen());
 
+      case AppRoutes.inventory:
+        return _buildRoute(const InventoryScreen());
+
+      case AppRoutes.sparePartOptions:
+        return _buildRoute(const SparePartsOrderOptionsScreen());
+
+      case AppRoutes.sales:
+        return _buildRoute(const SalesScreen());
+
       case AppRoutes.signup:
         return _buildRoute(const SignupScreen());
 
@@ -32,6 +45,9 @@ class RouteGenerator {
 
       case AppRoutes.cart:
         return _buildRoute(const CartScreen());
+      
+      case AppRoutes.myOrdersSpareParts:
+        return _buildRoute(const SparePartsOrdersScreen());
 
       case AppRoutes.items:
         final args =

@@ -50,6 +50,7 @@ class SignupScreenState extends State<SignupScreen> {
         username: usernameController.text,
         contact: contactController.text,
         area: selectedArea!.name,
+        areaId:selectedArea!.id,
         image: selectedImage!,
       );
 

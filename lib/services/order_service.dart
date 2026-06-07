@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:goodlife_party/models/executive_delivery_order.dart';
 import 'package:http/http.dart'
     as http;
 
@@ -33,4 +34,51 @@ class OrderService {
       );
     }
   }
+
+
+  static const String executiveOrdersUrl =
+      'https://getpartyexecutivedeliveryorders-kind2bfhcq-as.a.run.app';
+
+  Future<List<ExecutiveDeliveryOrder>>
+      getExecutiveDeliveryOrders(
+    String partyName,
+  ) async {
+    final response = await http.post(
+      Uri.parse(executiveOrdersUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'partyName': partyName,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      print(
+        'Failed to fetch executive delivery orders. Status code: ${response.statusCode}, Body: ${response.body}',
+      );
+      throw Exception(
+        'Unable to fetch executive delivery orders',
+      );
+    }
+
+    final json =
+        jsonDecode(response.body);
+
+    final orders =
+        json['orders'] as List<dynamic>? ?? [];
+
+    print("Fetched ${orders.length} executive delivery orders for party: $partyName");
+
+    return orders
+        .map(
+          (e) =>
+              ExecutiveDeliveryOrder.fromJson(
+                e,
+              ),
+        )
+        .toList();
+  }
+
+
 }

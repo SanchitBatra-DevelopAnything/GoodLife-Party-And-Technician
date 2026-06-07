@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/providers/auth_provider.dart';
 import 'package:goodlife_party/widgets/bottom_nav_bar.dart';
 import 'package:goodlife_party/widgets/payment_option_bottom_sheet.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,14 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.read<CartProvider>().setFreightPercentage(
+            authProvider.freightPercentage,
+          );
+        });
+
         final cartItems = cartProvider.items.values.toList();
 
         return Scaffold(
@@ -21,7 +30,10 @@ class CartScreen extends StatelessWidget {
 
           appBar: AppBar(title: const Text('My Cart'), centerTitle: true),
 
-          bottomNavigationBar: AppBottomNavBar(currentIndex: 2),
+          bottomNavigationBar: AppBottomNavBar(
+            currentIndex: 2,
+            showCartBar: false,
+          ),
 
           body: cartItems.isEmpty
               ? const Center(child: Text('Your cart is empty'))

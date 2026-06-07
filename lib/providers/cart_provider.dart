@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:goodlife_party/services/cart_local_service.dart';
@@ -47,6 +48,19 @@ class CartProvider with ChangeNotifier {
   List<CartItem> _itemList = [];
 
   Timer? _saveDebounce;
+  double _freightPercentage = 0;
+
+double get freightPercentage => _freightPercentage;
+
+void setFreightPercentage(double percentage) {
+  if (_freightPercentage == percentage) {
+    return;
+  }
+
+  _freightPercentage = percentage;
+
+  notifyListeners();
+}
 
   Map<String, CartItem> get items {
     return {..._items};
@@ -217,11 +231,14 @@ double get gst {
 }
 
 double get freightCharges {
-  if ((_items?.isEmpty ?? true)) {
+  if (_items.isEmpty) {
     return 0;
   }
 
-  return subtotal * 0.05;
+  return math.max(
+    (subtotal+gst).toDouble() * (_freightPercentage / 100),
+    100.0,
+  );
 }
 
 double get grandTotal {

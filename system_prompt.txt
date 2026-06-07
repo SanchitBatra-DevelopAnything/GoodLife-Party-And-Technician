@@ -109,3 +109,7 @@ Produce production-ready Flutter code that is:
 - Scalable (but not over-engineered)  
 - Easy to maintain by a single developer  
 - Platform-optimized for both iOS and Android  
+
+# Developer Simplicity
+- When asked to do updates in the file , make sure you always pass the full updated file and not just a part of it.
+- Full updated file to be passed for allow easy copy paste.
