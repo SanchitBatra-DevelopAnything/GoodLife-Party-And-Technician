@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:goodlife_party/models/custom_order_model.dart';
 import 'package:goodlife_party/models/executive_delivery_order.dart';
 import 'package:http/http.dart'
     as http;
@@ -79,6 +80,28 @@ class OrderService {
         )
         .toList();
   }
+
+  Future<void> placeInquiryOrder(
+  CustomOrderModel order,
+) async {
+  final url =
+      'https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/inquiryOrders/${order.orderedBy}.json';
+
+  final response = await http.post(
+    Uri.parse(url),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode(order.toJson()),
+  );
+
+  if (response.statusCode < 200 ||
+      response.statusCode >= 300) {
+    throw Exception(
+      'Failed to place inquiry order',
+    );
+  }
+}
 
 
 }

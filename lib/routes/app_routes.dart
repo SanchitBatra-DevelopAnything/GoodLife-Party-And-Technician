@@ -10,4 +10,5 @@ class AppRoutes {
   static const String sales = '/sales';
   static const String sparePartOptions = '/sparePartOptions';
   static const String myOrdersSpareParts = '/myOrdersSpareParts';
+  static const String customOrder = '/customOrder';
 }

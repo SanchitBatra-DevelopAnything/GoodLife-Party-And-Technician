@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:goodlife_party/screens/cart/cart_screen.dart';
 import 'package:goodlife_party/screens/categories_screen.dart';
+import 'package:goodlife_party/screens/custom_order_screen.dart';
 import 'package:goodlife_party/screens/home_screen.dart';
 import 'package:goodlife_party/screens/inventory_screen.dart';
 import 'package:goodlife_party/screens/items_screen.dart';
@@ -24,6 +25,9 @@ class RouteGenerator {
     switch (settings.name) {
       case AppRoutes.home:
         return _buildRoute(const HomeScreen());
+      
+      case AppRoutes.customOrder:
+        return _buildRoute(const CustomOrderScreen());
 
       case AppRoutes.inventory:
         return _buildRoute(const InventoryScreen());

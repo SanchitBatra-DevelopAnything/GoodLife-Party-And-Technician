@@ -141,7 +141,12 @@ class SparePartsOrderOptionsScreen extends StatelessWidget {
               title: 'Custom Spare Part Order',
               description:
                   'Send us a picture of the spare part and our team will check availability and assist you further.',
-              onTap: () {},
+              onTap: () {
+                 Navigator.pushNamed(
+    context,
+    '/customOrder',
+  );
+              },
             ),
           ],
         ),
