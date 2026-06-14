@@ -27,6 +27,12 @@ class OrderProvider with ChangeNotifier {
 
   List<ExecutiveDeliveryOrder> executiveOrders = [];
 
+  List<CustomOrderModel> customOrders = [];
+
+bool customOrdersLoading = false;
+
+String? customOrdersError;
+
 
   final StorageService _storageService =
     StorageService();
@@ -273,6 +279,29 @@ Future<void> placeInquiryOrder({
 
     notifyListeners();
   }
+}
+
+Future<void> fetchInquiryOrders(
+  String distributorName,
+) async {
+  customOrdersLoading = true;
+
+  customOrdersError = null;
+
+  notifyListeners();
+
+  try {
+    customOrders = await _orderService
+        .getInquiryOrders(
+      distributorName,
+    );
+  } catch (e) {
+    customOrdersError = e.toString();
+  }
+
+  customOrdersLoading = false;
+
+  notifyListeners();
 }
 
 }

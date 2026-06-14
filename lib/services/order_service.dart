@@ -7,7 +7,13 @@ import 'package:http/http.dart'
 
 import '../models/order_model.dart';
 
+
+
 class OrderService {
+
+  static const String customOrdersUrl =
+    'https://getpartyinquiryorders-kind2bfhcq-as.a.run.app';
+
   Future<void> placeOrder(
     OrderModel order,
   ) async {
@@ -101,6 +107,45 @@ class OrderService {
       'Failed to place inquiry order',
     );
   }
+}
+
+Future<List<CustomOrderModel>>
+    getInquiryOrders(
+  String partyName,
+) async {
+  final response = await http.post(
+    Uri.parse(customOrdersUrl),
+    headers: {
+      'Content-Type':
+          'application/json',
+    },
+    body: jsonEncode({
+      'partyName': partyName,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(
+      'Unable to fetch custom orders',
+    );
+  }
+
+  final json =
+      jsonDecode(response.body);
+
+  final orders =
+      json['orders']
+          as List<dynamic>? ??
+      [];
+
+  return orders
+      .map(
+        (e) =>
+            CustomOrderModel.fromJson(
+          e,
+        ),
+      )
+      .toList();
 }
 
 
