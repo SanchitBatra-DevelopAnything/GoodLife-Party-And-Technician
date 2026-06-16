@@ -42,7 +42,7 @@ class CustomOrderCard
               Row(
                 children: [
                   const Icon(
-                    Icons.build,
+                    Icons.camera_outlined,
                   ),
                   const SizedBox(
                     width: 8,

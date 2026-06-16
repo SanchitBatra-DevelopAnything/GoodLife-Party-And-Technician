@@ -16,6 +16,7 @@ class CustomOrderModel {
   final String? piLink;
   final String? paymentLink;
   final String? poLink;
+  final String? firebaseOrderId;
 
   final List<String> additionalDocuments;
 
@@ -29,6 +30,7 @@ class CustomOrderModel {
     required this.requestedItems,
     required this.orderStatus,
     this.requestedMessage,
+    this.firebaseOrderId,
     this.piLink,
     this.paymentLink,
     this.poLink,
@@ -58,6 +60,7 @@ class CustomOrderModel {
       paymentLink:
           json['paymentLink'],
       poLink: json['poLink'],
+      firebaseOrderId: json['firebaseOrderId'] ?? '',
       additionalDocuments:
           List<String>.from(
         json['additionalDocuments'] ??
@@ -86,6 +89,7 @@ class CustomOrderModel {
       'poLink': poLink,
       'additionalDocuments':
           additionalDocuments,
+      'firebaseOrderId': firebaseOrderId,
     };
   }
 }
