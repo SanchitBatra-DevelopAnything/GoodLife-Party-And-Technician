@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/screens/custom_order_details_screen.dart';
 import 'package:goodlife_party/widgets/bottom_nav_bar.dart';
 import 'package:goodlife_party/widgets/custom_order_card.dart';
 import 'package:provider/provider.dart';
@@ -348,11 +349,18 @@ class SparePartsOrdersScreenState
                     .customOrders[index];
 
             return CustomOrderCard(
-              order: order,
-              onTap: () {
-                // details screen later
-              },
-            );
+  order: order,
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomOrderDetailsScreen(
+          order: order,
+        ),
+      ),
+    );
+  },
+);
           },
         ),
       );
