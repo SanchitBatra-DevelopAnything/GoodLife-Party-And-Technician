@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class StorageService {
@@ -73,6 +74,27 @@ class StorageService {
   } else {
     throw Exception('Upload failed');
   }
+}
+
+Future<String> uploadPurchaseOrder({
+  required String firebaseOrderId,
+  required Uint8List pdfBytes,
+  required String fileName,
+}) async {
+  final ref = FirebaseStorage.instance
+      .ref()
+      .child('purchase_orders')
+      .child(firebaseOrderId)
+      .child(fileName);
+
+  await ref.putData(
+    pdfBytes,
+    SettableMetadata(
+      contentType: 'application/pdf',
+    ),
+  );
+
+  return await ref.getDownloadURL();
 }
 
 

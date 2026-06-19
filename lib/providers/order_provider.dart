@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:goodlife_party/models/custom_order_model.dart';
@@ -302,6 +303,36 @@ Future<void> fetchInquiryOrders(
   customOrdersLoading = false;
 
   notifyListeners();
+}
+
+Future<void> attachPurchaseOrder({
+  required String firebaseOrderId,
+  required String partyName,
+  required Uint8List pdfBytes,
+  required String fileName,
+}) async {
+  try {
+    _isPlacingOrder = true;
+
+    notifyListeners();
+
+    final poLink =
+        await _storageService.uploadPurchaseOrder(
+      firebaseOrderId: firebaseOrderId,
+      pdfBytes: pdfBytes,
+      fileName: fileName,
+    );
+
+    await _orderService.updatePurchaseOrder(
+      firebaseOrderId: firebaseOrderId,
+      partyName: partyName,
+      poLink: poLink,
+    );
+  } finally {
+    _isPlacingOrder = false;
+
+    notifyListeners();
+  }
 }
 
 }

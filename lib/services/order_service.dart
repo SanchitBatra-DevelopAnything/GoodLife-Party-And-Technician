@@ -148,5 +148,33 @@ Future<List<CustomOrderModel>>
       .toList();
 }
 
+Future<void> updatePurchaseOrder({
+  required String firebaseOrderId,
+  required String partyName,
+  required String poLink,
+}) async {
+  final url =
+      'https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/'
+      'inquiryOrders/$partyName/$firebaseOrderId.json';
+
+  final response = await http.patch(
+    Uri.parse(url),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'poLink': poLink,
+      'orderStatus': 'PAYMENT_VERIFICATION',
+    }),
+  );
+
+  if (response.statusCode < 200 ||
+      response.statusCode >= 300) {
+    throw Exception(
+      'Failed to update purchase order',
+    );
+  }
+}
+
 
 }
