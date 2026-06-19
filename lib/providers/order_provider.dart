@@ -258,6 +258,7 @@ Future<void> placeInquiryOrder({
       piLink: null,
 
       paymentLink: null,
+      firebaseOrderId: null,
     );
 
     await _orderService.placeInquiryOrder(

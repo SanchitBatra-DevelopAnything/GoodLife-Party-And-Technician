@@ -1,3 +1,5 @@
+import 'package:goodlife_party/models/additional_document.dart';
+
 class CustomOrderModel {
   final String area;
   final String orderedBy;
@@ -18,7 +20,7 @@ class CustomOrderModel {
   final String? poLink;
   final String? firebaseOrderId;
 
-  final List<String> additionalDocuments;
+  final List<AdditionalDocument> additionalDocuments;
 
   CustomOrderModel({
     required this.area,
@@ -30,7 +32,7 @@ class CustomOrderModel {
     required this.requestedItems,
     required this.orderStatus,
     this.requestedMessage,
-    this.firebaseOrderId,
+    required this.firebaseOrderId,
     this.piLink,
     this.paymentLink,
     this.poLink,
@@ -47,25 +49,31 @@ class CustomOrderModel {
       contact: json['contact'] ?? '',
       orderDate: json['orderDate'] ?? '',
       orderTime: json['orderTime'] ?? '',
-      requestedItems:
-          List<String>.from(
+      requestedItems: List<String>.from(
         json['requestedItems'] ?? [],
       ),
-      requestedMessage:
-          json['requestedMessage'],
-      orderStatus:
-          json['orderStatus'] ??
-              'INQUIRY',
+      requestedMessage: json['requestedMessage'],
+      orderStatus: json['orderStatus'] ?? 'INQUIRY',
       piLink: json['piLink'],
-      paymentLink:
-          json['paymentLink'],
+      paymentLink: json['paymentLink'],
       poLink: json['poLink'],
-      firebaseOrderId: json['firebaseOrderId'] ?? '',
+      firebaseOrderId: json['firebaseOrderId'],
       additionalDocuments:
-          List<String>.from(
-        json['additionalDocuments'] ??
-            [],
-      ),
+          (json['additionalDocuments'] as List?)
+              ?.map((e) {
+                if (e is String) {
+                  return AdditionalDocument(
+                    url: e,
+                    type: 'pdf',
+                  );
+                }
+
+                return AdditionalDocument.fromJson(
+                  Map<dynamic, dynamic>.from(e),
+                );
+              })
+              .toList() ??
+          [],
     );
   }
 
@@ -77,18 +85,16 @@ class CustomOrderModel {
       'contact': contact,
       'orderDate': orderDate,
       'orderTime': orderTime,
-      'requestedItems':
-          requestedItems,
-      'requestedMessage':
-          requestedMessage,
-      'orderStatus':
-          orderStatus,
+      'requestedItems': requestedItems,
+      'requestedMessage': requestedMessage,
+      'orderStatus': orderStatus,
       'piLink': piLink,
-      'paymentLink':
-          paymentLink,
+      'paymentLink': paymentLink,
       'poLink': poLink,
       'additionalDocuments':
-          additionalDocuments,
+          additionalDocuments
+              .map((e) => e.toJson())
+              .toList(),
       'firebaseOrderId': firebaseOrderId,
     };
   }

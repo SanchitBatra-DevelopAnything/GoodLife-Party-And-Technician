@@ -81,14 +81,16 @@ class CustomOrderDetailsScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              ...order.additionalDocuments.asMap().entries.map(
-                (entry) => _buildDocumentTile(
+              ...order.additionalDocuments.asMap().entries.map((entry) {
+                final document = entry.value;
+
+                return _buildDocumentTile(
                   context: context,
                   title: 'Document ${entry.key + 1}',
-                  url: entry.value,
-                  isPdf: true,
-                ),
-              ),
+                  url: document.url,
+                  isPdf: document.type == 'pdf',
+                );
+              }),
             ],
 
             if (_shouldShowPi()) ...[
@@ -277,27 +279,36 @@ class CustomOrderDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildDocumentTile({
-    required BuildContext context,
-    required String title,
-    required String url,
-    required bool isPdf,
-  }) {
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.description),
-        title: Text(title),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => PdfViewerScreen(title: title, pdfUrl: url),
-            ),
-          );
-        },
+  required BuildContext context,
+  required String title,
+  required String url,
+  required bool isPdf,
+}) {
+  return Card(
+    child: ListTile(
+      leading: Icon(
+        isPdf ? Icons.picture_as_pdf : Icons.image,
       ),
-    );
-  }
+      title: Text(title),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => isPdf
+                ? PdfViewerScreen(
+                    title: title,
+                    pdfUrl: url,
+                  )
+                : FullScreenImageScreen(
+                    imageUrl: url,
+                  ),
+          ),
+        );
+      },
+    ),
+  );
+}
 
   Widget _buildActionSection(BuildContext context, bool allowPayLater) {
     final isLoading = context.watch<OrderProvider>().isPlacingOrder;
