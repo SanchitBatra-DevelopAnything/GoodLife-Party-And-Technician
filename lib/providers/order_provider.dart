@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/models/custom_order_model.dart';
 import 'package:goodlife_party/models/login_context.dart';
+import 'package:goodlife_party/services/storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -23,6 +27,22 @@ class OrderProvider with ChangeNotifier {
   String? executiveOrdersError;
 
   List<ExecutiveDeliveryOrder> executiveOrders = [];
+
+  List<CustomOrderModel> customOrders = [];
+
+bool customOrdersLoading = false;
+
+String? customOrdersError;
+
+
+  final StorageService _storageService =
+    StorageService();
+
+String _inquiryProgressMessage = '';
+
+String get inquiryProgressMessage =>
+    _inquiryProgressMessage;
+
 
   Future<void> placeOrder({
     required CartProvider cartProvider,
@@ -138,4 +158,204 @@ class OrderProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+
+Future<void> placeInquiryOrder({
+  required List<File> images,
+  required String? message,
+}) async {
+  try {
+    _isPlacingOrder = true;
+
+    _inquiryProgressMessage =
+        'Preparing inquiry...';
+
+    notifyListeners();
+
+    final prefs =
+        await SharedPreferences.getInstance();
+
+    final loginContextString =
+        prefs.getString('login_context');
+
+    String username = 'UNKNOWN_USER';
+    String area = '';
+    String contact = '';
+    String deviceToken = '';
+
+    if (loginContextString != null) {
+      final loginContext = LoginContext.fromJson(
+        jsonDecode(loginContextString),
+      );
+
+      username =
+          loginContext
+              .distributorDetails
+              .distributorName;
+
+      area =
+          loginContext
+              .distributorDetails
+              .area;
+
+      contact =
+          loginContext
+              .distributorDetails
+              .contact;
+
+      deviceToken =
+          loginContext
+              .distributorDetails
+              .deviceToken;
+    }
+
+    final List<String> photoUrls = [];
+
+    for (int i = 0; i < images.length; i++) {
+      _inquiryProgressMessage =
+          'Uploading photo ${i + 1} of ${images.length}';
+
+      notifyListeners();
+
+      final imageUrl =
+          await _storageService.uploadCustomOrderImageWithProgress(
+        images[i],
+        (progress) {},
+      );
+
+      photoUrls.add(imageUrl);
+    }
+
+    _inquiryProgressMessage =
+        'Creating inquiry order...';
+
+    notifyListeners();
+
+    final now = DateTime.now();
+
+    final customOrder = CustomOrderModel(
+      area: area,
+      orderedBy: username,
+      deviceToken: deviceToken,
+      contact: contact,
+
+      orderDate:
+          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}",
+
+      orderTime:
+          "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}",
+
+      requestedItems: photoUrls,
+
+      requestedMessage:
+          message?.trim().isEmpty == true
+              ? null
+              : message?.trim(),
+
+      orderStatus:
+          "INQUIRY",
+
+      piLink: null,
+
+      paymentLink: null,
+      firebaseOrderId: null,
+    );
+
+    await _orderService.placeInquiryOrder(
+      customOrder,
+    );
+
+    _inquiryProgressMessage =
+        'Inquiry submitted successfully';
+
+    notifyListeners();
+  } catch (e) {
+    _inquiryProgressMessage =
+        'Failed to submit inquiry';
+
+    notifyListeners();
+
+    rethrow;
+  } finally {
+    _isPlacingOrder = false;
+
+    notifyListeners();
+  }
+}
+
+Future<void> fetchInquiryOrders(
+  String distributorName,
+) async {
+  customOrdersLoading = true;
+
+  customOrdersError = null;
+
+  notifyListeners();
+
+  try {
+    customOrders = await _orderService
+        .getInquiryOrders(
+      distributorName,
+    );
+  } catch (e) {
+    customOrdersError = e.toString();
+  }
+
+  customOrdersLoading = false;
+
+  notifyListeners();
+}
+
+Future<void> attachPurchaseOrder({
+  required String firebaseOrderId,
+  required String partyName,
+  required Uint8List pdfBytes,
+  required String fileName,
+}) async {
+  try {
+    _isPlacingOrder = true;
+
+    notifyListeners();
+
+    final poLink =
+        await _storageService.uploadPurchaseOrder(
+      firebaseOrderId: firebaseOrderId,
+      pdfBytes: pdfBytes,
+      fileName: fileName,
+    );
+
+    await _orderService.updatePurchaseOrder(
+      firebaseOrderId: firebaseOrderId,
+      partyName: partyName,
+      poLink: poLink,
+    );
+  } finally {
+    _isPlacingOrder = false;
+
+    notifyListeners();
+  }
+}
+
+Future<void> attachPaymentScreenshotForCustomOrder({
+  required String firebaseOrderId,
+  required String partyName,
+  required String paymentLink,
+}) async {
+  try {
+    _isPlacingOrder = true;
+
+    notifyListeners();
+
+    await _orderService.updatePaymentLink(
+      firebaseOrderId: firebaseOrderId,
+      partyName: partyName,
+      paymentLink: paymentLink,
+    );
+  } finally {
+    _isPlacingOrder = false;
+
+    notifyListeners();
+  }
+}
+
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:goodlife_party/screens/custom_order_details_screen.dart';
 import 'package:goodlife_party/widgets/bottom_nav_bar.dart';
+import 'package:goodlife_party/widgets/custom_order_card.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -29,15 +31,22 @@ class SparePartsOrdersScreenState
   }
 
   Future<void> _loadOrders() async {
-    final authProvider =
-        context.read<AuthProvider>();
+  final authProvider =
+      context.read<AuthProvider>();
 
-    await context
+  await Future.wait([
+    context
         .read<OrderProvider>()
         .fetchExecutiveDeliveryOrders(
           authProvider.distributorName,
-        );
-  }
+        ),
+    context
+        .read<OrderProvider>()
+        .fetchInquiryOrders(
+          authProvider.distributorName,
+        ),
+  ]);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -244,37 +253,124 @@ class SparePartsOrdersScreenState
   }
 
   Widget _buildCustomOrders() {
-    return Center(
-      child: Padding(
-        padding:
-            const EdgeInsets.symmetric(
-              horizontal: 32,
+  return Consumer<OrderProvider>(
+    builder: (
+      context,
+      provider,
+      child,
+    ) {
+      if (provider
+          .customOrdersLoading) {
+        return const Center(
+          child:
+              CircularProgressIndicator(),
+        );
+      }
+
+      if (provider
+              .customOrdersError !=
+          null) {
+        return Center(
+          child: Padding(
+            padding:
+                const EdgeInsets.all(
+              24,
             ),
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.build_circle_outlined,
-              size: 80,
-              color: Colors.grey.shade400,
+            child: Text(
+              provider
+                  .customOrdersError!,
+              textAlign:
+                  TextAlign.center,
             ),
-            const SizedBox(
-              height: 16,
-            ),
-            const Text(
-              'Custom Orders Coming Soon',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight:
-                    FontWeight.w600,
+          ),
+        );
+      }
+
+      if (provider
+          .customOrders.isEmpty) {
+        return RefreshIndicator(
+          onRefresh: _loadOrders,
+          child: ListView(
+            children: [
+              SizedBox(
+                height:
+                    MediaQuery.of(
+                          context,
+                        ).size.height *
+                        0.25,
               ),
-            ),
-          ],
-        ),
+              Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons
+                          .build_circle_outlined,
+                      size: 90,
+                      color: Colors
+                          .grey
+                          .shade400,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    const Text(
+                      'No Custom Orders Found',
+                      style:
+                          TextStyle(
+                        fontSize: 18,
+                        fontWeight:
+                            FontWeight
+                                .w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return RefreshIndicator(
+        onRefresh: _loadOrders,
+        child: ListView.builder(
+          padding:
+              const EdgeInsets.only(
+            bottom: 24,
+          ),
+          itemCount:
+              provider
+                  .customOrders
+                  .length,
+          itemBuilder:
+              (context, index) {
+            final order =
+                provider
+                    .customOrders[index];
+
+            return CustomOrderCard(
+  order: order,
+  onTap: () async {
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => CustomOrderDetailsScreen(
+        order: order,
       ),
-    );
+    ),
+  );
+
+  if (result == true && mounted) {
+    await _loadOrders();
   }
+},
+);
+          },
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildExecutiveOrders() {
     return Consumer<OrderProvider>(
