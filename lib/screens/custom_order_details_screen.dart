@@ -367,7 +367,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
                             ),
                           );
 
-                          Navigator.pop(context);
+                          Navigator.pop(context , true);
                         }
                       } catch (e) {
                         if (context.mounted) {

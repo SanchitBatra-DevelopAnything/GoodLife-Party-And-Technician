@@ -350,16 +350,20 @@ class SparePartsOrdersScreenState
 
             return CustomOrderCard(
   order: order,
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CustomOrderDetailsScreen(
-          order: order,
-        ),
+  onTap: () async {
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => CustomOrderDetailsScreen(
+        order: order,
       ),
-    );
-  },
+    ),
+  );
+
+  if (result == true && mounted) {
+    await _loadOrders();
+  }
+},
 );
           },
         ),
