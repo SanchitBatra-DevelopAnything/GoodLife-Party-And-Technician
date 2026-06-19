@@ -127,7 +127,7 @@ class CustomOrderPaymentBottomSheetState
         return;
       }
 
-      Navigator.pop(context);
+      Navigator.pop(context , true);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
