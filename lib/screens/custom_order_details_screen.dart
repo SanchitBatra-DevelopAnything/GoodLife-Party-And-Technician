@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:goodlife_party/screens/full_screen_image_screen.dart';
 import 'package:goodlife_party/screens/pdf_viewer_screen.dart';
+import 'package:goodlife_party/widgets/custom_order_payment_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../models/custom_order_model.dart';
@@ -279,36 +280,29 @@ class CustomOrderDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildDocumentTile({
-  required BuildContext context,
-  required String title,
-  required String url,
-  required bool isPdf,
-}) {
-  return Card(
-    child: ListTile(
-      leading: Icon(
-        isPdf ? Icons.picture_as_pdf : Icons.image,
+    required BuildContext context,
+    required String title,
+    required String url,
+    required bool isPdf,
+  }) {
+    return Card(
+      child: ListTile(
+        leading: Icon(isPdf ? Icons.picture_as_pdf : Icons.image),
+        title: Text(title),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => isPdf
+                  ? PdfViewerScreen(title: title, pdfUrl: url)
+                  : FullScreenImageScreen(imageUrl: url),
+            ),
+          );
+        },
       ),
-      title: Text(title),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => isPdf
-                ? PdfViewerScreen(
-                    title: title,
-                    pdfUrl: url,
-                  )
-                : FullScreenImageScreen(
-                    imageUrl: url,
-                  ),
-          ),
-        );
-      },
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildActionSection(BuildContext context, bool allowPayLater) {
     final isLoading = context.watch<OrderProvider>().isPlacingOrder;
@@ -326,7 +320,28 @@ class CustomOrderDetailsScreen extends StatelessWidget {
 
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(onPressed: () {}, child: const Text('PAY NOW')),
+          child: ElevatedButton(
+            onPressed: () async {
+              final result = await showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                builder: (_) {
+                  return CustomOrderPaymentBottomSheet(
+                    firebaseOrderId: order.firebaseOrderId!,
+                    partyName: order.orderedBy,
+                  );
+                },
+              );
+
+              if (result == true && context.mounted) {
+                Navigator.pop(context, true);
+              }
+            },
+            child: const Text('PAY NOW'),
+          ),
         ),
 
         if (allowPayLater) ...[
@@ -367,7 +382,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
                             ),
                           );
 
-                          Navigator.pop(context , true);
+                          Navigator.pop(context, true);
                         }
                       } catch (e) {
                         if (context.mounted) {

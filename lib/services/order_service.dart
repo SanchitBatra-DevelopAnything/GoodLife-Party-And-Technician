@@ -176,5 +176,33 @@ Future<void> updatePurchaseOrder({
   }
 }
 
+Future<void> updatePaymentLink({
+  required String firebaseOrderId,
+  required String partyName,
+  required String paymentLink,
+}) async {
+  final url =
+      'https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/'
+      'inquiryOrders/$partyName/$firebaseOrderId.json';
+
+  final response = await http.patch(
+    Uri.parse(url),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'paymentLink': paymentLink,
+      'orderStatus': 'PAYMENT_VERIFICATION',
+    }),
+  );
+
+  if (response.statusCode < 200 ||
+      response.statusCode >= 300) {
+    throw Exception(
+      'Failed to update payment link',
+    );
+  }
+}
+
 
 }

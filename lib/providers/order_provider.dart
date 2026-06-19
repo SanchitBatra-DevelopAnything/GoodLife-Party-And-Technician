@@ -336,4 +336,26 @@ Future<void> attachPurchaseOrder({
   }
 }
 
+Future<void> attachPaymentScreenshotForCustomOrder({
+  required String firebaseOrderId,
+  required String partyName,
+  required String paymentLink,
+}) async {
+  try {
+    _isPlacingOrder = true;
+
+    notifyListeners();
+
+    await _orderService.updatePaymentLink(
+      firebaseOrderId: firebaseOrderId,
+      partyName: partyName,
+      paymentLink: paymentLink,
+    );
+  } finally {
+    _isPlacingOrder = false;
+
+    notifyListeners();
+  }
+}
+
 }
