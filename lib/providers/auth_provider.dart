@@ -48,6 +48,30 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateProfile({
+    required String name,
+    required String contact,
+  }) async {
+    if (_loginContext == null) return;
+
+    final updatedDistributor = DistributorDetails(
+      allowPayLater: _loginContext!.distributorDetails.allowPayLater,
+      area: _loginContext!.distributorDetails.area,
+      contact: contact,
+      deviceToken: _loginContext!.distributorDetails.deviceToken,
+      distributorName: name,
+      machineIds: _loginContext!.distributorDetails.machineIds,
+    );
+
+    _loginContext = LoginContext(
+      distributorDetails: updatedDistributor,
+      areaDetails: _loginContext!.areaDetails,
+    );
+
+    await LocalStorageService.saveLoginContext(_loginContext!);
+    notifyListeners();
+  }
+
   Future<void> logout() async {
     _loginContext = null;
 
