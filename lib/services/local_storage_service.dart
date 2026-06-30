@@ -28,6 +28,11 @@ class LocalStorageService {
       areaKey,
       context.distributorDetails.area,
     );
+
+    await prefs.setString(
+      'logged_in_user',
+      jsonEncode(context.distributorDetails.toJson()),
+    );
   }
 
   static Future<LoginContext?> getLoginContext() async {
@@ -58,5 +63,6 @@ class LocalStorageService {
     await prefs.remove(loginContextKey);
     await prefs.remove(mobileKey);
     await prefs.remove(areaKey);
+    await prefs.remove('logged_in_user');
   }
 }
