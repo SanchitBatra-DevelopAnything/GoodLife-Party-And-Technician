@@ -15,6 +15,7 @@ class SignupProvider with ChangeNotifier {
   Future<void> signup({
   required String username,
   required String contact,
+  required String address,
   required String area,
   required File image,
   required String areaId,
@@ -49,6 +50,7 @@ class SignupProvider with ChangeNotifier {
       "area": area,
       "areaId": areaId,
       "contact": contact,
+      "address": address,
       "deviceToken": "random_token_123",
       "createdAt": DateTime.now().toIso8601String(),
     };
