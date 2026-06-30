@@ -29,11 +29,11 @@ class CustomOrderScreenState
   final List<File> selectedImages = [];
 
   Future<void> pickImage() async {
-    if (selectedImages.length >= 4) {
+    if (selectedImages.length >= 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Maximum 4 photos allowed',
+            'Maximum 6 photos allowed',
           ),
         ),
       );
@@ -456,7 +456,7 @@ class CustomOrderScreenState
                   alignment:
                       Alignment.centerLeft,
                   child: Text(
-                    'Photos (${selectedImages.length}/4)',
+                    'Photos (${selectedImages.length}/6)',
                     style:
                         const TextStyle(
                       fontWeight:
@@ -476,11 +476,11 @@ class CustomOrderScreenState
                       const NeverScrollableScrollPhysics(),
                   itemCount:
                       selectedImages.length <
-                              4
+                              6
                           ? selectedImages
                                   .length +
                               1
-                          : 4,
+                          : 6,
                   gridDelegate:
                       const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
