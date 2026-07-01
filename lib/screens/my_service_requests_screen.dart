@@ -4,22 +4,33 @@ import 'package:goodlife_party/routes/app_routes.dart';
 class MyServiceRequestsScreen extends StatelessWidget {
   const MyServiceRequestsScreen({super.key});
 
+  /// Formats a date string from YYYY-MM-DD → DD-MM-YYYY.
+  /// If already in DD-MM-YYYY format (or any other format), returns as-is.
+  String _formatDate(String rawDate) {
+    final parts = rawDate.split('-');
+    if (parts.length == 3 && parts[0].length == 4) {
+      // YYYY-MM-DD → DD-MM-YYYY
+      return '${parts[2]}-${parts[1]}-${parts[0]}';
+    }
+    return rawDate;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Mock data for demonstration purposes
     final mockRequests = [
       {
         'id': 'SR-1029',
-        'date': '2023-10-24',
+        'date': '24-06-2025',
         'status': 'Pending',
-        'machine': 'Coffee Machine XP-200',
+        'machines': ['Coffee Machine XP-200', 'Espresso Maker v2'],
         'happyCode': '4829',
       },
       {
         'id': 'SR-1028',
-        'date': '2023-10-15',
+        'date': '15-06-2025',
         'status': 'Resolved',
-        'machine': 'Espresso Maker v2',
+        'machines': ['Ice Cream Dispenser Pro'],
         'happyCode': '1092',
       },
     ];
@@ -37,7 +48,8 @@ class MyServiceRequestsScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final req = mockRequests[index];
                 final isPending = req['status'] == 'Pending';
-                
+                final machines = req['machines'] as List<String>;
+
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
                   elevation: 2,
@@ -51,20 +63,29 @@ class MyServiceRequestsScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 8),
-                        Text('Machine: ${req['machine']}'),
+                        Text(
+                          machines.length == 1
+                              ? 'Machine: ${machines.first}'
+                              : 'Machines: ${machines.join(', ')}',
+                        ),
                         const SizedBox(height: 4),
-                        Text('Date: ${req['date']}'),
+                        Text('Date: ${_formatDate(req['date'] as String)}'),
                         const SizedBox(height: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: isPending ? Colors.orange.shade100 : Colors.green.shade100,
+                            color: isPending
+                                ? Colors.orange.shade100
+                                : Colors.green.shade100,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            req['status']!,
+                            req['status']! as String,
                             style: TextStyle(
-                              color: isPending ? Colors.orange.shade800 : Colors.green.shade800,
+                              color: isPending
+                                  ? Colors.orange.shade800
+                                  : Colors.green.shade800,
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
                             ),
@@ -72,7 +93,8 @@ class MyServiceRequestsScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                    trailing:
+                        const Icon(Icons.arrow_forward_ios_rounded, size: 16),
                     onTap: () {
                       Navigator.pushNamed(
                         context,

@@ -8,8 +8,32 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
     required this.requestData,
   });
 
+  /// Formats a date string from YYYY-MM-DD → DD-MM-YYYY.
+  /// If already in DD-MM-YYYY (or other) format, returns as-is.
+  String _formatDate(String rawDate) {
+    final parts = rawDate.split('-');
+    if (parts.length == 3 && parts[0].length == 4) {
+      // YYYY-MM-DD → DD-MM-YYYY
+      return '${parts[2]}-${parts[1]}-${parts[0]}';
+    }
+    return rawDate;
+  }
+
+  /// Resolves machine display string from either the new 'machines' list
+  /// or the legacy 'machine' string field.
+  String _getMachinesDisplay() {
+    if (requestData.containsKey('machines')) {
+      final machines = requestData['machines'] as List<dynamic>;
+      return machines.join(', ');
+    }
+    return requestData['machine'] as String? ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final machinesDisplay = _getMachinesDisplay();
+    final date = _formatDate(requestData['date'] as String? ?? '');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Request Details'),
@@ -36,18 +60,19 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: requestData['status'] == 'Pending' 
-                            ? Colors.orange.shade100 
+                        color: requestData['status'] == 'Pending'
+                            ? Colors.orange.shade100
                             : Colors.green.shade100,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-                        requestData['status'],
+                        requestData['status'] as String,
                         style: TextStyle(
-                          color: requestData['status'] == 'Pending' 
-                              ? Colors.orange.shade800 
+                          color: requestData['status'] == 'Pending'
+                              ? Colors.orange.shade800
                               : Colors.green.shade800,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -59,7 +84,7 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Details
             Card(
               elevation: 2,
@@ -77,9 +102,14 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                     ),
                     const Divider(),
                     const SizedBox(height: 8),
-                    _buildDetailRow('Machine', requestData['machine']),
+                    _buildDetailRow(
+                      label: machinesDisplay.contains(',')
+                          ? 'Machines'
+                          : 'Machine',
+                      value: machinesDisplay,
+                    ),
                     const SizedBox(height: 12),
-                    _buildDetailRow('Date', requestData['date']),
+                    _buildDetailRow(label: 'Date', value: date),
                   ],
                 ),
               ),
@@ -90,10 +120,12 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                color:
+                    Theme.of(context).colorScheme.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  color:
+                      Theme.of(context).colorScheme.primary.withOpacity(0.3),
                   width: 2,
                 ),
               ),
@@ -114,7 +146,7 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Please share this code with the technician once the service is complete.',
+                    'Please share this code with the technician once all machines are serviced.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.grey,
@@ -123,7 +155,8 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -136,7 +169,7 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                       ],
                     ),
                     child: Text(
-                      requestData['happyCode'],
+                      requestData['happyCode'] as String,
                       style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -153,7 +186,7 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildDetailRow({required String label, required String value}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

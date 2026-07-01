@@ -17,6 +17,7 @@ import 'package:goodlife_party/screens/spare_part_order_options.dart';
 
 import 'package:goodlife_party/screens/my_service_requests_screen.dart';
 import 'package:goodlife_party/screens/service_request_details_screen.dart';
+import 'package:goodlife_party/screens/service_request_form_screen.dart';
 
 import 'app_routes.dart';
 
@@ -59,6 +60,9 @@ class RouteGenerator {
       
       case AppRoutes.myOrdersSpareParts:
         return _buildRoute(const SparePartsOrdersScreen());
+
+      case AppRoutes.serviceRequestForm:
+        return _buildRoute(const ServiceRequestFormScreen());
 
       case AppRoutes.myServiceRequests:
         return _buildRoute(const MyServiceRequestsScreen());
