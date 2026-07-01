@@ -91,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          distributor?.distributorName ?? 'Distributor Profile',
+                          distributor?.distributorName ?? 'Party Profile',
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.85),
@@ -128,20 +128,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _buildProfileHeaderCard(distributor, area),
               const SizedBox(height: 16),
 
-              // 2. Edit Profile and Quick Links Section
-              _buildQuickActionsCard(context),
-              const SizedBox(height: 16),
-
-              // 3. Area and AMC details
-              _buildDetailsCard(area),
-              const SizedBox(height: 16),
-
-              // 4. Associated Machines list
-              _buildMachinesCard(distributor?.machineIds ?? []),
-              const SizedBox(height: 16),
-
-              // 5. Support card
-              _buildSupportCard(area),
+              // 2. Options List
+              _buildOptionsCard(context, authProvider),
               const SizedBox(height: 30),
             ],
           ),
@@ -223,353 +211,112 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildQuickActionsCard(BuildContext context) {
+  Widget _buildOptionsCard(BuildContext context, AuthProvider authProvider) {
     return Card(
       elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.edit_rounded, color: Colors.blue),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                shape: BoxShape.circle,
               ),
-              title: const Text(
-                'Edit Profile Info',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: const Text('Update distributor name and contact mobile'),
-              trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-              onTap: () => _showEditProfileDialog(context),
+              child: const Icon(Icons.receipt_long_rounded, color: Colors.green),
             ),
-            const Divider(height: 1, indent: 56),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.receipt_long_rounded, color: Colors.green),
-              ),
-              title: const Text(
-                'Spare Parts Orders',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: const Text('View history of spare part requests'),
-              trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.myOrdersSpareParts);
-              },
+            title: const Text(
+              'My Spare Part Orders',
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailsCard(area) {
-    if (area == null) return const SizedBox();
-
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.stars_rounded, color: Colors.amber, size: 24),
-                SizedBox(width: 10),
-                Text(
-                  'Membership & Billing details',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildDetailRow('AMC Services Included', '${area.amcServices} Services'),
-            const Divider(height: 24),
-            _buildDetailRow('AMC Pricing', '₹${area.amcPrice.toStringAsFixed(2)}'),
-            const Divider(height: 24),
-            _buildDetailRow('Freight Percentage Charge', '${area.freightPercentage.toStringAsFixed(1)}%'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 15,
-            color: Colors.grey.shade600,
-            fontWeight: FontWeight.w500,
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.myOrdersSpareParts);
+            },
           ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          const Divider(height: 1, indent: 56),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.build_rounded, color: Colors.blue),
+            ),
+            title: const Text(
+              'My Service Requests',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.myServiceRequests);
+            },
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMachinesCard(List<String> machineIds) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.precision_manufacturing_rounded, color: Theme.of(context).colorScheme.primary, size: 24),
-                const SizedBox(width: 10),
-                const Text(
-                  'Registered Machines',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (machineIds.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'No registered machines assigned.',
-                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
-                ),
-              )
-            else
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: machineIds.length,
-                separatorBuilder: (context, index) => const Divider(height: 16),
-                itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(Icons.qr_code_rounded, size: 18, color: Colors.blueGrey),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        machineIds[index],
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  );
-                },
+          const Divider(height: 1, indent: 56),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                shape: BoxShape.circle,
               ),
-          ],
-        ),
+              child: const Icon(Icons.logout_rounded, color: Colors.orange),
+            ),
+            title: const Text(
+              'Logout',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+            onTap: () => _showLogoutConfirmation(context, authProvider),
+          ),
+          const Divider(height: 1, indent: 56),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.delete_forever_rounded, color: Colors.red),
+            ),
+            title: const Text(
+              'Delete my account',
+              style: TextStyle(fontWeight: FontWeight.w600, color: Colors.red),
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+            onTap: () => _showDeleteAccountConfirmation(context, authProvider),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSupportCard(area) {
-    if (area == null || area.salesPerson.isEmpty) return const SizedBox();
-
-    return Card(
-      elevation: 2,
-      color: Colors.grey.shade900,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.contact_support_rounded, color: Colors.greenAccent, size: 24),
-                SizedBox(width: 10),
-                Text(
-                  'Local Representative Support',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              area.salesPerson,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Your assigned area sales executive',
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey.shade400,
-              ),
-            ),
-            const Divider(color: Colors.white24, height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.call_rounded, color: Colors.greenAccent, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      area.salesContact.toString(),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                TextButton.icon(
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: area.salesContact.toString()));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Contact number copied to clipboard')),
-                    );
-                  },
-                  icon: const Icon(Icons.copy_rounded, size: 16, color: Colors.white70),
-                  label: const Text('Copy', style: TextStyle(color: Colors.white70)),
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showEditProfileDialog(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final nameController = TextEditingController(text: authProvider.distributorName);
-    final contactController = TextEditingController(text: authProvider.mobile);
-    final formKey = GlobalKey<FormState>();
-
+  void _showDeleteAccountConfirmation(BuildContext context, AuthProvider authProvider) {
     showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (dialogCtx) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text(
-            'Edit Profile Info',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: Form(
-            key: formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    controller: nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Distributor Name',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person_outline_rounded),
-                    ),
-                    validator: (val) {
-                      if (val == null || val.trim().isEmpty) {
-                        return 'Name cannot be empty';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: contactController,
-                    keyboardType: TextInputType.phone,
-                    maxLength: 10,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      labelText: 'Contact Mobile',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.phone_android_rounded),
-                      counterText: '',
-                    ),
-                    validator: (val) {
-                      if (val == null || val.trim().isEmpty) {
-                        return 'Contact number cannot be empty';
-                      }
-                      if (val.trim().length != 10) {
-                        return 'Enter a valid 10-digit mobile';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
+          title: const Text('Delete Account'),
+          content: const Text('Are you sure you want to delete your account? This action cannot be undone.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogCtx),
               child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
-            ElevatedButton(
+            TextButton(
               onPressed: () async {
-                if (formKey.currentState!.validate()) {
-                  final name = nameController.text.trim();
-                  final contact = contactController.text.trim();
-
-                  try {
-                    await authProvider.updateProfile(
-                      name: name,
-                      contact: contact,
-                    );
-                    if (!context.mounted) return;
-                    Navigator.pop(dialogCtx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Profile updated successfully')),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to update: ${e.toString()}')),
-                    );
-                  }
-                }
+                Navigator.pop(dialogCtx); // close dialog
+                // Assuming logout handles local clearing for now, until API is ready
+                await authProvider.logout();
+                if (!context.mounted) return;
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.home,
+                  (route) => false,
+                );
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              child: const Text('Save'),
+              child: const Text('Delete', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
             ),
           ],
         );
@@ -583,7 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (dialogCtx) {
         return AlertDialog(
           title: const Text('Logout Confirmation'),
-          content: const Text('Are you sure you want to log out of your profile?'),
+          content: const Text('Are you sure?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogCtx),
@@ -601,7 +348,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   (route) => false,
                 );
               },
-              child: const Text('Logout', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              child: const Text('YES', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
             ),
           ],
         );
