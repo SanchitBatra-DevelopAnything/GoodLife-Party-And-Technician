@@ -12,6 +12,7 @@ import 'package:goodlife_party/providers/items_provider.dart';
 import 'package:goodlife_party/providers/order_provider.dart';
 import 'package:goodlife_party/providers/signup_provider.dart';
 import 'package:goodlife_party/providers/whats_new_provider.dart';
+import 'package:goodlife_party/providers/service_request_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:goodlife_party/routes/route_generator.dart';
 import 'package:goodlife_party/theme/app_theme.dart';
@@ -43,7 +44,8 @@ void main() async {
       ChangeNotifierProvider(create: (_)=> CategoryProvider()),
       ChangeNotifierProvider(create: (_)=>ItemsProvider()),
       ChangeNotifierProvider(create: (_)=> WhatsNewProvider()),
-      ChangeNotifierProvider(create: (_)=>OrderProvider())
+      ChangeNotifierProvider(create: (_)=>OrderProvider()),
+      ChangeNotifierProvider(create: (_)=>ServiceRequestProvider())
     ],
     child: const MyApp(),
   ),
