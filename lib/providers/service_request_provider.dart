@@ -20,8 +20,8 @@ class ServiceRequestProvider with ChangeNotifier {
   String get progressMessage => _progressMessage;
 
   Future<void> submitServiceRequest({
-    required String machineId,
-    required String machineName,
+    required List<String> machineIds,
+    required List<String> machineNames,
     required List<File> images,
     required File? audio,
     required String type, // 'SERVICE' or 'INSTALLATION'
@@ -85,8 +85,8 @@ class ServiceRequestProvider with ChangeNotifier {
       final now = DateTime.now();
       final request = ServiceRequestModel(
         serviceRequestId: const Uuid().v4(),
-        machineId: machineId,
-        machineName: machineName,
+        machineIds: machineIds,
+        machineNames: machineNames,
         area: area,
         orderedBy: username,
         deviceToken: deviceToken,

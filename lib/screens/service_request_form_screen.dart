@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -10,6 +9,7 @@ import '../models/categories_model.dart';
 import '../providers/service_request_provider.dart';
 import '../routes/app_routes.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/voice_recorder_widget.dart';
 
 class ServiceRequestFormScreen extends StatefulWidget {
   const ServiceRequestFormScreen({super.key});
@@ -26,7 +26,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
   String selectedType = 'SERVICE'; // 'SERVICE' or 'INSTALLATION'
   final List<File> selectedImages = [];
   File? selectedAudio;
-  CategoryModel? selectedMachine;
+  final List<CategoryModel> selectedMachines = [];
 
   @override
   void initState() {
@@ -57,32 +57,158 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
     }
   }
 
-
-
-  Future<void> pickAudio() async {
-    try {
-      final FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.audio,
-      );
-
-      if (result != null && result.files.single.path != null) {
-        setState(() {
-          selectedAudio = File(result.files.single.path!);
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking audio: $e')),
+  void _showMultiSelectMachines(List<CategoryModel> categories) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return DraggableScrollableSheet(
+              initialChildSize: 0.6,
+              minChildSize: 0.4,
+              maxChildSize: 0.9,
+              expand: false,
+              builder: (context, scrollController) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Select Machines',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: categories.length,
+                          itemBuilder: (context, index) {
+                            final machine = categories[index];
+                            final isSelected = selectedMachines.any((m) => m.id == machine.id);
+                            return CheckboxListTile(
+                              title: Text(
+                                machine.name,
+                                style: const TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                              value: isSelected,
+                              activeColor: Theme.of(context).colorScheme.primary,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              onChanged: (bool? checked) {
+                                setModalState(() {
+                                  if (checked == true) {
+                                    selectedMachines.add(machine);
+                                  } else {
+                                    selectedMachines.removeWhere((m) => m.id == machine.id);
+                                  }
+                                });
+                                setState(() {}); // Update parent view
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Done',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
         );
-      }
-    }
+      },
+    );
+  }
+
+  Widget buildMachineSelector(List<CategoryModel> categories) {
+    final hasSelected = selectedMachines.isNotEmpty;
+    return InkWell(
+      onTap: () => _showMultiSelectMachines(categories),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: hasSelected
+                  ? Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: selectedMachines.map((machine) {
+                        return Chip(
+                          label: Text(
+                            machine.name,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          onDeleted: () {
+                            setState(() {
+                              selectedMachines.removeWhere((m) => m.id == machine.id);
+                            });
+                          },
+                          deleteIcon: const Icon(Icons.cancel, size: 16),
+                          backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                          side: BorderSide.none,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        );
+                      }).toList(),
+                    )
+                  : Text(
+                      'Choose machine(s)',
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: 15),
+                    ),
+            ),
+            const Icon(Icons.arrow_drop_down, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> submitRequest() async {
-    if (selectedMachine == null) {
+    if (selectedMachines.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a machine.')),
+        const SnackBar(content: Text('Please select at least one machine.')),
       );
       return;
     }
@@ -97,8 +223,8 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
 
     try {
       await context.read<ServiceRequestProvider>().submitServiceRequest(
-            machineId: selectedMachine!.id,
-            machineName: selectedMachine!.name,
+            machineIds: selectedMachines.map((m) => m.id).toList(),
+            machineNames: selectedMachines.map((m) => m.name).toList(),
             images: selectedImages,
             audio: selectedAudio,
             type: selectedType,
@@ -308,120 +434,40 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Attach Audio / Recording',
+          'Voice Recording',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: selectedAudio == null
-                  ? buildPickCard(
-                      icon: Icons.audiotrack_rounded,
-                      title: 'Add Audio',
-                      onTap: pickAudio,
-                    )
-                  : buildSelectedMediaCard(
-                      icon: Icons.audiotrack_rounded,
-                      title: 'Audio Selected',
-                      fileName: selectedAudio!.path.split('/').last,
-                      onClear: () {
-                        setState(() {
-                          selectedAudio = null;
-                        });
-                      },
-                    ),
-            ),
-          ],
+        VoiceRecorderWidget(
+          onAudioRecorded: (file) {
+            setState(() {
+              selectedAudio = file;
+            });
+          },
         ),
       ],
     );
   }
 
-  Widget buildPickCard({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade300),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 28, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildSelectedMediaCard({
-    required IconData icon,
-    required String title,
-    required String fileName,
-    required VoidCallback onClear,
-  }) {
+  Widget buildWhatsAppBanner() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.green.shade50,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Colors.green.shade100),
       ),
-      child: Stack(
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(icon, size: 32, color: Colors.green),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                        color: Colors.green,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      fileName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            top: -6,
-            right: -6,
-            child: GestureDetector(
-              onTap: onClear,
-              child: Container(
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.close, size: 14, color: Colors.black87),
+          Icon(Icons.chat_bubble_outline_rounded, color: Colors.green.shade700, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'If you need to send more information like video, etc., please WhatsApp us on +91 9999999999.',
+              style: TextStyle(
+                color: Colors.green.shade900,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -518,7 +564,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Select Machine',
+                  'Select Machine(s)',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 12),
@@ -537,32 +583,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                         child: const Text('No machines assigned to your account.'),
                       );
                     }
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<CategoryModel>(
-                          value: selectedMachine,
-                          hint: const Text('Choose a machine'),
-                          isExpanded: true,
-                          items: categoryProvider.categories.map((machine) {
-                            return DropdownMenuItem(
-                              value: machine,
-                              child: Text(machine.name),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedMachine = value;
-                            });
-                          },
-                        ),
-                      ),
-                    );
+                    return buildMachineSelector(categoryProvider.categories);
                   },
                 ),
                 const SizedBox(height: 24),
@@ -576,6 +597,8 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                 buildImageSection(),
                 const SizedBox(height: 24),
                 buildMediaSection(),
+                const SizedBox(height: 24),
+                buildWhatsAppBanner(),
                 const SizedBox(height: 24),
                 const Text(
                   'Description',

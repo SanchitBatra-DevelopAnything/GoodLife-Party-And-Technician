@@ -1,7 +1,7 @@
 class ServiceRequestModel {
   final String serviceRequestId;
-  final String machineId;
-  final String machineName;
+  final List<String> machineIds;
+  final List<String> machineNames;
   final String area;
   final String orderedBy;
   final String deviceToken;
@@ -16,8 +16,8 @@ class ServiceRequestModel {
 
   ServiceRequestModel({
     required this.serviceRequestId,
-    required this.machineId,
-    required this.machineName,
+    required this.machineIds,
+    required this.machineNames,
     required this.area,
     required this.orderedBy,
     required this.deviceToken,
@@ -34,8 +34,8 @@ class ServiceRequestModel {
   factory ServiceRequestModel.fromJson(Map<String, dynamic> json) {
     return ServiceRequestModel(
       serviceRequestId: json['serviceRequestId'] ?? '',
-      machineId: json['machineId'] ?? '',
-      machineName: json['machineName'] ?? '',
+      machineIds: List<String>.from(json['machineIds'] ?? []),
+      machineNames: List<String>.from(json['machineNames'] ?? []),
       area: json['area'] ?? '',
       orderedBy: json['orderedBy'] ?? '',
       deviceToken: json['deviceToken'] ?? '',
@@ -53,8 +53,8 @@ class ServiceRequestModel {
   Map<String, dynamic> toJson() {
     return {
       'serviceRequestId': serviceRequestId,
-      'machineId': machineId,
-      'machineName': machineName,
+      'machineIds': machineIds,
+      'machineNames': machineNames,
       'area': area,
       'orderedBy': orderedBy,
       'deviceToken': deviceToken,
