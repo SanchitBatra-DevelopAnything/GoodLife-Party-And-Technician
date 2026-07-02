@@ -13,12 +13,43 @@ class ServiceRequestProvider with ChangeNotifier {
   final ServiceRequestService _serviceRequestService = ServiceRequestService();
   final StorageService _storageService = StorageService();
 
+  // ── Submit state ──────────────────────────────────────────────────────────
   bool _isSubmitting = false;
   bool get isSubmitting => _isSubmitting;
 
   String _progressMessage = '';
   String get progressMessage => _progressMessage;
 
+  // ── Fetch state ───────────────────────────────────────────────────────────
+  bool _isFetching = false;
+  bool get isFetching => _isFetching;
+
+  String? _fetchError;
+  String? get fetchError => _fetchError;
+
+  List<ServiceRequestModel> _serviceRequests = [];
+  List<ServiceRequestModel> get serviceRequests => _serviceRequests;
+
+  /// Fetch all service requests for the logged-in party.
+  Future<void> fetchServiceRequests(String partyName) async {
+    if (partyName.isEmpty) return;
+
+    try {
+      _isFetching = true;
+      _fetchError = null;
+      notifyListeners();
+
+      _serviceRequests =
+          await _serviceRequestService.fetchServiceRequests(partyName);
+    } catch (e) {
+      _fetchError = 'Failed to load service requests. Please try again.';
+    } finally {
+      _isFetching = false;
+      notifyListeners();
+    }
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────────────
   Future<void> submitServiceRequest({
     required List<String> machineIds,
     required List<String> machineNames,

@@ -12,7 +12,8 @@ class ServiceRequestModel {
   final String description;
   final List<String> imageUrls;
   final String? audioUrl;
-  final String status; // 'PENDING'
+  final String status; // 'PENDING', 'IN_PROGRESS', 'RESOLVED'
+  final String? happyCode; // Assigned by admin when service is completed
 
   ServiceRequestModel({
     required this.serviceRequestId,
@@ -29,6 +30,7 @@ class ServiceRequestModel {
     required this.imageUrls,
     this.audioUrl,
     required this.status,
+    this.happyCode,
   });
 
   factory ServiceRequestModel.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class ServiceRequestModel {
       imageUrls: List<String>.from(json['imageUrls'] ?? []),
       audioUrl: json['audioUrl'],
       status: json['status'] ?? 'PENDING',
+      happyCode: json['happyCode'],
     );
   }
 
@@ -66,6 +69,7 @@ class ServiceRequestModel {
       'imageUrls': imageUrls,
       'audioUrl': audioUrl,
       'status': status,
+      if (happyCode != null) 'happyCode': happyCode,
     };
   }
 }

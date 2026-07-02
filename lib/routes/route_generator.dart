@@ -15,6 +15,7 @@ import 'package:goodlife_party/screens/sales_screen.dart';
 import 'package:goodlife_party/screens/signup/signup.dart';
 import 'package:goodlife_party/screens/spare_part_order_options.dart';
 
+import 'package:goodlife_party/models/service_request_model.dart';
 import 'package:goodlife_party/screens/my_service_requests_screen.dart';
 import 'package:goodlife_party/screens/service_request_details_screen.dart';
 import 'package:goodlife_party/screens/service_request_form_screen.dart';
@@ -68,9 +69,9 @@ class RouteGenerator {
         return _buildRoute(const MyServiceRequestsScreen());
 
       case AppRoutes.serviceRequestDetails:
-        final args = settings.arguments as Map<String, dynamic>;
+        final req = settings.arguments as ServiceRequestModel;
         return _buildRoute(
-          ServiceRequestDetailsScreen(requestData: args),
+          ServiceRequestDetailsScreen(request: req),
         );
 
       case AppRoutes.items:

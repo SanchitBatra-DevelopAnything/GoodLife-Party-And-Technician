@@ -1,211 +1,394 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:goodlife_party/models/service_request_model.dart';
 
 class ServiceRequestDetailsScreen extends StatelessWidget {
-  final Map<String, dynamic> requestData;
+  final ServiceRequestModel request;
 
   const ServiceRequestDetailsScreen({
     super.key,
-    required this.requestData,
+    required this.request,
   });
 
-  /// Formats a date string from YYYY-MM-DD → DD-MM-YYYY.
-  /// If already in DD-MM-YYYY (or other) format, returns as-is.
-  String _formatDate(String rawDate) {
-    final parts = rawDate.split('-');
-    if (parts.length == 3 && parts[0].length == 4) {
-      // YYYY-MM-DD → DD-MM-YYYY
-      return '${parts[2]}-${parts[1]}-${parts[0]}';
+  Color _statusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'RESOLVED':
+        return Colors.green;
+      case 'IN_PROGRESS':
+        return Colors.blue;
+      case 'PENDING':
+      default:
+        return Colors.orange;
     }
-    return rawDate;
   }
 
-  /// Resolves machine display string from either the new 'machines' list
-  /// or the legacy 'machine' string field.
-  String _getMachinesDisplay() {
-    if (requestData.containsKey('machines')) {
-      final machines = requestData['machines'] as List<dynamic>;
-      return machines.join(', ');
+  String _statusLabel(String status) {
+    switch (status.toUpperCase()) {
+      case 'RESOLVED':
+        return 'Resolved';
+      case 'IN_PROGRESS':
+        return 'In Progress';
+      case 'PENDING':
+      default:
+        return 'Pending';
     }
-    return requestData['machine'] as String? ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
-    final machinesDisplay = _getMachinesDisplay();
-    final date = _formatDate(requestData['date'] as String? ?? '');
+    final statusColor = _statusColor(request.status);
+    final primary = Theme.of(context).colorScheme.primary;
+    final machines = request.machineNames.isNotEmpty
+        ? request.machineNames.join(', ')
+        : request.machineIds.join(', ');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Request Details'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Status and ID
-            Card(
-              elevation: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Request ID: ${requestData['id']}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(90),
+        child: Container(
+          decoration: BoxDecoration(
+            color: primary,
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(26),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: primary.withOpacity(0.18),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: requestData['status'] == 'Pending'
-                            ? Colors.orange.shade100
-                            : Colors.green.shade100,
+                        color: Colors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Text(
-                        requestData['status'] as String,
-                        style: TextStyle(
-                          color: requestData['status'] == 'Pending'
-                              ? Colors.orange.shade800
-                              : Colors.green.shade800,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
+                      child: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white,
+                        size: 28,
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Details
-            Card(
-              elevation: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Details',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Divider(),
-                    const SizedBox(height: 8),
-                    _buildDetailRow(
-                      label: machinesDisplay.contains(',')
-                          ? 'Machines'
-                          : 'Machine',
-                      value: machinesDisplay,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildDetailRow(label: 'Date', value: date),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Happy Code Section
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color:
-                      Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                  width: 2,
-                ),
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.verified_user_rounded,
-                    size: 48,
-                    color: Theme.of(context).colorScheme.primary,
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Happy Code',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Please share this code with the technician once all machines are serviced.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+                  const SizedBox(width: 16),
+                  const Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Request Details',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.4,
+                          ),
                         ),
                       ],
-                    ),
-                    child: Text(
-                      requestData['happyCode'] as String,
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 8.0,
-                      ),
                     ),
                   ),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── Status & Type card ──────────────────────────────────────────
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          'Type',
+                          style: TextStyle(
+                              color: Colors.grey.shade600, fontSize: 12),
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            request.type == 'INSTALLATION'
+                                ? 'Installation'
+                                : 'Service',
+                            style: TextStyle(
+                              color: primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                        width: 1, height: 40, color: Colors.grey.shade200),
+                    Column(
+                      children: [
+                        Text(
+                          'Status',
+                          style: TextStyle(
+                              color: Colors.grey.shade600, fontSize: 12),
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: statusColor.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            _statusLabel(request.status),
+                            style: TextStyle(
+                              color: statusColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // ── Details card ────────────────────────────────────────────────
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Request Info',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    const Divider(height: 20),
+                    _infoRow(
+                      icon: Icons.precision_manufacturing_rounded,
+                      label: 'Machine(s)',
+                      value: machines.isNotEmpty ? machines : '—',
+                    ),
+                    const SizedBox(height: 12),
+                    _infoRow(
+                      icon: Icons.calendar_today_rounded,
+                      label: 'Date',
+                      value: request.requestDate,
+                    ),
+                    const SizedBox(height: 12),
+                    _infoRow(
+                      icon: Icons.access_time_rounded,
+                      label: 'Time',
+                      value: request.requestTime,
+                    ),
+                    const SizedBox(height: 12),
+                    _infoRow(
+                      icon: Icons.location_on_rounded,
+                      label: 'Area',
+                      value: request.area.isNotEmpty ? request.area : '—',
+                    ),
+                    if (request.description.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      _infoRow(
+                        icon: Icons.notes_rounded,
+                        label: 'Description',
+                        value: request.description,
+                        multiline: true,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // ── Happy Code section ──────────────────────────────────────────
+            if (request.happyCode != null && request.happyCode!.isNotEmpty) ...[
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: primary.withOpacity(0.07),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: primary.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.verified_user_rounded,
+                      size: 48,
+                      color: primary,
+                    ),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Happy Code',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Share this code with the technician once the service is complete to confirm closure.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        Clipboard.setData(
+                            ClipboardData(text: request.happyCode!));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Happy Code copied to clipboard')),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.06),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          request.happyCode!,
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 10.0,
+                            color: primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Tap the code to copy',
+                      style: TextStyle(
+                          color: Colors.grey.shade500, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ] else ...[
+              // Shown when happy code hasn't been assigned yet
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.lock_clock_rounded,
+                        color: Colors.grey.shade400, size: 36),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Happy Code',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Will be available once the technician completes the service.',
+                            style: TextStyle(
+                                color: Colors.grey.shade600, fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDetailRow({required String label, required String value}) {
+  Widget _infoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    bool multiline = false,
+  }) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment:
+          multiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
+        Icon(icon, size: 18, color: Colors.grey.shade500),
+        const SizedBox(width: 10),
         SizedBox(
-          width: 80,
+          width: 90,
           child: Text(
             label,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 13,
             ),
           ),
         ),
-        const Text(':  '),
         Expanded(
           child: Text(
             value,
             style: const TextStyle(
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
             ),
           ),
         ),
