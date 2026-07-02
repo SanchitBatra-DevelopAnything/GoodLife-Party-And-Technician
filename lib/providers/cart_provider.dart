@@ -49,8 +49,18 @@ class CartProvider with ChangeNotifier {
 
   Timer? _saveDebounce;
   double _freightPercentage = 0;
+  bool _isExpressDelivery = false;
 
 double get freightPercentage => _freightPercentage;
+bool get isExpressDelivery => _isExpressDelivery;
+
+void setExpressDelivery(bool value) {
+  if (_isExpressDelivery == value) {
+    return;
+  }
+  _isExpressDelivery = value;
+  notifyListeners();
+}
 
 void setFreightPercentage(double percentage) {
   if (_freightPercentage == percentage) {
@@ -186,6 +196,7 @@ void setFreightPercentage(double percentage) {
     _items.clear();
 
     _itemList = [];
+    _isExpressDelivery = false;
 
     _scheduleSave();
 
@@ -218,7 +229,7 @@ void setFreightPercentage(double percentage) {
   double get subtotal {
   double total = 0;
 
-  _items?.forEach((key, cartItem) {
+  _items.forEach((key, cartItem) {
     total +=
         cartItem.price * cartItem.quantity;
   });
@@ -227,22 +238,22 @@ void setFreightPercentage(double percentage) {
 }
 
 double get gst {
-  return subtotal * 0.18;
+  return 0.0;
 }
 
 double get freightCharges {
-  if (_items.isEmpty) {
+  if (_items.isEmpty || !_isExpressDelivery) {
     return 0;
   }
 
   return math.max(
-    (subtotal+gst).toDouble() * (_freightPercentage / 100),
+    subtotal * (_freightPercentage / 100),
     100.0,
   );
 }
 
 double get grandTotal {
-  return subtotal + gst + freightCharges;
+  return subtotal + freightCharges;
 }
 
 }

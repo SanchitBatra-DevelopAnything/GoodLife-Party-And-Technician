@@ -98,17 +98,53 @@ class CartScreen extends StatelessWidget {
 
                           const SizedBox(height: 10),
 
-                          buildPriceRow('GST (18%)', cartProvider.gst),
-
-                          const SizedBox(height: 10),
-
-                          buildPriceRow(
-                            'Freight Charges',
-                            cartProvider.freightCharges,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      Icons.electric_bolt_rounded,
+                                      color: Colors.orange.shade800,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Text(
+                                    'Express Delivery',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Switch(
+                                value: cartProvider.isExpressDelivery,
+                                onChanged: (value) {
+                                  cartProvider.setExpressDelivery(value);
+                                },
+                                activeThumbColor: Theme.of(context).primaryColor,
+                              ),
+                            ],
                           ),
 
+                          if (cartProvider.isExpressDelivery) ...[
+                            const SizedBox(height: 10),
+                            buildPriceRow(
+                              'Delivery Charges',
+                              cartProvider.freightCharges,
+                            ),
+                          ],
+
                           const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
+                            padding: EdgeInsets.symmetric(vertical: 12),
                             child: Divider(),
                           ),
 

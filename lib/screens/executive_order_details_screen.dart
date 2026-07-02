@@ -29,6 +29,61 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
               order: order,
             ),
 
+            if (order.isExpressDelivery) ...[
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.orange.shade50, Colors.orange.shade100],
+                  ),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.orange.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: Colors.orange,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.electric_bolt_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Express Delivery Order',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'This order is flagged for high priority fast dispatch.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             const SizedBox(height: 16),
 
             buildPriceBreakdownCard(),
@@ -86,14 +141,15 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
             ),
 
             buildAmountRow(
-              'Freight Charges',
+              'Delivery Charges',
               order.freightCharges,
             ),
 
-            buildAmountRow(
-              'GST',
-              order.gstAmount,
-            ),
+            if (order.gstAmount > 0)
+              buildAmountRow(
+                'GST',
+                order.gstAmount,
+              ),
 
             const Divider(
               height: 24,
