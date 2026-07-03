@@ -1,14 +1,95 @@
+import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:goodlife_party/models/service_request_model.dart';
 
-class ServiceRequestDetailsScreen extends StatelessWidget {
+class ServiceRequestDetailsScreen extends StatefulWidget {
   final ServiceRequestModel request;
 
   const ServiceRequestDetailsScreen({
     super.key,
     required this.request,
   });
+
+  @override
+  State<ServiceRequestDetailsScreen> createState() => _ServiceRequestDetailsScreenState();
+}
+
+class _ServiceRequestDetailsScreenState extends State<ServiceRequestDetailsScreen> {
+  late final AudioPlayer _audioPlayer;
+  bool _isPlaying = false;
+  Duration _playbackPosition = Duration.zero;
+  Duration _playbackDuration = Duration.zero;
+
+  StreamSubscription? _positionSubscription;
+  StreamSubscription? _durationSubscription;
+  StreamSubscription? _playerStateSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer = AudioPlayer();
+
+    _positionSubscription = _audioPlayer.onPositionChanged.listen((pos) {
+      if (mounted) {
+        setState(() {
+          _playbackPosition = pos;
+        });
+      }
+    });
+
+    _durationSubscription = _audioPlayer.onDurationChanged.listen((dur) {
+      if (mounted) {
+        setState(() {
+          _playbackDuration = dur;
+        });
+      }
+    });
+
+    _playerStateSubscription = _audioPlayer.onPlayerStateChanged.listen((state) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = state == PlayerState.playing;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _positionSubscription?.cancel();
+    _durationSubscription?.cancel();
+    _playerStateSubscription?.cancel();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  Future<void> _togglePlayback() async {
+    final audioUrl = widget.request.audioUrl;
+    if (audioUrl == null || audioUrl.isEmpty) return;
+
+    try {
+      if (_isPlaying) {
+        await _audioPlayer.pause();
+      } else {
+        await _audioPlayer.play(UrlSource(audioUrl));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error playing audio: $e')),
+        );
+      }
+    }
+  }
+
+  String _formatDuration(Duration duration) {
+    final seconds = duration.inSeconds;
+    final minutes = (seconds / 60).floor();
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
 
   Color _statusColor(String status) {
     switch (status.toUpperCase()) {
@@ -36,11 +117,11 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _statusColor(request.status);
+    final statusColor = _statusColor(widget.request.status);
     final primary = Theme.of(context).colorScheme.primary;
-    final machines = request.machineNames.isNotEmpty
-        ? request.machineNames.join(', ')
-        : request.machineIds.join(', ');
+    final machines = widget.request.machineNames.isNotEmpty
+        ? widget.request.machineNames.join(', ')
+        : widget.request.machineIds.join(', ');
 
     return Scaffold(
       appBar: PreferredSize(
@@ -136,7 +217,7 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            request.type == 'INSTALLATION'
+                            widget.request.type == 'INSTALLATION'
                                 ? 'Installation'
                                 : 'Service',
                             style: TextStyle(
@@ -165,7 +246,7 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            _statusLabel(request.status),
+                            _statusLabel(widget.request.status),
                             style: TextStyle(
                               color: statusColor,
                               fontWeight: FontWeight.bold,
@@ -208,26 +289,26 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                     _infoRow(
                       icon: Icons.calendar_today_rounded,
                       label: 'Date',
-                      value: request.requestDate,
+                      value: widget.request.requestDate,
                     ),
                     const SizedBox(height: 12),
                     _infoRow(
                       icon: Icons.access_time_rounded,
                       label: 'Time',
-                      value: request.requestTime,
+                      value: widget.request.requestTime,
                     ),
                     const SizedBox(height: 12),
                     _infoRow(
                       icon: Icons.location_on_rounded,
                       label: 'Area',
-                      value: request.area.isNotEmpty ? request.area : '—',
+                      value: widget.request.area.isNotEmpty ? widget.request.area : '—',
                     ),
-                    if (request.description.isNotEmpty) ...[
+                    if (widget.request.description.isNotEmpty) ...[
                       const SizedBox(height: 12),
                       _infoRow(
                         icon: Icons.notes_rounded,
                         label: 'Description',
-                        value: request.description,
+                        value: widget.request.description,
                         multiline: true,
                       ),
                     ],
@@ -237,8 +318,14 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
+            // ── Audio player section ──────────────────────────────────────────
+            if (widget.request.audioUrl != null && widget.request.audioUrl!.isNotEmpty) ...[
+              _buildAudioPlayerCard(primary),
+              const SizedBox(height: 20),
+            ],
+
             // ── Happy Code section ──────────────────────────────────────────
-            if (request.happyCode != null && request.happyCode!.isNotEmpty) ...[
+            if (widget.request.happyCode != null && widget.request.happyCode!.isNotEmpty) ...[
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -277,7 +364,7 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         Clipboard.setData(
-                            ClipboardData(text: request.happyCode!));
+                            ClipboardData(text: widget.request.happyCode!));
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               content: Text('Happy Code copied to clipboard')),
@@ -298,7 +385,7 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
                           ],
                         ),
                         child: Text(
-                          request.happyCode!,
+                          widget.request.happyCode!,
                           style: TextStyle(
                             fontSize: 36,
                             fontWeight: FontWeight.bold,
@@ -355,6 +442,96 @@ class ServiceRequestDetailsScreen extends StatelessWidget {
             ],
 
             const SizedBox(height: 30),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAudioPlayerCard(Color primaryColor) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Recorded Voice Note',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                // Play / Pause Button
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: Icon(
+                    _isPlaying
+                        ? Icons.pause_circle_filled_rounded
+                        : Icons.play_circle_filled_rounded,
+                    color: primaryColor,
+                    size: 40,
+                  ),
+                  onPressed: _togglePlayback,
+                ),
+                const SizedBox(width: 4),
+                // Progress Bar / Slider
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                          overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                          activeTrackColor: primaryColor,
+                          inactiveTrackColor: Colors.grey.shade200,
+                          thumbColor: primaryColor,
+                          trackHeight: 3.0,
+                        ),
+                        child: Slider(
+                          min: 0.0,
+                          max: _playbackDuration.inMilliseconds.toDouble() > 0
+                              ? _playbackDuration.inMilliseconds.toDouble()
+                              : 1.0,
+                          value: _playbackPosition.inMilliseconds.toDouble().clamp(
+                                0.0,
+                                _playbackDuration.inMilliseconds.toDouble() > 0
+                                    ? _playbackDuration.inMilliseconds.toDouble()
+                                    : 1.0,
+                              ),
+                          onChanged: (val) async {
+                            await _audioPlayer.seek(Duration(milliseconds: val.toInt()));
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _formatDuration(_playbackPosition),
+                              style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                            ),
+                            Text(
+                              _formatDuration(_playbackDuration),
+                              style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
