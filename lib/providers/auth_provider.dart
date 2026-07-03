@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/login_context.dart';
 import '../services/auth_service.dart';
 import '../services/local_storage_service.dart';
+import '../services/notification_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService authService = AuthService();
@@ -31,6 +32,12 @@ class AuthProvider extends ChangeNotifier {
       await LocalStorageService.saveLoginContext(context);
 
       _loginContext = context;
+
+      // Update FCM token to backend
+      final token = await NotificationService().getToken();
+      if (token != null) {
+        authService.updateDeviceToken(mobile, token);
+      }
     } catch (e) {
       rethrow;
     } finally {
@@ -42,6 +49,12 @@ class AuthProvider extends ChangeNotifier {
   Future<void> loadSavedContext() async {
     try {
       _loginContext = await LocalStorageService.getLoginContext();
+      if (_loginContext != null) {
+        final token = await NotificationService().getToken();
+        if (token != null) {
+          authService.updateDeviceToken(mobile, token);
+        }
+      }
       notifyListeners();
     } catch (_) {
       // ignore cache errors

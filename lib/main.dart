@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 
 import 'providers/locale_provider.dart';
 import 'l10n/app_localizations.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Firebase.initializeApp();
+
+  await NotificationService().initialize();
 
   runApp(
   MultiProvider(
@@ -43,7 +46,8 @@ void main() async {
       ChangeNotifierProvider(create: (_)=> CategoryProvider()),
       ChangeNotifierProvider(create: (_)=>ItemsProvider()),
       ChangeNotifierProvider(create: (_)=> WhatsNewProvider()),
-      ChangeNotifierProvider(create: (_)=>OrderProvider())
+      ChangeNotifierProvider(create: (_)=>OrderProvider()),
+      ChangeNotifierProvider(create: (_)=>ServiceRequestProvider())
     ],
     child: const MyApp(),
   ),
@@ -59,6 +63,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: NotificationService.navigatorKey,
 
       // ✅ KEEP YOUR THEME EXACTLY SAME
       theme: AppTheme.getMaterialTheme(),
