@@ -263,75 +263,31 @@ class ExecutiveOrderCard extends StatelessWidget {
                   ),
 
                   /// ORDER ID BADGE
-                  Row(
-                    children: [
-                      Container(
-                        padding:
-                            const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration:
-                            BoxDecoration(
-                          color: Colors
-                              .grey.shade100,
-                          borderRadius:
-                              BorderRadius.circular(
-                            20,
-                          ),
-                        ),
-                        child: Text(
-                          '#$shortOrderId',
-                          style: TextStyle(
-                            color: Colors
-                                .grey.shade700,
-                            fontWeight:
-                                FontWeight.w700,
-                            fontSize: 12,
-                          ),
-                        ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration:
+                        BoxDecoration(
+                      color: Colors
+                          .grey.shade100,
+                      borderRadius:
+                          BorderRadius.circular(
+                        20,
                       ),
-                      if (order.isExpressDelivery) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding:
-                              const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration:
-                              BoxDecoration(
-                            color: Colors.orange.shade50,
-                            borderRadius:
-                                BorderRadius.circular(
-                              20,
-                            ),
-                            border: Border.all(
-                              color: Colors.orange.shade200,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.electric_bolt_rounded,
-                                size: 12,
-                                color: Colors.orange.shade800,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Express',
-                                style: TextStyle(
-                                  color: Colors.orange.shade800,
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
+                    ),
+                    child: Text(
+                      '#$shortOrderId',
+                      style: TextStyle(
+                        color: Colors
+                            .grey.shade700,
+                        fontWeight:
+                            FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
 
                   if (order.dispatchedOn !=

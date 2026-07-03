@@ -48,7 +48,6 @@ class ExecutiveDeliveryOrder {
   final List<String> documents;
 
   final List<ExecutiveDeliveryItem> items;
-  final bool isExpressDelivery;
 
   ExecutiveDeliveryOrder({
     required this.orderId,
@@ -66,7 +65,6 @@ class ExecutiveDeliveryOrder {
     required this.dispatchedOn,
     required this.documents,
     required this.items,
-    required this.isExpressDelivery,
   });
 
   factory ExecutiveDeliveryOrder.fromJson(
@@ -105,7 +103,6 @@ class ExecutiveDeliveryOrder {
                     ),
               )
               .toList(),
-      isExpressDelivery: json['isExpressDelivery'] ?? false,
     );
   }
 }

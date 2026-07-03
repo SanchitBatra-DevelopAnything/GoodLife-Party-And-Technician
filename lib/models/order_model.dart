@@ -17,7 +17,6 @@ class OrderModel {
   final String status;
   final List<String> documents;
   final bool partyClaimedPaymentComplete;
-  final bool isExpressDelivery;
 
   OrderModel({
     required this.orderId,
@@ -36,7 +35,6 @@ class OrderModel {
     required this.status,
     required this.documents,
     required this.partyClaimedPaymentComplete,
-    required this.isExpressDelivery,
   });
 
   Map<String, dynamic> toJson() {
@@ -61,7 +59,6 @@ class OrderModel {
       "documents": documents,
       "partyClaimedPaymentComplete":
           partyClaimedPaymentComplete,
-      "isExpressDelivery": isExpressDelivery,
     };
   }
 }

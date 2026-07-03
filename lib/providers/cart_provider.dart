@@ -49,18 +49,7 @@ class CartProvider with ChangeNotifier {
 
   Timer? _saveDebounce;
   double _freightPercentage = 0;
-  bool _isExpressDelivery = false;
-
 double get freightPercentage => _freightPercentage;
-bool get isExpressDelivery => _isExpressDelivery;
-
-void setExpressDelivery(bool value) {
-  if (_isExpressDelivery == value) {
-    return;
-  }
-  _isExpressDelivery = value;
-  notifyListeners();
-}
 
 void setFreightPercentage(double percentage) {
   if (_freightPercentage == percentage) {
@@ -196,7 +185,6 @@ void setFreightPercentage(double percentage) {
     _items.clear();
 
     _itemList = [];
-    _isExpressDelivery = false;
 
     _scheduleSave();
 
@@ -242,7 +230,7 @@ double get gst {
 }
 
 double get freightCharges {
-  if (_items.isEmpty || !_isExpressDelivery) {
+  if (_items.isEmpty) {
     return 0;
   }
 

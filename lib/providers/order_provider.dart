@@ -124,8 +124,6 @@ String get inquiryProgressMessage =>
         documents: paymentScreenshotUrl != null ? [paymentScreenshotUrl] : [],
 
         partyClaimedPaymentComplete: paymentDone,
-
-        isExpressDelivery: cartProvider.isExpressDelivery,
       );
 
       await _orderService.placeOrder(order);
