@@ -20,6 +20,7 @@ class SignupScreen extends StatefulWidget {
 class SignupScreenState extends State<SignupScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
 
   AreaModel? selectedArea;
   File? selectedImage;
@@ -35,6 +36,7 @@ class SignupScreenState extends State<SignupScreen> {
   void onSignup() async {
     if (usernameController.text.isEmpty ||
         contactController.text.isEmpty ||
+        addressController.text.isEmpty ||
         selectedArea == null ||
         selectedImage == null) {
       ScaffoldMessenger.of(
@@ -49,8 +51,9 @@ class SignupScreenState extends State<SignupScreen> {
       await signupProvider.signup(
         username: usernameController.text,
         contact: contactController.text,
+        address: addressController.text,
         area: selectedArea!.name,
-        areaId:selectedArea!.id,
+        areaId: selectedArea!.id,
         image: selectedImage!,
       );
 
@@ -102,6 +105,17 @@ class SignupScreenState extends State<SignupScreen> {
                   ), // ✅ limit (adjust if needed)
                 ],
                 decoration: const InputDecoration(labelText: 'Contact'),
+              ),
+
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: addressController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: 'Address',
+                  alignLabelWithHint: true,
+                ),
               ),
 
               const SizedBox(height: 12),
