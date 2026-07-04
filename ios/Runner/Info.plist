@@ -25,9 +25,11 @@
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>NSCameraUsageDescription</key>
-	<string>We need camera access</string>
+	<string>We need camera access to take photos for your service request</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need gallery access</string>
+	<string>We need gallery access to attach photos to your service request</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need microphone access to record a voice note for your service request</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

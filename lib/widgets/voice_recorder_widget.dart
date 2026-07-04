@@ -88,40 +88,63 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget> {
   // Start Audio Recording
   Future<void> _startRecording() async {
     try {
-      if (await _audioRecorder.hasPermission()) {
-        final tempDir = await getTemporaryDirectory();
-        final path = '${tempDir.path}/service_request_voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+      // Explicitly request microphone permission (required on real iOS devices)
+      final hasPermission = await _audioRecorder.hasPermission();
 
-        // Configure recorder
-        await _audioRecorder.start(
-          const RecordConfig(
-            encoder: AudioEncoder.aacLc,
-            bitRate: 128000,
-            sampleRate: 44100,
+      if (!hasPermission) {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Microphone Access Required'),
+            content: const Text(
+              'This app needs microphone access to record a voice note. '
+              'Please enable it in Settings → Privacy & Security → Microphone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-          path: path,
         );
-
-        setState(() {
-          _isRecording = true;
-          _recordDuration = 0;
-          _recordedFilePath = null;
-        });
-
-        // Notify parent that no file is ready yet
-        widget.onAudioRecorded(null);
-
-        // Timer to count up to 60 seconds
-        _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          setState(() {
-            _recordDuration++;
-          });
-
-          if (_recordDuration >= 60) {
-            _stopRecording();
-          }
-        });
+        return;
       }
+
+      final tempDir = await getTemporaryDirectory();
+      final path =
+          '${tempDir.path}/service_request_voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+
+      // Configure recorder
+      await _audioRecorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.aacLc,
+          bitRate: 128000,
+          sampleRate: 44100,
+        ),
+        path: path,
+      );
+
+      setState(() {
+        _isRecording = true;
+        _recordDuration = 0;
+        _recordedFilePath = null;
+      });
+
+      // Notify parent that no file is ready yet
+      widget.onAudioRecorded(null);
+
+      // Timer to count up to 60 seconds
+      _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        setState(() {
+          _recordDuration++;
+        });
+
+        if (_recordDuration >= 60) {
+          _stopRecording();
+        }
+      });
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
