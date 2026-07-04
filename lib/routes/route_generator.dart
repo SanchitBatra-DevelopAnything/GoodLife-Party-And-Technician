@@ -10,9 +10,15 @@ import 'package:goodlife_party/screens/inventory_screen.dart';
 import 'package:goodlife_party/screens/items_screen.dart';
 import 'package:goodlife_party/screens/login/login_screen.dart';
 import 'package:goodlife_party/screens/my_orders_spare_parts.dart';
+import 'package:goodlife_party/screens/profile_screen.dart';
 import 'package:goodlife_party/screens/sales_screen.dart';
 import 'package:goodlife_party/screens/signup/signup.dart';
 import 'package:goodlife_party/screens/spare_part_order_options.dart';
+
+import 'package:goodlife_party/models/service_request_model.dart';
+import 'package:goodlife_party/screens/my_service_requests_screen.dart';
+import 'package:goodlife_party/screens/service_request_details_screen.dart';
+import 'package:goodlife_party/screens/service_request_form_screen.dart';
 
 import 'app_routes.dart';
 
@@ -44,6 +50,9 @@ class RouteGenerator {
       case AppRoutes.login:
         return _buildRoute(const LoginScreen());
 
+      case AppRoutes.profile:
+        return _buildRoute(const ProfileScreen());
+
       case AppRoutes.categories:
         return _buildRoute(const CategoriesScreen());
 
@@ -52,6 +61,18 @@ class RouteGenerator {
       
       case AppRoutes.myOrdersSpareParts:
         return _buildRoute(const SparePartsOrdersScreen());
+
+      case AppRoutes.serviceRequestForm:
+        return _buildRoute(const ServiceRequestFormScreen());
+
+      case AppRoutes.myServiceRequests:
+        return _buildRoute(const MyServiceRequestsScreen());
+
+      case AppRoutes.serviceRequestDetails:
+        final req = settings.arguments as ServiceRequestModel;
+        return _buildRoute(
+          ServiceRequestDetailsScreen(request: req),
+        );
 
       case AppRoutes.items:
         final args =

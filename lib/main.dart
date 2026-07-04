@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:goodlife_party/providers/area_provider.dart';
@@ -10,12 +7,12 @@ import 'package:goodlife_party/providers/cart_provider.dart';
 import 'package:goodlife_party/providers/categories_provider.dart';
 import 'package:goodlife_party/providers/items_provider.dart';
 import 'package:goodlife_party/providers/order_provider.dart';
+import 'package:goodlife_party/providers/service_request_provider.dart';
 import 'package:goodlife_party/providers/signup_provider.dart';
 import 'package:goodlife_party/providers/whats_new_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:goodlife_party/routes/route_generator.dart';
 import 'package:goodlife_party/theme/app_theme.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -32,18 +29,22 @@ void main() async {
   await Hive.initFlutter();
   await Firebase.initializeApp();
 
+  final authProvider = AuthProvider();
+  await authProvider.loadSavedContext();
+
   runApp(
   MultiProvider(
     providers: [
       ChangeNotifierProvider.value(value: localeProvider),
       ChangeNotifierProvider(create: (_) => AreaProvider()),
       ChangeNotifierProvider(create: (_) => SignupProvider()),
-      ChangeNotifierProvider(create: (_)=> AuthProvider()),
+      ChangeNotifierProvider.value(value: authProvider),
       ChangeNotifierProvider(create: (_)=> CartProvider()),
       ChangeNotifierProvider(create: (_)=> CategoryProvider()),
       ChangeNotifierProvider(create: (_)=>ItemsProvider()),
       ChangeNotifierProvider(create: (_)=> WhatsNewProvider()),
-      ChangeNotifierProvider(create: (_)=>OrderProvider())
+      ChangeNotifierProvider(create: (_)=>OrderProvider()),
+      ChangeNotifierProvider(create: (_)=>ServiceRequestProvider())
     ],
     child: const MyApp(),
   ),

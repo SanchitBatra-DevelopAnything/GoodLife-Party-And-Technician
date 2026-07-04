@@ -89,28 +89,19 @@ class SparePartsOrdersScreenState
                   ),
               child: Row(
                 children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.all(
-                          12,
-                        ),
-                    decoration:
-                        BoxDecoration(
-                          color: Colors.white
-                              .withOpacity(
-                                0.15,
-                              ),
-                          borderRadius:
-                              BorderRadius.circular(
-                                16,
-                              ),
-                        ),
-                    child: const Icon(
-                      Icons
-                          .local_shipping_rounded,
-                      color:
-                          Colors.white,
-                      size: 28,
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ),
                   ),
                   const SizedBox(

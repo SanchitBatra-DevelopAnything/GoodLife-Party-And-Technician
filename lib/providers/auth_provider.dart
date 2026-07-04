@@ -48,6 +48,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+
+
   Future<void> logout() async {
     _loginContext = null;
 
