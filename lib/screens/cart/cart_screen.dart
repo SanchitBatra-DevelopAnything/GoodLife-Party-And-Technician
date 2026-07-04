@@ -98,10 +98,6 @@ class CartScreen extends StatelessWidget {
 
                           const SizedBox(height: 10),
 
-                          buildPriceRow('GST (18%)', cartProvider.gst),
-
-                          const SizedBox(height: 10),
-
                           buildPriceRow(
                             'Freight Charges',
                             cartProvider.freightCharges,

@@ -28,7 +28,6 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
             ExecutiveOrderStatusCard(
               order: order,
             ),
-
             const SizedBox(height: 16),
 
             buildPriceBreakdownCard(),
@@ -90,10 +89,11 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
               order.freightCharges,
             ),
 
-            buildAmountRow(
-              'GST',
-              order.gstAmount,
-            ),
+            if (order.gstAmount > 0)
+              buildAmountRow(
+                'GST',
+                order.gstAmount,
+              ),
 
             const Divider(
               height: 24,
