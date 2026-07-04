@@ -134,6 +134,19 @@ class AppBottomNavBar extends StatelessWidget {
 
             onTap: (index) {
               if (index == currentIndex) {
+                if (index == 4 &&
+                    ModalRoute.of(context)?.settings.name !=
+                        AppRoutes.profile) {
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  } else {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.profile,
+                      (route) => false,
+                    );
+                  }
+                }
                 return;
               }
 
@@ -165,7 +178,7 @@ class AppBottomNavBar extends StatelessWidget {
                 case 3:
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    AppRoutes.categories,
+                    AppRoutes.serviceRequestForm,
                     (route) => false,
                   );
                   break;
@@ -173,7 +186,7 @@ class AppBottomNavBar extends StatelessWidget {
                 case 4:
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    AppRoutes.myOrdersSpareParts,
+                    AppRoutes.profile,
                     (route) => false,
                   );
                   break;
