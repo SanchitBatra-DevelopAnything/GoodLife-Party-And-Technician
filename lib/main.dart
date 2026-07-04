@@ -45,9 +45,8 @@ void main() async {
       ChangeNotifierProvider(create: (_)=> CartProvider()),
       ChangeNotifierProvider(create: (_)=> CategoryProvider()),
       ChangeNotifierProvider(create: (_)=>ItemsProvider()),
-      ChangeNotifierProvider(create: (_)=> WhatsNewProvider()),
-      ChangeNotifierProvider(create: (_)=>OrderProvider()),
-      ChangeNotifierProvider(create: (_)=>ServiceRequestProvider())
+      ChangeNotifierProvider(create: (_)=>WhatsNewProvider()),
+      ChangeNotifierProvider(create: (_)=>OrderProvider())
     ],
     child: const MyApp(),
   ),
