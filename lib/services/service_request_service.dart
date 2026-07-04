@@ -1,10 +1,15 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import '../models/service_request_model.dart';
 
 class ServiceRequestService {
   static const String _baseUrl =
       'https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+  String _generateHappyCode() {
+    return (100000 + Random().nextInt(900000)).toString();
+  }
 
   Future<void> placeServiceRequest(ServiceRequestModel request) async {
     final url = '$_baseUrl/serviceRequests/${request.orderedBy}.json';
@@ -14,7 +19,10 @@ class ServiceRequestService {
       headers: {
         "Content-Type": "application/json",
       },
-      body: jsonEncode(request.toJson()),
+      body: jsonEncode(
+        // Generate happy code before saving
+        request.copyWith(happyCode: _generateHappyCode()).toJson(),
+      ),
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {

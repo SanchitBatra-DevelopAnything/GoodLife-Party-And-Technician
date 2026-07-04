@@ -404,41 +404,6 @@ class _ServiceRequestDetailsScreenState extends State<ServiceRequestDetailsScree
                   ],
                 ),
               ),
-            ] else ...[
-              // Shown when happy code hasn't been assigned yet
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.lock_clock_rounded,
-                        color: Colors.grey.shade400, size: 36),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Happy Code',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Will be available once the technician completes the service.',
-                            style: TextStyle(
-                                color: Colors.grey.shade600, fontSize: 13),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
 
             const SizedBox(height: 30),

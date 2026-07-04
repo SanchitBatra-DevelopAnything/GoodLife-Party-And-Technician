@@ -49,7 +49,7 @@ class ServiceRequestModel {
       imageUrls: List<String>.from(json['imageUrls'] ?? []),
       audioUrl: json['audioUrl'],
       status: json['status'] ?? 'PENDING',
-      happyCode: json['happyCode'],
+      happyCode: json['happyCode'] as String?,
     );
   }
 
@@ -71,5 +71,41 @@ class ServiceRequestModel {
       'status': status,
       if (happyCode != null) 'happyCode': happyCode,
     };
+  }
+
+  ServiceRequestModel copyWith({
+    String? serviceRequestId,
+    List<String>? machineIds,
+    List<String>? machineNames,
+    String? area,
+    String? orderedBy,
+    String? deviceToken,
+    String? contact,
+    String? requestDate,
+    String? requestTime,
+    String? type,
+    String? description,
+    List<String>? imageUrls,
+    String? audioUrl,
+    String? status,
+    String? happyCode,
+  }) {
+    return ServiceRequestModel(
+      serviceRequestId: serviceRequestId ?? this.serviceRequestId,
+      machineIds: machineIds ?? this.machineIds,
+      machineNames: machineNames ?? this.machineNames,
+      area: area ?? this.area,
+      orderedBy: orderedBy ?? this.orderedBy,
+      deviceToken: deviceToken ?? this.deviceToken,
+      contact: contact ?? this.contact,
+      requestDate: requestDate ?? this.requestDate,
+      requestTime: requestTime ?? this.requestTime,
+      type: type ?? this.type,
+      description: description ?? this.description,
+      imageUrls: imageUrls ?? this.imageUrls,
+      audioUrl: audioUrl ?? this.audioUrl,
+      status: status ?? this.status,
+      happyCode: happyCode ?? this.happyCode,
+    );
   }
 }
