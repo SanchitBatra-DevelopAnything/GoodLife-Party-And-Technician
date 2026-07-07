@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -10,6 +9,7 @@ import '../models/categories_model.dart';
 import '../providers/service_request_provider.dart';
 import '../routes/app_routes.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/voice_recorder_widget.dart';
 
 class ServiceRequestFormScreen extends StatefulWidget {
   const ServiceRequestFormScreen({super.key});
@@ -58,26 +58,6 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
       setState(() {
         selectedImages.add(File(image.path));
       });
-    }
-  }
-
-  Future<void> pickAudio() async {
-    try {
-      final FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.audio,
-      );
-
-      if (result != null && result.files.single.path != null) {
-        setState(() {
-          selectedAudio = File(result.files.single.path!);
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking audio: $e')),
-        );
-      }
     }
   }
 
@@ -430,27 +410,12 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: selectedAudio == null
-                  ? buildPickCard(
-                      icon: Icons.audiotrack_rounded,
-                      title: 'Add Audio',
-                      onTap: pickAudio,
-                    )
-                  : buildSelectedMediaCard(
-                      icon: Icons.audiotrack_rounded,
-                      title: 'Audio Selected',
-                      fileName: selectedAudio!.path.split('/').last,
-                      onClear: () {
-                        setState(() {
-                          selectedAudio = null;
-                        });
-                      },
-                    ),
-            ),
-          ],
+        VoiceRecorderWidget(
+          onAudioRecorded: (file) {
+            setState(() {
+              selectedAudio = file;
+            });
+          },
         ),
       ],
     );

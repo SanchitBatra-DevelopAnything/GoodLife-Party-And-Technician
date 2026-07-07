@@ -10,6 +10,7 @@ import 'package:goodlife_party/providers/order_provider.dart';
 import 'package:goodlife_party/providers/service_request_provider.dart';
 import 'package:goodlife_party/providers/signup_provider.dart';
 import 'package:goodlife_party/providers/whats_new_provider.dart';
+import 'package:goodlife_party/providers/service_request_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:goodlife_party/routes/route_generator.dart';
 import 'package:goodlife_party/theme/app_theme.dart';
