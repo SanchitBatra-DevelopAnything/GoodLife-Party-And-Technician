@@ -10,7 +10,6 @@ import 'package:goodlife_party/providers/order_provider.dart';
 import 'package:goodlife_party/providers/service_request_provider.dart';
 import 'package:goodlife_party/providers/signup_provider.dart';
 import 'package:goodlife_party/providers/whats_new_provider.dart';
-import 'package:goodlife_party/providers/service_request_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:goodlife_party/routes/route_generator.dart';
 import 'package:goodlife_party/theme/app_theme.dart';
@@ -19,6 +18,7 @@ import 'package:provider/provider.dart';
 
 import 'providers/locale_provider.dart';
 import 'l10n/app_localizations.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,30 +26,30 @@ void main() async {
   final localeProvider = LocaleProvider();
   await localeProvider.loadLocale();
 
-  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Firebase.initializeApp();
 
   final authProvider = AuthProvider();
   await authProvider.loadSavedContext();
+  await NotificationService().initialize();
 
   runApp(
-  MultiProvider(
-    providers: [
-      ChangeNotifierProvider.value(value: localeProvider),
-      ChangeNotifierProvider(create: (_) => AreaProvider()),
-      ChangeNotifierProvider(create: (_) => SignupProvider()),
-      ChangeNotifierProvider.value(value: authProvider),
-      ChangeNotifierProvider(create: (_)=> CartProvider()),
-      ChangeNotifierProvider(create: (_)=> CategoryProvider()),
-      ChangeNotifierProvider(create: (_)=>ItemsProvider()),
-      ChangeNotifierProvider(create: (_)=> WhatsNewProvider()),
-      ChangeNotifierProvider(create: (_)=>OrderProvider()),
-      ChangeNotifierProvider(create: (_)=>ServiceRequestProvider())
-    ],
-    child: const MyApp(),
-  ),
-);
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: localeProvider),
+        ChangeNotifierProvider(create: (_) => AreaProvider()),
+        ChangeNotifierProvider(create: (_) => SignupProvider()),
+        ChangeNotifierProvider.value(value: authProvider),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => ItemsProvider()),
+        ChangeNotifierProvider(create: (_) => WhatsNewProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => ServiceRequestProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -61,6 +61,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: NotificationService.navigatorKey,
 
       // ✅ KEEP YOUR THEME EXACTLY SAME
       theme: AppTheme.getMaterialTheme(),

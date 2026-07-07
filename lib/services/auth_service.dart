@@ -31,4 +31,27 @@ class AuthService {
 
     throw Exception("Login failed");
   }
+
+  Future<void> updateDeviceToken(String mobile, String token) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+          'https://asia-southeast1-goodlifeadminapp.cloudfunctions.net/updateDeviceToken',
+        ),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'mobile': mobile,
+          'deviceToken': token,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('✅ Device token updated successfully.');
+      } else {
+        print('❌ Failed to update device token: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error updating device token: $e');
+    }
+  }
 }

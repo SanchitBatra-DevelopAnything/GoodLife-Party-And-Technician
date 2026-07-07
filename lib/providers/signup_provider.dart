@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../services/notification_service.dart';
 import '../services/storage_service.dart';
 
 class SignupProvider with ChangeNotifier {
@@ -43,13 +44,16 @@ class SignupProvider with ChangeNotifier {
       'https://goodlifeadminapp-default-rtdb.asia-southeast1.firebasedatabase.app/DistributorNotifications.json',
     );
 
+    // ✅ Fetch real FCM token before submitting
+    final fcmToken = await NotificationService().getToken() ?? '';
+
     final payload = {
       "distributorName": username,
       "imgUrl": imageUrl,
       "area": area,
       "areaId": areaId,
       "contact": contact,
-      "deviceToken": "random_token_123",
+      "deviceToken": fcmToken,
       "createdAt": DateTime.now().toIso8601String(),
     };
 
