@@ -4,6 +4,7 @@ import '../models/login_context.dart';
 import '../services/auth_service.dart';
 import '../services/local_storage_service.dart';
 import '../services/notification_service.dart';
+import '../utils/session_status.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService authService = AuthService();
@@ -30,6 +31,10 @@ class AuthProvider extends ChangeNotifier {
       );
       print("Context Received");
       await LocalStorageService.saveLoginContext(context);
+      await LocalStorageService.saveUserCredentials(
+        mobile: mobile,
+        areaName: areaName,
+      );
 
       _loginContext = context;
 
@@ -50,6 +55,12 @@ class AuthProvider extends ChangeNotifier {
     try {
       _loginContext = await LocalStorageService.getLoginContext();
       if (_loginContext != null) {
+        final isValid = await validateSession();
+        if (!isValid) {
+          notifyListeners();
+          return;
+        }
+
         final token = await NotificationService().getToken();
         if (token != null) {
           authService.updateDeviceToken(mobile, token);
@@ -61,12 +72,42 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> validateSession() async {
+    if (!isLoggedIn) return false;
 
+    final mobileToCheck = mobile;
+    final areaToCheck = areaName.isNotEmpty ? areaName : area;
+
+    if (mobileToCheck.isEmpty || areaToCheck.isEmpty) {
+      await forceLogout();
+      return false;
+    }
+
+    final status = await authService.validateUserSession(
+      mobile: mobileToCheck,
+      areaName: areaToCheck,
+    );
+
+    if (status == SessionStatus.invalid) {
+      await forceLogout();
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<void> forceLogout() async {
+    _loginContext = null;
+    await LocalStorageService.clearLoginContext();
+    await LocalStorageService.clearUserCredentials();
+    notifyListeners();
+  }
 
   Future<void> logout() async {
     _loginContext = null;
 
     await LocalStorageService.clearLoginContext();
+    await LocalStorageService.clearUserCredentials();
 
     notifyListeners();
   }

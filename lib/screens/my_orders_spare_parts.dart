@@ -8,6 +8,7 @@ import '../providers/auth_provider.dart';
 import '../providers/order_provider.dart';
 import '../screens/executive_order_details_screen.dart';
 import '../widgets/executive_order_card.dart';
+import '../l10n/app_localizations.dart';
 
 class SparePartsOrdersScreen extends StatefulWidget {
   const SparePartsOrdersScreen({super.key});
@@ -50,6 +51,7 @@ class SparePartsOrdersScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize:
@@ -116,9 +118,9 @@ class SparePartsOrdersScreenState
                           CrossAxisAlignment
                               .start,
                       children: [
-                        const Text(
-                          'Spare Parts Orders',
-                          style: TextStyle(
+                        Text(
+                          l10n.sparePartsOrders,
+                          style: const TextStyle(
                             color:
                                 Colors.white,
                             fontSize: 22,
@@ -133,7 +135,7 @@ class SparePartsOrdersScreenState
                           height: 4,
                         ),
                         Text(
-                          'Track your spare parts deliveries',
+                          l10n.trackSparePartsDeliveries,
                           overflow:
                               TextOverflow
                                   .ellipsis,
@@ -193,13 +195,13 @@ class SparePartsOrdersScreenState
                 ),
             child: SegmentedButton<
                 bool>(
-              segments: const [
+              segments: [
                 ButtonSegment<bool>(
                   value: true,
                   label: Text(
-                    'Executive Delivery',
+                    l10n.executiveDelivery,
                   ),
-                  icon: Icon(
+                  icon: const Icon(
                     Icons
                         .local_shipping,
                   ),
@@ -207,9 +209,9 @@ class SparePartsOrdersScreenState
                 ButtonSegment<bool>(
                   value: false,
                   label: Text(
-                    'Custom Orders',
+                    l10n.customOrders,
                   ),
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.build,
                   ),
                 ),
@@ -250,6 +252,7 @@ class SparePartsOrdersScreenState
       provider,
       child,
     ) {
+      final l10n = AppLocalizations.of(context)!;
       if (provider
           .customOrdersLoading) {
         return const Center(
@@ -304,10 +307,10 @@ class SparePartsOrdersScreenState
                     const SizedBox(
                       height: 16,
                     ),
-                    const Text(
-                      'No Custom Orders Found',
+                    Text(
+                      l10n.noCustomOrdersFound,
                       style:
-                          TextStyle(
+                          const TextStyle(
                         fontSize: 18,
                         fontWeight:
                             FontWeight
@@ -370,6 +373,7 @@ class SparePartsOrdersScreenState
         provider,
         child,
       ) {
+        final l10n = AppLocalizations.of(context)!;
         if (provider
             .executiveOrdersLoading) {
           return const Center(
@@ -424,9 +428,9 @@ class SparePartsOrdersScreenState
                       const SizedBox(
                         height: 16,
                       ),
-                      const Text(
-                        'No Executive Delivery Orders Found',
-                        style: TextStyle(
+                      Text(
+                        l10n.noExecutiveOrdersFound,
+                        style: const TextStyle(
                           fontSize:
                               18,
                           fontWeight:
@@ -438,7 +442,7 @@ class SparePartsOrdersScreenState
                         height: 8,
                       ),
                       Text(
-                        'Your executive delivery orders will appear here.',
+                        'Your express delivery orders will appear here.',
                         textAlign:
                             TextAlign
                                 .center,

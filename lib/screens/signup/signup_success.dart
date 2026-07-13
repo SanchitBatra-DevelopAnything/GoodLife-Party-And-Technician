@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class SignupSuccessScreen extends StatelessWidget {
   const SignupSuccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Signup Successful'),
+        title: Text(l10n.signupSuccessTitle),
         automaticallyImplyLeading: false,
       ),
       body: Padding(
@@ -23,10 +26,10 @@ class SignupSuccessScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            const Text(
-              'You have signed up successfully!',
+            Text(
+              l10n.signupSuccessMsg,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -34,16 +37,14 @@ class SignupSuccessScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            const Text(
-  'Your request is currently under approval.\n\n'
-  'We will notify you once it is approved.\n\n'
-  'You can close the app now and come back later to log in.',
-  textAlign: TextAlign.center,
-  style: TextStyle(
-    fontSize: 16,
-    color: Colors.black54,
-  ),
-),
+            Text(
+              l10n.signupUnderApproval,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
           ],
         ),
       ),

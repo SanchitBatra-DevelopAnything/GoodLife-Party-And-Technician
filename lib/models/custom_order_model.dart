@@ -19,6 +19,7 @@ class CustomOrderModel {
   final String? paymentLink;
   final String? poLink;
   final String? firebaseOrderId;
+  final String? audioUrl;
 
   final List<AdditionalDocument> additionalDocuments;
 
@@ -33,6 +34,7 @@ class CustomOrderModel {
     required this.orderStatus,
     this.requestedMessage,
     required this.firebaseOrderId,
+    this.audioUrl,
     this.piLink,
     this.paymentLink,
     this.poLink,
@@ -58,6 +60,7 @@ class CustomOrderModel {
       paymentLink: json['paymentLink'],
       poLink: json['poLink'],
       firebaseOrderId: json['firebaseOrderId'],
+      audioUrl: json['audioUrl'],
       additionalDocuments:
           (json['additionalDocuments'] as List?)
               ?.map((e) {
@@ -96,6 +99,7 @@ class CustomOrderModel {
               .map((e) => e.toJson())
               .toList(),
       'firebaseOrderId': firebaseOrderId,
+      'audioUrl': audioUrl,
     };
   }
 }

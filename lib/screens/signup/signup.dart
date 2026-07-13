@@ -9,6 +9,7 @@ import '../../providers/area_provider.dart';
 import '../../models/area_model.dart';
 import '../../widgets/image_picker_widget.dart';
 import '../../widgets/app_logo.dart';
+import '../../l10n/app_localizations.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -20,6 +21,7 @@ class SignupScreen extends StatefulWidget {
 class SignupScreenState extends State<SignupScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
 
   AreaModel? selectedArea;
   File? selectedImage;
@@ -33,13 +35,15 @@ class SignupScreenState extends State<SignupScreen> {
   }
 
   void onSignup() async {
+    final l10n = AppLocalizations.of(context)!;
     if (usernameController.text.isEmpty ||
         contactController.text.isEmpty ||
+        addressController.text.isEmpty ||
         selectedArea == null ||
         selectedImage == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseFillAllFields)));
       return;
     }
 
@@ -49,14 +53,15 @@ class SignupScreenState extends State<SignupScreen> {
       await signupProvider.signup(
         username: usernameController.text,
         contact: contactController.text,
+        address: addressController.text,
         area: selectedArea!.name,
-        areaId:selectedArea!.id,
+        areaId: selectedArea!.id,
         image: selectedImage!,
       );
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Signup successful')));
+      ).showSnackBar(SnackBar(content: Text(l10n.signupSuccessful)));
 
       Navigator.pushAndRemoveUntil(
         context,
@@ -73,9 +78,10 @@ class SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AreaProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
+      appBar: AppBar(title: Text(l10n.signUp)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -87,7 +93,7 @@ class SignupScreenState extends State<SignupScreen> {
 
               TextField(
                 controller: usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
+                decoration: InputDecoration(labelText: l10n.username),
               ),
 
               const SizedBox(height: 12),
@@ -101,7 +107,14 @@ class SignupScreenState extends State<SignupScreen> {
                     10,
                   ), // ✅ limit (adjust if needed)
                 ],
-                decoration: const InputDecoration(labelText: 'Contact'),
+                decoration: InputDecoration(labelText: l10n.contact),
+              ),
+
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: addressController,
+                decoration: InputDecoration(labelText: l10n.address),
               ),
 
               const SizedBox(height: 12),
@@ -110,7 +123,7 @@ class SignupScreenState extends State<SignupScreen> {
                   ? const CircularProgressIndicator()
                   : DropdownButtonFormField<AreaModel>(
                       value: selectedArea,
-                      hint: const Text('Select Area'),
+                      hint: Text(l10n.selectArea),
                       items: provider.areas
                           .map(
                             (area) => DropdownMenuItem(
@@ -126,9 +139,8 @@ class SignupScreenState extends State<SignupScreen> {
 
               const SizedBox(height: 20),
 
-              const Text(
-                'Please upload a photo of the machine along with your selfie. '
-                'Without this, your request will not be approved.',
+              Text(
+                l10n.uploadSelfieNotice,
                 textAlign: TextAlign.center,
               ),
 
@@ -146,8 +158,8 @@ class SignupScreenState extends State<SignupScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: Provider.of<SignupProvider>(context).isLoading
-    ? null
-    : onSignup,
+                      ? null
+                      : onSignup,
                   child: Consumer<SignupProvider>(
                     builder: (_, signupProvider, __) {
                       if (signupProvider.isLoading) {
@@ -164,10 +176,10 @@ class SignupScreenState extends State<SignupScreen> {
                         final percent = (signupProvider.uploadProgress * 100)
                             .toStringAsFixed(0);
 
-                        return Text('Uploading... $percent%');
+                        return Text('${l10n.uploading} $percent%');
                       }
 
-                      return const Text('Sign Up');
+                      return Text(l10n.signUp);
                     },
                   ),
                 ),

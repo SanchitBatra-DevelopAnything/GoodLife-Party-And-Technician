@@ -14,4 +14,13 @@ class AppRoutes {
   static const String serviceRequestForm = '/serviceRequestForm';
   static const String myServiceRequests = '/myServiceRequests';
   static const String serviceRequestDetails = '/serviceRequestDetails';
+
+  // Technician routes
+  static const String technicianLogin = '/technician-login';
+  static const String technicianServiceRequests = '/technician-service-requests';
+  static const String technicianServiceRequestDetail =
+      '/technician-service-request-detail';
+  static const String technicianProfile = '/technician-profile';
+  static const String technicianPartyList = '/technician-party-list';
+  static const String technicianUploadDocument = '/technician-upload-document';
 }

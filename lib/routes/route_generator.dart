@@ -19,8 +19,12 @@ import 'package:goodlife_party/screens/service_request_form_screen.dart';
 import 'package:goodlife_party/models/service_request_model.dart';
 import 'package:goodlife_party/screens/my_service_requests_screen.dart';
 import 'package:goodlife_party/screens/service_request_details_screen.dart';
-import 'package:goodlife_party/screens/service_request_form_screen.dart';
-
+import 'package:goodlife_party/screens/technician/technician_login_screen.dart';
+import 'package:goodlife_party/screens/technician/technician_profile_screen.dart';
+import 'package:goodlife_party/screens/technician/technician_service_request_detail_screen.dart';
+import 'package:goodlife_party/screens/technician/technician_service_requests_screen.dart';
+import 'package:goodlife_party/screens/technician/technician_party_list_screen.dart';
+import 'package:goodlife_party/screens/technician/technician_upload_document_screen.dart';
 import 'app_routes.dart';
 
 class RouteGenerator {
@@ -66,9 +70,6 @@ class RouteGenerator {
       case AppRoutes.myOrdersSpareParts:
         return _buildRoute(const SparePartsOrdersScreen());
 
-      case AppRoutes.serviceRequestForm:
-        return _buildRoute(const ServiceRequestFormScreen());
-
       case AppRoutes.myServiceRequests:
         return _buildRoute(const MyServiceRequestsScreen());
 
@@ -76,6 +77,33 @@ class RouteGenerator {
         final req = settings.arguments as ServiceRequestModel;
         return _buildRoute(
           ServiceRequestDetailsScreen(request: req),
+        );
+
+      case AppRoutes.technicianLogin:
+        return _buildRoute(const TechnicianLoginScreen());
+
+      case AppRoutes.technicianServiceRequests:
+        return _buildRoute(const TechnicianServiceRequestsScreen());
+
+      case AppRoutes.technicianServiceRequestDetail:
+        final req = settings.arguments as ServiceRequestModel;
+        return _buildRoute(
+          TechnicianServiceRequestDetailScreen(request: req),
+        );
+
+      case AppRoutes.technicianProfile:
+        return _buildRoute(const TechnicianProfileScreen());
+
+      case AppRoutes.technicianPartyList:
+        return _buildRoute(const TechnicianPartyListScreen());
+
+      case AppRoutes.technicianUploadDocument:
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildRoute(
+          TechnicianUploadDocumentScreen(
+            partyId: args['partyId'],
+            partyName: args['partyName'],
+          ),
         );
 
       case AppRoutes.items:

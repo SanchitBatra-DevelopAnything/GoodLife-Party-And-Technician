@@ -68,6 +68,7 @@ class ServiceRequestProvider with ChangeNotifier {
 
       String username = 'UNKNOWN_USER';
       String area = '';
+      String address = '';
       String contact = '';
       String deviceToken = '';
 
@@ -77,6 +78,7 @@ class ServiceRequestProvider with ChangeNotifier {
         );
         username = loginContext.distributorDetails.distributorName;
         area = loginContext.distributorDetails.area;
+        address = loginContext.distributorDetails.address;
         contact = loginContext.distributorDetails.contact;
         deviceToken = loginContext.distributorDetails.deviceToken;
       }
@@ -119,6 +121,7 @@ class ServiceRequestProvider with ChangeNotifier {
         machineIds: machineIds,
         machineNames: machineNames,
         area: area,
+        address: address.isNotEmpty ? address : null,
         orderedBy: username,
         deviceToken: deviceToken,
         contact: contact,
@@ -143,6 +146,37 @@ class ServiceRequestProvider with ChangeNotifier {
       rethrow;
     } finally {
       _isSubmitting = false;
+      notifyListeners();
+    }
+  }
+
+  Future<ServiceRequestModel> submitTechnicianRating({
+    required ServiceRequestModel request,
+    required int rating,
+    String? comment,
+  }) async {
+    try {
+      _isFetching = true;
+      _fetchError = null;
+      notifyListeners();
+
+      final updated = await _serviceRequestService.submitTechnicianRating(
+        request: request,
+        rating: rating,
+        comment: comment,
+      );
+
+      final index = _serviceRequests.indexWhere(
+        (r) => r.serviceRequestId == updated.serviceRequestId,
+      );
+      if (index >= 0) {
+        _serviceRequests[index] = updated;
+      }
+
+      notifyListeners();
+      return updated;
+    } finally {
+      _isFetching = false;
       notifyListeners();
     }
   }

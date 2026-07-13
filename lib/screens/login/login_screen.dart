@@ -4,8 +4,11 @@ import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../providers/area_provider.dart';
+import '../../providers/outstanding_balance_provider.dart';
 import '../../models/area_model.dart';
+import '../../services/local_storage_service.dart';
 import '../../widgets/app_logo.dart';
+import '../../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,33 +20,95 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   final TextEditingController contactController = TextEditingController();
   AreaModel? selectedArea;
+  bool _isAutoLoggingIn = false;
 
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<AreaProvider>(context, listen: false).loadAreas();
+      _initializeLogin();
     });
   }
 
-  Future<void> handleLogin() async {
+  Future<void> _initializeLogin() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    if (authProvider.isLoggedIn) {
+      final isValid = await authProvider.validateSession();
+      if (!mounted) return;
+
+      if (isValid) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/inventory',
+          (route) => false,
+        );
+      }
+      return;
+    }
+
+    final areaProvider = Provider.of<AreaProvider>(context, listen: false);
+    await areaProvider.loadAreas();
+
+    final savedCredentials = await LocalStorageService.getUserCredentials();
+    SavedUserCredentials? credentials = savedCredentials;
+
+    if (credentials == null) {
+      final mobile = await LocalStorageService.getMobile();
+      final areaName = await LocalStorageService.getArea();
+      if (mobile != null && areaName != null) {
+        credentials = SavedUserCredentials(
+          mobile: mobile,
+          areaName: areaName,
+        );
+        await LocalStorageService.saveUserCredentials(
+          mobile: mobile,
+          areaName: areaName,
+        );
+      }
+    }
+
+    if (credentials == null || !mounted) return;
+
+    contactController.text = credentials.mobile;
+    final matchingAreas = areaProvider.areas
+        .where((area) => area.name == credentials!.areaName);
+    final matchingArea =
+        matchingAreas.isNotEmpty ? matchingAreas.first : null;
+
+    if (matchingArea != null) {
+      setState(() => selectedArea = matchingArea);
+      await handleLogin(isAutoLogin: true);
+    }
+  }
+
+  Future<void> handleLogin({bool isAutoLogin = false}) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
 
     final mobile = contactController.text.trim();
 
     if (mobile.length != 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Enter valid mobile number")),
-      );
+      if (!isAutoLogin) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.enterValidMobile)),
+        );
+      }
       return;
     }
 
     if (selectedArea == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select area")),
-      );
+      if (!isAutoLogin) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.pleaseSelectArea)),
+        );
+      }
       return;
+    }
+
+    if (isAutoLogin) {
+      setState(() => _isAutoLoggingIn = true);
     }
 
     try {
@@ -52,16 +117,31 @@ class LoginScreenState extends State<LoginScreen> {
         areaName: selectedArea!.name,
       );
 
+      // Start real-time outstanding-balance listener for this party
+      if (mounted) {
+        final balanceProvider =
+            Provider.of<OutstandingBalanceProvider>(context, listen: false);
+        balanceProvider.startListening(mobile);
+      }
+
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
-  context,
-  '/inventory',
-  (route) => false,
-);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login failed")),
+        context,
+        '/inventory',
+        (route) => false,
       );
+    } catch (e) {
+      if (!mounted) return;
+      await LocalStorageService.clearUserCredentials();
+      if (!isAutoLogin) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.loginFailed)),
+        );
+      }
+    } finally {
+      if (mounted && isAutoLogin) {
+        setState(() => _isAutoLoggingIn = false);
+      }
     }
   }
 
@@ -69,14 +149,17 @@ class LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final areaProvider = Provider.of<AreaProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login"),
+        title: Text(l10n.login),
         elevation: 0,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: _isAutoLoggingIn
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Column(
@@ -97,9 +180,9 @@ class LoginScreenState extends State<LoginScreen> {
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                   ],
-                  decoration: const InputDecoration(
-                    labelText: 'Mobile Number',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.mobileNumber,
+                    border: const OutlineInputBorder(),
                     counterText: "",
                   ),
                 ),
@@ -111,7 +194,7 @@ class LoginScreenState extends State<LoginScreen> {
                     ? const Center(child: CircularProgressIndicator())
                     : DropdownButtonFormField<AreaModel>(
                         value: selectedArea,
-                        hint: const Text('Select Area'),
+                        hint: Text(l10n.selectArea),
                         items: areaProvider.areas
                             .map(
                               (area) => DropdownMenuItem<AreaModel>(
@@ -149,9 +232,9 @@ class LoginScreenState extends State<LoginScreen> {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text(
-                            "Login",
-                            style: TextStyle(fontSize: 16),
+                        : Text(
+                            l10n.login,
+                            style: const TextStyle(fontSize: 16),
                           ),
                   ),
                 ),
@@ -163,5 +246,11 @@ class LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    contactController.dispose();
+    super.dispose();
   }
 }

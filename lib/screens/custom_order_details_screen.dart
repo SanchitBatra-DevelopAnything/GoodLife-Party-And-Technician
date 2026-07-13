@@ -11,6 +11,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/order_provider.dart';
+import '../widgets/audio_player_widget.dart';
 
 class CustomOrderDetailsScreen extends StatelessWidget {
   final CustomOrderModel order;
@@ -39,6 +40,13 @@ class CustomOrderDetailsScreen extends StatelessWidget {
 
               _buildRequestedItems(context),
 
+              const SizedBox(height: 24),
+            ],
+
+            if (order.audioUrl != null && order.audioUrl!.isNotEmpty) ...[
+              _buildSectionTitle('Voice Note'),
+              const SizedBox(height: 12),
+              AudioPlayerWidget(audioUrl: order.audioUrl!),
               const SizedBox(height: 24),
             ],
 

@@ -5,7 +5,7 @@ import 'package:goodlife_party/widgets/payment_option_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/cart_provider.dart';
-
+import '../../l10n/app_localizations.dart';
 import '../../widgets/cart/cart_item_card.dart';
 
 class CartScreen extends StatelessWidget {
@@ -28,7 +28,7 @@ class CartScreen extends StatelessWidget {
         return Scaffold(
           backgroundColor: Colors.grey.shade100,
 
-          appBar: AppBar(title: const Text('My Cart'), centerTitle: true),
+          appBar: AppBar(title: Text(AppLocalizations.of(context)!.myCart), centerTitle: true),
 
           bottomNavigationBar: AppBottomNavBar(
             currentIndex: 2,
@@ -36,7 +36,7 @@ class CartScreen extends StatelessWidget {
           ),
 
           body: cartItems.isEmpty
-              ? const Center(child: Text('Your cart is empty'))
+              ? Center(child: Text(AppLocalizations.of(context)!.cartEmpty))
               : Column(
                   children: [
                     Expanded(
@@ -94,16 +94,12 @@ class CartScreen extends StatelessWidget {
 
                       child: Column(
                         children: [
-                          buildPriceRow('Subtotal', cartProvider.subtotal),
+                          buildPriceRow(context, AppLocalizations.of(context)!.subtotal, cartProvider.subtotal),
 
-                          const SizedBox(height: 10),
-
-                          buildPriceRow('GST (18%)', cartProvider.gst),
-
-                          const SizedBox(height: 10),
 
                           buildPriceRow(
-                            'Freight Charges',
+                            context,
+                            AppLocalizations.of(context)!.freightCharges,
                             cartProvider.freightCharges,
                           ),
 
@@ -113,7 +109,8 @@ class CartScreen extends StatelessWidget {
                           ),
 
                           buildPriceRow(
-                            'Grand Total',
+                            context,
+                            AppLocalizations.of(context)!.grandTotal,
                             cartProvider.grandTotal,
                             isBold: true,
                           ),
@@ -167,10 +164,10 @@ class CartScreen extends StatelessWidget {
                                         CrossAxisAlignment.start,
 
                                     children: [
-                                      const Text(
-                                        'Total Amount',
+                                      Text(
+                                        AppLocalizations.of(context)!.totalAmount,
 
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Colors.white70,
                                           fontSize: 13,
                                         ),
@@ -191,11 +188,11 @@ class CartScreen extends StatelessWidget {
                                   ),
 
                                   Row(
-                                    children: const [
+                                    children: [
                                       Text(
-                                        'Place Order',
+                                        AppLocalizations.of(context)!.placeOrder,
 
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 17,
 
                                           fontWeight: FontWeight.w700,
@@ -204,9 +201,9 @@ class CartScreen extends StatelessWidget {
                                         ),
                                       ),
 
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
 
-                                      Icon(
+                                      const Icon(
                                         Icons.arrow_forward_rounded,
 
                                         color: Colors.white,
@@ -227,7 +224,7 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget buildPriceRow(String title, double value, {bool isBold = false}) {
+  Widget buildPriceRow(BuildContext context, String title, double value, {bool isBold = false}) {
     final style = TextStyle(
       fontSize: isBold ? 18 : 15,
 
@@ -240,7 +237,7 @@ class CartScreen extends StatelessWidget {
       children: [
         Text(title, style: style),
 
-        Text('₹${value.toStringAsFixed(0)}', style: style),
+        Text('\u20b9${value.toStringAsFixed(0)}', style: style),
       ],
     );
   }

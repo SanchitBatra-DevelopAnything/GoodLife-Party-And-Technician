@@ -10,6 +10,7 @@ import 'package:goodlife_party/widgets/inventory_item.dart';
 import 'package:goodlife_party/widgets/whats_new_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/app_localizations.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -70,6 +71,7 @@ class InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<CategoryProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return PopScope(
       canPop: false,
@@ -79,16 +81,16 @@ class InventoryScreenState extends State<InventoryScreen> {
         final shouldExit = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text("Exit App"),
-            content: const Text("Do you want to close the app?"),
+            title: Text(l10n.exitApp),
+            content: Text(l10n.closeAppConfirm),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text("No"),
+                child: Text(l10n.no),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text("Yes"),
+                child: Text(l10n.yes),
               ),
             ],
           ),
@@ -146,9 +148,9 @@ class InventoryScreenState extends State<InventoryScreen> {
                         crossAxisAlignment:
                             CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Machine Inventory',
-                            style: TextStyle(
+                          Text(
+                            l10n.machineInventory,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -157,7 +159,7 @@ class InventoryScreenState extends State<InventoryScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'By Goodlife Machines Pvt. Ltd.',
+                            l10n.byGoodlife,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color:
@@ -203,7 +205,7 @@ class InventoryScreenState extends State<InventoryScreen> {
                 child: TextField(
                   onChanged: provider.search,
                   decoration: InputDecoration(
-                    hintText: 'Search machines...',
+                    hintText: l10n.searchMachines,
                     prefixIcon: const Icon(Icons.search),
                     filled: true,
                     fillColor: Colors.grey.shade100,

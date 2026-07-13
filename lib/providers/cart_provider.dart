@@ -227,7 +227,7 @@ void setFreightPercentage(double percentage) {
 }
 
 double get gst {
-  return subtotal * 0.18;
+  return 0;
 }
 
 double get freightCharges {
@@ -236,13 +236,13 @@ double get freightCharges {
   }
 
   return math.max(
-    (subtotal+gst).toDouble() * (_freightPercentage / 100),
+    subtotal.toDouble() * (_freightPercentage / 100),
     100.0,
   );
 }
 
 double get grandTotal {
-  return subtotal + gst + freightCharges;
+  return subtotal + freightCharges;
 }
 
 }

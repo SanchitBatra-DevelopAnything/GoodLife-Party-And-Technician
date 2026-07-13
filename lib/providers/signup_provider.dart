@@ -17,6 +17,7 @@ class SignupProvider with ChangeNotifier {
   required String username,
   required String contact,
   required String area,
+  required String address,
   required File image,
   required String areaId,
 }) async {
@@ -51,6 +52,7 @@ class SignupProvider with ChangeNotifier {
       "distributorName": username,
       "imgUrl": imageUrl,
       "area": area,
+      "address": address,
       "areaId": areaId,
       "contact": contact,
       "deviceToken": fcmToken,

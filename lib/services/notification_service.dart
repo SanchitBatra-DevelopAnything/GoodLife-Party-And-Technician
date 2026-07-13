@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../routes/app_routes.dart';
+import 'service_request_service.dart';
 
 // Background message handler
 @pragma('vm:entry-point')
@@ -20,8 +21,10 @@ class NotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  final ServiceRequestService _serviceRequestService = ServiceRequestService();
 
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   Future<void> initialize() async {
     // Request permission for iOS/Android
@@ -41,11 +44,13 @@ class NotificationService {
     // Initialize local notifications for foreground alerts
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    
-    // For iOS
-    const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
 
-    const InitializationSettings initializationSettings = InitializationSettings(
+    // For iOS
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings();
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
@@ -61,7 +66,8 @@ class NotificationService {
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel', // id
       'High Importance Notifications', // title
-      description: 'This channel is used for important notifications.', // description
+      description:
+          'This channel is used for important notifications.', // description
       importance: Importance.max,
     );
 
@@ -102,7 +108,8 @@ class NotificationService {
     });
 
     // Handle when app is opened from terminated state via notification
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       _handleNotificationPayload(initialMessage.data);
     }
@@ -161,9 +168,63 @@ class NotificationService {
         navigatorKey.currentState?.pushNamed(AppRoutes.myOrdersSpareParts);
         break;
 
+      // Service request updates for party users
+      case 'service_request_assigned':
+      case 'service_request_in_progress':
+      case 'service_request_closed':
+      case 'service_request_verified':
+      case 'service_request_resolved':
+      case 'service_request_update':
+        _navigateToServiceRequest(data, forTechnician: false);
+        break;
+
+      // New assignment for technicians
+      case 'technician_request_assigned':
+      case 'technician_service_request':
+      case 'technician_service_request_update':
+        _navigateToServiceRequest(data, forTechnician: true);
+        break;
+
       default:
-        // Unknown type — navigate to home silently
         break;
     }
+  }
+
+  Future<void> _navigateToServiceRequest(
+    Map<String, dynamic> data, {
+    required bool forTechnician,
+  }) async {
+    final orderedBy = data['orderedBy']?.toString();
+    final firebasePushId = data['firebasePushId']?.toString();
+
+    if (orderedBy != null &&
+        orderedBy.isNotEmpty &&
+        firebasePushId != null &&
+        firebasePushId.isNotEmpty) {
+      try {
+        final request = await _serviceRequestService.fetchServiceRequestByKey(
+          orderedBy: orderedBy,
+          firebasePushId: firebasePushId,
+        );
+
+        if (request != null) {
+          navigatorKey.currentState?.pushNamed(
+            forTechnician
+                ? AppRoutes.technicianServiceRequestDetail
+                : AppRoutes.serviceRequestDetails,
+            arguments: request,
+          );
+          return;
+        }
+      } catch (e) {
+        print('Failed to load service request for notification: $e');
+      }
+    }
+
+    navigatorKey.currentState?.pushNamed(
+      forTechnician
+          ? AppRoutes.technicianServiceRequests
+          : AppRoutes.myServiceRequests,
+    );
   }
 }

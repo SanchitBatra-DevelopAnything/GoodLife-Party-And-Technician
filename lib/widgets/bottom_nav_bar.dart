@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:goodlife_party/providers/cart_provider.dart';
+import 'package:goodlife_party/providers/outstanding_balance_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 
 class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -17,41 +20,111 @@ class AppBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartProvider = context.watch<CartProvider>();
     final cartCount = cartProvider.itemCount;
+    final l10n = AppLocalizations.of(context)!;
 
-    // Allows screens to pass -1, 100, etc.
-    // No tab will appear selected.
-    final bool hasSelectedTab =
-        currentIndex >= 0 && currentIndex <= 4;
+    // Real-time outstanding balance
+    final balanceProvider = context.watch<OutstandingBalanceProvider>();
+    final balance = balanceProvider.outstandingBalance;
+    final showBalanceBanner = balanceProvider.payLater == true && balance > 0;
+    final formattedBalance = NumberFormat.currency(
+      locale: 'en_IN',
+      symbol: '₹',
+      decimalDigits: 0,
+    ).format(balance);
+
+    // Allows screens to pass -1, 100, etc. → no tab will appear selected.
+    final bool hasSelectedTab = currentIndex >= 0 && currentIndex <= 4;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // ── Outstanding Balance Banner (always visible when payLater=true) ──
+        if (showBalanceBanner)
+          SafeArea(
+            top: false,
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+              child: Container(
+                height: 46,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.red.shade700,
+                      Colors.red.shade500,
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.shade300.withOpacity(0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.account_balance_wallet_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'Outstanding Balance',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      formattedBalance,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: Colors.yellowAccent,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+        // ── Cart Bar ─────────────────────────────────────────────────────
         if (showCartBar && cartCount > 0)
           SafeArea(
             top: false,
             bottom: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                16,
-                8,
-                16,
-                8,
-              ),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(18),
                   onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.cart,
-                    );
+                    Navigator.pushNamed(context, AppRoutes.cart);
                   },
                   child: Container(
                     height: 56,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(18),
@@ -74,9 +147,7 @@ class AppBottomNavBar extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Text(
-                            cartCount > 99
-                                ? '99+'
-                                : cartCount.toString(),
+                            cartCount > 99 ? '99+' : cartCount.toString(),
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -94,9 +165,9 @@ class AppBottomNavBar extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const Text(
-                          'View Cart',
-                          style: TextStyle(
+                        Text(
+                          l10n.viewCart,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -114,16 +185,18 @@ class AppBottomNavBar extends StatelessWidget {
                 ),
               ),
             ),
-          ),
+          )
+        else if (showBalanceBanner)
+          const SizedBox(height: 8),
 
+        // ── Bottom Navigation Bar ─────────────────────────────────────────
         Theme(
           data: Theme.of(context).copyWith(
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
           ),
           child: BottomNavigationBar(
-            currentIndex:
-                hasSelectedTab ? currentIndex : 0,
+            currentIndex: hasSelectedTab ? currentIndex : 0,
             type: BottomNavigationBarType.fixed,
 
             selectedItemColor: hasSelectedTab
@@ -193,26 +266,26 @@ class AppBottomNavBar extends StatelessWidget {
               }
             },
 
-            items: const [
+            items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded),
-                label: 'Home',
+                icon: const Icon(Icons.home_rounded),
+                label: l10n.navHome,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.point_of_sale_rounded),
-                label: 'Sales',
+                icon: const Icon(Icons.point_of_sale_rounded),
+                label: l10n.navSales,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.inventory_2_rounded),
-                label: 'Spare Parts',
+                icon: const Icon(Icons.inventory_2_rounded),
+                label: l10n.navSpareParts,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.build_rounded),
-                label: 'Service',
+                icon: const Icon(Icons.build_rounded),
+                label: l10n.navService,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'My Profile',
+                icon: const Icon(Icons.person),
+                label: l10n.navMyProfile,
               ),
             ],
           ),

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:goodlife_party/widgets/bottom_nav_bar.dart';
+import '../l10n/app_localizations.dart';
 
 class SparePartsOrderOptionsScreen extends StatelessWidget {
   const SparePartsOrderOptionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
 
@@ -55,9 +58,9 @@ class SparePartsOrderOptionsScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Spare Parts',
-                          style: TextStyle(
+                        Text(
+                          l10n.spareParts,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -66,7 +69,7 @@ class SparePartsOrderOptionsScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Order spare parts for your machines',
+                          l10n.orderSparePartsSubtitle,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.85),
@@ -103,7 +106,7 @@ class SparePartsOrderOptionsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Choose Order Type',
+              l10n.chooseOrderType,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -112,7 +115,7 @@ class SparePartsOrderOptionsScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             Text(
-              'Select how you would like to place your spare parts request.',
+              l10n.chooseOrderTypeSubtitle,
               style: TextStyle(
                 color: Colors.grey.shade600,
                 fontSize: 15,
@@ -123,29 +126,27 @@ class SparePartsOrderOptionsScreen extends StatelessWidget {
 
             SparePartOptionCard(
               icon: Icons.local_shipping_rounded,
-              title: 'Place Express Delivery Order',
-              description:
-                  'Choose spare parts of your machines that are already available in our catalogue and get them delivered quickly.',
+              title: l10n.expressOrderTitle,
+              description: l10n.expressOrderDesc,
               onTap: () {
-  Navigator.pushNamed(
-    context,
-    '/categories',
-  );
-},
+                Navigator.pushNamed(
+                  context,
+                  '/categories',
+                );
+              },
             ),
 
             const SizedBox(height: 16),
 
             SparePartOptionCard(
               icon: Icons.camera_alt_rounded,
-              title: 'Custom Spare Part Order',
-              description:
-                  'Send us a picture of the spare part and our team will check availability and assist you further.',
+              title: l10n.customOrderTitle,
+              description: l10n.customOrderDesc,
               onTap: () {
-                 Navigator.pushNamed(
-    context,
-    '/customOrder',
-  );
+                Navigator.pushNamed(
+                  context,
+                  '/customOrder',
+                );
               },
             ),
           ],

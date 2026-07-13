@@ -1,70 +1,11 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart' as intl;
 
-import 'app_localizations_en.dart';
-import 'app_localizations_hi.dart';
-
-// ignore_for_file: type=lint
-
-/// Callers can lookup localized strings with an instance of AppLocalizations
-/// returned by `AppLocalizations.of(context)`.
-///
-/// Applications need to include `AppLocalizations.delegate()` in their app's
-/// `localizationDelegates` list, and the locales they support in the app's
-/// `supportedLocales` list. For example:
-///
-/// ```dart
-/// import 'l10n/app_localizations.dart';
-///
-/// return MaterialApp(
-///   localizationsDelegates: AppLocalizations.localizationsDelegates,
-///   supportedLocales: AppLocalizations.supportedLocales,
-///   home: MyApplicationHome(),
-/// );
-/// ```
-///
-/// ## Update pubspec.yaml
-///
-/// Please make sure to update your pubspec.yaml to include the following
-/// packages:
-///
-/// ```yaml
-/// dependencies:
-///   # Internationalization support.
-///   flutter_localizations:
-///     sdk: flutter
-///   intl: any # Use the pinned version from flutter_localizations
-///
-///   # Rest of dependencies
-/// ```
-///
-/// ## iOS Applications
-///
-/// iOS applications define key application metadata, including supported
-/// locales, in an Info.plist file that is built into the application bundle.
-/// To configure the locales supported by your app, you’ll need to edit this
-/// file.
-///
-/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
-/// Then, in the Project Navigator, open the Info.plist file under the Runner
-/// project’s Runner folder.
-///
-/// Next, select the Information Property List item, select Add Item from the
-/// Editor menu, then select Localizations from the pop-up menu.
-///
-/// Select and expand the newly-created Localizations item then, for each
-/// locale your application supports, add a new item and select the locale
-/// you wish to add from the pop-up menu in the Value field. This list should
-/// be consistent with the languages listed in the AppLocalizations.supportedLocales
-/// property.
-abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
-
-  final String localeName;
+class AppLocalizations {
+  final Locale locale;
+  AppLocalizations(this.locale);
 
   static AppLocalizations? of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -72,16 +13,6 @@ abstract class AppLocalizations {
 
   static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
-  /// A list of this localizations delegate along with the default localizations
-  /// delegates.
-  ///
-  /// Returns a list of localizations delegates containing this delegate along with
-  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
-  /// and GlobalWidgetsLocalizations.delegate.
-  ///
-  /// Additional delegates can be added by appending to this list in
-  /// MaterialApp. This list does not have to be used at all if a custom list
-  /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
     delegate,
     GlobalMaterialLocalizations.delegate,
@@ -89,41 +20,1608 @@ abstract class AppLocalizations {
     GlobalWidgetsLocalizations.delegate,
   ];
 
-  /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('hi')
+    Locale('hi'),
+    Locale('bn'),
+    Locale('mr'),
+    Locale('te'),
+    Locale('ta'),
+    Locale('gu'),
+    Locale('kn'),
+    Locale('or'),
+    Locale('ml'),
+    Locale('pa'),
   ];
 
-  /// No description provided for @appTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Goodlife Machines Pvt. Ltd.'**
-  String get appTitle;
+  String _translate(String key, [Map<String, String>? args]) {
+    final languageCode = locale.languageCode;
+    final dict = _localizedValues[languageCode] ?? _localizedValues['en']!;
+    var value = dict[key] ?? _localizedValues['en']![key] ?? key;
+    if (args != null) {
+      args.forEach((k, v) {
+        value = value.replaceAll('{$k}', v);
+      });
+    }
+    return value;
+  }
 
-  /// No description provided for @technician.
-  ///
-  /// In en, this message translates to:
-  /// **'I am a technician'**
-  String get technician;
+  // Getters
+  String get appTitle => _translate('appTitle');
+  String get technician => _translate('technician');
+  String get user => _translate('user');
+  String get login => _translate('login');
+  String get signUp => _translate('signUp');
+  String get selectLanguage => _translate('selectLanguage');
+  String get mobileNumber => _translate('mobileNumber');
+  String get selectArea => _translate('selectArea');
+  String get enterValidMobile => _translate('enterValidMobile');
+  String get pleaseSelectArea => _translate('pleaseSelectArea');
+  String get loginFailed => _translate('loginFailed');
+  String get username => _translate('username');
+  String get contact => _translate('contact');
+  String get address => _translate('address');
+  String get pleaseFillAllFields => _translate('pleaseFillAllFields');
+  String get signupSuccessful => _translate('signupSuccessful');
+  String get uploadSelfieNotice => _translate('uploadSelfieNotice');
+  String get uploading => _translate('uploading');
+  String get camera => _translate('camera');
+  String get gallery => _translate('gallery');
+  String get signupSuccessTitle => _translate('signupSuccessTitle');
+  String get signupSuccessMsg => _translate('signupSuccessMsg');
+  String get signupUnderApproval => _translate('signupUnderApproval');
+  String get navHome => _translate('navHome');
+  String get navSales => _translate('navSales');
+  String get navSpareParts => _translate('navSpareParts');
+  String get navService => _translate('navService');
+  String get navMyProfile => _translate('navMyProfile');
+  String get viewCart => _translate('viewCart');
+  String get exitApp => _translate('exitApp');
+  String get closeAppConfirm => _translate('closeAppConfirm');
+  String get no => _translate('no');
+  String get yes => _translate('yes');
+  String get machineInventory => _translate('machineInventory');
+  String get byGoodlife => _translate('byGoodlife');
+  String get searchMachines => _translate('searchMachines');
+  String get myMachines => _translate('myMachines');
+  String welcomeBack(String userName) => _translate('welcomeBack', {'userName': userName});
+  String get salesSupport => _translate('salesSupport');
+  String get contactSalesExecutive => _translate('contactSalesExecutive');
+  String get callSalesPerson => _translate('callSalesPerson');
+  String get whatsAppSalesPerson => _translate('whatsAppSalesPerson');
+  String get spareParts => _translate('spareParts');
+  String get orderSparePartsSubtitle => _translate('orderSparePartsSubtitle');
+  String get chooseOrderType => _translate('chooseOrderType');
+  String get chooseOrderTypeSubtitle => _translate('chooseOrderTypeSubtitle');
+  String get expressOrderTitle => _translate('expressOrderTitle');
+  String get expressOrderDesc => _translate('expressOrderDesc');
+  String get customOrderTitle => _translate('customOrderTitle');
+  String get customOrderDesc => _translate('customOrderDesc');
+  String get myProfile => _translate('myProfile');
+  String get partyProfile => _translate('partyProfile');
+  String get mySparePartOrders => _translate('mySparePartOrders');
+  String get myServiceRequests => _translate('myServiceRequests');
+  String get logout => _translate('logout');
+  String get deleteMyAccount => _translate('deleteMyAccount');
+  String get deleteAccountTitle => _translate('deleteAccountTitle');
+  String get deleteAccountConfirm => _translate('deleteAccountConfirm');
+  String get cancel => _translate('cancel');
+  String get delete => _translate('delete');
+  String get logoutConfirmTitle => _translate('logoutConfirmTitle');
+  String get areYouSure => _translate('areYouSure');
+  String get myCart => _translate('myCart');
+  String get cartEmpty => _translate('cartEmpty');
+  String get subtotal => _translate('subtotal');
+  String get gst => _translate('gst');
+  String get freightCharges => _translate('freightCharges');
+  String get grandTotal => _translate('grandTotal');
+  String get totalAmount => _translate('totalAmount');
+  String get placeOrder => _translate('placeOrder');
+  String get payNow => _translate('payNow');
+  String get qrCode => _translate('qrCode');
+  String get bankTransfer => _translate('bankTransfer');
+  String get uploadScreenshot => _translate('uploadScreenshot');
+  String get submitPayment => _translate('submitPayment');
+  String get qrCodePayment => _translate('qrCodePayment');
+  String get maxPhotosAllowed => _translate('maxPhotosAllowed');
+  String get pleaseUploadPhotosOrMessage => _translate('pleaseUploadPhotosOrMessage');
+  String get inquirySubmittedSuccess => _translate('inquirySubmittedSuccess');
+  String get addPhoto => _translate('addPhoto');
+  String get customInquiry => _translate('customInquiry');
+  String get uploadProductPhotosDetails => _translate('uploadProductPhotosDetails');
+  String get cantFindProduct => _translate('cantFindProduct');
+  String get uploadPhotosOrDescribe => _translate('uploadPhotosOrDescribe');
+  String photosCount(int current) => _translate('photosCount', {'current': current.toString()});
+  String get placeInquiryOrder => _translate('placeInquiryOrder');
+  String get sparePartsOrders => _translate('sparePartsOrders');
+  String get trackSparePartsDeliveries => _translate('trackSparePartsDeliveries');
+  String get executiveDelivery => _translate('executiveDelivery');
+  String get customOrders => _translate('customOrders');
+  String get noExecutiveOrdersFound => _translate('noExecutiveOrdersFound');
+  String get noCustomOrdersFound => _translate('noCustomOrdersFound');
+  String get myServiceRequestsTitle => _translate('myServiceRequestsTitle');
+  String get trackServiceRequests => _translate('trackServiceRequests');
+  String get serviceTab => _translate('serviceTab');
+  String get installationTab => _translate('installationTab');
+  String get noServiceRequestsYet => _translate('noServiceRequestsYet');
+  String get noInstallationRequestsYet => _translate('noInstallationRequestsYet');
+  String get serviceRequestsHere => _translate('serviceRequestsHere');
+  String get installationRequestsHere => _translate('installationRequestsHere');
+  String get retry => _translate('retry');
+  String get maxPhotos6Allowed => _translate('maxPhotos6Allowed');
+  String get pleaseSelectOneMachine => _translate('pleaseSelectOneMachine');
+  String get pleaseDescribeDetails => _translate('pleaseDescribeDetails');
+  String get serviceRequestSuccess => _translate('serviceRequestSuccess');
+  String submissionFailed(String error) => _translate('submissionFailed', {'error': error});
+  String get noMachinesAssigned => _translate('noMachinesAssigned');
+  String get clearAll => _translate('clearAll');
+  String get serviceRequest => _translate('serviceRequest');
+  String get requestInstallationSubtitle => _translate('requestInstallationSubtitle');
+  String get selectMachines => _translate('selectMachines');
+  String selectedCount(int count) => _translate('selectedCount', {'count': count.toString()});
+  String get selectMachinesInstruction => _translate('selectMachinesInstruction');
+  String get selectRequestType => _translate('selectRequestType');
+  String get description => _translate('description');
+  String get provideMoreDetailsHint => _translate('provideMoreDetailsHint');
+  String get whatsAppMoreInfoNote => _translate('whatsAppMoreInfoNote');
+  String get whatsAppSupportPhone => _translate('whatsAppSupportPhone');
+  String get submitRequest => _translate('submitRequest');
+  String get submittingRequest => _translate('submittingRequest');
+  String get requestDetails => _translate('requestDetails');
+  String get callTechnician => _translate('callTechnician');
+  String get assignedTechnician => _translate('assignedTechnician');
+  String get technicianDetails => _translate('technicianDetails');
+  String get noTechnicianAssigned => _translate('noTechnicianAssigned');
+  String get happyCode => _translate('happyCode');
+  String get shareHappyCodeNotice => _translate('shareHappyCodeNotice');
+  String get happyCodeCopied => _translate('happyCodeCopied');
+  String get cancelRequest => _translate('cancelRequest');
+  String get voiceNote => _translate('voiceNote');
+  String get assignedMachine => _translate('assignedMachine');
+  String get assignedMachines => _translate('assignedMachines');
+  String get timeline => _translate('timeline');
+  String get typeLabel => _translate('typeLabel');
+  String get statusLabel => _translate('statusLabel');
+  String get dateLabel => _translate('dateLabel');
+  String get timeLabel => _translate('timeLabel');
+  String get areaLabel => _translate('areaLabel');
+  String get technicianLabel => _translate('technicianLabel');
+  String get submittedPhotos => _translate('submittedPhotos');
+  String get technicianWorkPhotos => _translate('technicianWorkPhotos');
+  String get beforeService => _translate('beforeService');
+  String get afterService => _translate('afterService');
+  String get serviceDone => _translate('serviceDone');
+  String get cleaningDone => _translate('cleaningDone');
+  String get paymentLabel => _translate('paymentLabel');
+  String paidVia(String mode) => _translate('paidVia', {'mode': mode});
+  String get invoiceLabel => _translate('invoiceLabel');
+  String get invoiceUploadedNotice => _translate('invoiceUploadedNotice');
+  String get tapToViewInvoice => _translate('tapToViewInvoice');
+  String get tapToCopy => _translate('tapToCopy');
+  String get voiceNoteTitle => _translate('voiceNoteTitle');
+  String get statusVerified => _translate('statusVerified');
+  String get statusClosed => _translate('statusClosed');
+  String get statusResolved => _translate('statusResolved');
+  String get statusInProgress => _translate('statusInProgress');
+  String get statusAssigned => _translate('statusAssigned');
+  String get statusApproved => _translate('statusApproved');
+  String get statusPending => _translate('statusPending');
+  String get rateTechnician => _translate('rateTechnician');
+  String get rateTechnicianOptional => _translate('rateTechnicianOptional');
+  String get ratingCommentHint => _translate('ratingCommentHint');
+  String get submitRating => _translate('submitRating');
+  String get submittingRating => _translate('submittingRating');
+  String get ratingSubmitted => _translate('ratingSubmitted');
+  String get ratingThankYou => _translate('ratingThankYou');
+  String get yourRating => _translate('yourRating');
+  String ratingStars(int count) =>
+      _translate('ratingStars', {'count': count.toString()});
 
-  /// No description provided for @user.
-  ///
-  /// In en, this message translates to:
-  /// **'I am a user'**
-  String get user;
-
-  /// No description provided for @login.
-  ///
-  /// In en, this message translates to:
-  /// **'Login'**
-  String get login;
-
-  /// No description provided for @signUp.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign Up'**
-  String get signUp;
+  static const Map<String, Map<String, String>> _localizedValues = {
+    'en': {
+      'appTitle': 'Goodlife Machines Pvt. Ltd.',
+      'technician': 'I am a technician',
+      'user': 'I am a user',
+      'login': 'Login',
+      'signUp': 'Sign Up',
+      'selectLanguage': 'Select Language',
+      'mobileNumber': 'Mobile Number',
+      'selectArea': 'Select Area',
+      'enterValidMobile': 'Enter valid mobile number',
+      'pleaseSelectArea': 'Please select area',
+      'loginFailed': 'Login failed',
+      'username': 'Username',
+      'contact': 'Contact',
+      'address': 'Address',
+      'pleaseFillAllFields': 'Please fill all fields',
+      'signupSuccessful': 'Signup successful',
+      'uploadSelfieNotice': 'Please upload a photo of the machine along with your selfie. Without this, your request will not be approved.',
+      'uploading': 'Uploading...',
+      'camera': 'Camera',
+      'gallery': 'Gallery',
+      'signupSuccessTitle': 'Signup Successful',
+      'signupSuccessMsg': 'You have signed up successfully!',
+      'signupUnderApproval': 'Your request is currently under approval.\n\nWe will notify you once it is approved.\n\nYou can close the app now and come back later to log in.',
+      'navHome': 'Home',
+      'navSales': 'Sales',
+      'navSpareParts': 'Spare Parts',
+      'navService': 'Service',
+      'navMyProfile': 'My Profile',
+      'viewCart': 'View Cart',
+      'exitApp': 'Exit App',
+      'closeAppConfirm': 'Do you want to close the app?',
+      'no': 'No',
+      'yes': 'Yes',
+      'machineInventory': 'Machine Inventory',
+      'byGoodlife': 'By Goodlife Machines Pvt. Ltd.',
+      'searchMachines': 'Search machines...',
+      'myMachines': 'My Machines',
+      'welcomeBack': 'Welcome back, {userName}',
+      'salesSupport': 'Sales Support',
+      'contactSalesExecutive': 'Contact your sales executive',
+      'callSalesPerson': 'Call Sales Person',
+      'whatsAppSalesPerson': 'WhatsApp Sales Person',
+      'spareParts': 'Spare Parts',
+      'orderSparePartsSubtitle': 'Order spare parts for your machines',
+      'chooseOrderType': 'Choose Order Type',
+      'chooseOrderTypeSubtitle': 'Select how you would like to place your spare parts request.',
+      'expressOrderTitle': 'Place Express Delivery Order',
+      'expressOrderDesc': 'Choose spare parts of your machines that are already available in our catalogue and get them delivered quickly.',
+      'customOrderTitle': 'Custom Spare Part Order',
+      'customOrderDesc': 'Send us a picture of the spare part and our team will check availability and assist you further.',
+      'myProfile': 'My Profile',
+      'partyProfile': 'Party Profile',
+      'mySparePartOrders': 'My Spare Part Orders',
+      'myServiceRequests': 'My Service Requests',
+      'logout': 'Logout',
+      'deleteMyAccount': 'Delete my account',
+      'deleteAccountTitle': 'Delete Account',
+      'deleteAccountConfirm': 'Are you sure you want to delete your account? This action cannot be undone.',
+      'cancel': 'Cancel',
+      'delete': 'Delete',
+      'logoutConfirmTitle': 'Logout Confirmation',
+      'areYouSure': 'Are you sure?',
+      'myCart': 'My Cart',
+      'cartEmpty': 'Your cart is empty',
+      'subtotal': 'Subtotal',
+      'gst': 'GST (18%)',
+      'freightCharges': 'Freight Charges',
+      'grandTotal': 'Grand Total',
+      'totalAmount': 'Total Amount',
+      'placeOrder': 'Place Order',
+      'payNow': 'Pay Now',
+      'qrCode': 'QR Code',
+      'bankTransfer': 'Bank Transfer',
+      'uploadScreenshot': 'Upload Screenshot',
+      'submitPayment': 'Submit Payment',
+      'qrCodePayment': 'QR Code Payment',
+      'maxPhotosAllowed': 'Maximum 4 photos allowed',
+      'pleaseUploadPhotosOrMessage': 'Please upload photos or enter a message.',
+      'inquirySubmittedSuccess': 'Inquiry submitted successfully.',
+      'addPhoto': 'Add Photo',
+      'customInquiry': 'Custom Inquiry',
+      'uploadProductPhotosDetails': 'Upload product photos or details',
+      'cantFindProduct': 'Can’t find your product?',
+      'uploadPhotosOrDescribe': 'Upload photos or describe the product you need.',
+      'photosCount': 'Photos ({current}/4)',
+      'placeInquiryOrder': 'Place Inquiry Order',
+      'sparePartsOrders': 'Spare Parts Orders',
+      'trackSparePartsDeliveries': 'Track your spare parts deliveries',
+      'executiveDelivery': 'Express Delivery',
+      'customOrders': 'Custom Orders',
+      'noExecutiveOrdersFound': 'No Express Orders Found',
+      'noCustomOrdersFound': 'No Custom Orders Found',
+      'myServiceRequestsTitle': 'My Service Requests',
+      'trackServiceRequests': 'Track your service & installation requests',
+      'serviceTab': 'Service',
+      'installationTab': 'Installation',
+      'noServiceRequestsYet': 'No Service Requests Yet',
+      'noInstallationRequestsYet': 'No Installation Requests Yet',
+      'serviceRequestsHere': 'Your service requests will appear here.',
+      'installationRequestsHere': 'Your installation requests will appear here.',
+      'retry': 'Retry',
+      'maxPhotos6Allowed': 'Maximum 6 photos allowed',
+      'pleaseSelectOneMachine': 'Please select at least one machine.',
+      'pleaseDescribeDetails': 'Please describe the request details.',
+      'serviceRequestSuccess': 'Service request submitted successfully.',
+      'submissionFailed': 'Submission failed: {error}',
+      'noMachinesAssigned': 'No machines assigned to your account.',
+      'clearAll': 'Clear All',
+      'serviceRequest': 'Service Request',
+      'requestInstallationSubtitle': 'Request installation or file complaints',
+      'selectMachines': 'Select Machines',
+      'selectedCount': '{count} selected',
+      'selectMachinesInstruction': 'Select all machines that need servicing. One technician will fix all selected machines.',
+      'selectRequestType': 'Select Request Type',
+      'description': 'Description',
+      'provideMoreDetailsHint': 'Provide more details about the issue or requested installation service...',
+      'whatsAppMoreInfoNote': 'If you need to send more information like video etc. please WhatsApp us on ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'Submit Request',
+      'submittingRequest': 'Submitting Request',
+      'requestDetails': 'Request Details',
+      'callTechnician': 'Call Technician',
+      'assignedTechnician': 'Assigned Technician',
+      'technicianDetails': 'Technician Details',
+      'noTechnicianAssigned': 'No technician assigned yet',
+      'happyCode': 'Happy Code',
+      'shareHappyCodeNotice': 'Share this Happy Code with technician only after service is completed.',
+      'happyCodeCopied': 'Happy Code copied to clipboard',
+      'cancelRequest': 'Cancel Request',
+      'voiceNote': 'Voice Note',
+      'assignedMachine': 'Assigned Machine',
+      'assignedMachines': 'Assigned Machines',
+      'timeline': 'Timeline',
+      'typeLabel': 'Type',
+      'statusLabel': 'Status',
+      'dateLabel': 'Date',
+      'timeLabel': 'Time',
+      'areaLabel': 'Area',
+      'technicianLabel': 'Technician',
+      'submittedPhotos': 'Submitted Photos',
+      'technicianWorkPhotos': 'Technician Work Photos',
+      'beforeService': 'Before Service',
+      'afterService': 'After Service',
+      'serviceDone': 'Service Done',
+      'cleaningDone': 'Cleaning Done',
+      'paymentLabel': 'Payment',
+      'paidVia': 'Paid via {mode}',
+      'invoiceLabel': 'Invoice',
+      'invoiceUploadedNotice': 'Your invoice has been uploaded by the admin.',
+      'tapToViewInvoice': 'Tap to view full invoice',
+      'tapToCopy': 'Tap the code to copy',
+      'voiceNoteTitle': 'Recorded Voice Note',
+      'statusVerified': 'Verified',
+      'statusClosed': 'Closed',
+      'statusResolved': 'Resolved',
+      'statusInProgress': 'In Progress',
+      'statusAssigned': 'Assigned',
+      'statusApproved': 'Approved',
+      'statusPending': 'Pending',
+      'rateTechnician': 'Rate Your Technician',
+      'rateTechnicianOptional':
+          'Optional — share your experience with the technician who served you.',
+      'ratingCommentHint': 'Add a comment (optional)',
+      'submitRating': 'Submit Rating',
+      'submittingRating': 'Submitting...',
+      'ratingSubmitted': 'Rating submitted',
+      'ratingThankYou': 'Thank you for your feedback!',
+      'yourRating': 'Your Rating',
+      'ratingStars': '{count} out of 5 stars',
+    },
+    'hi': {
+      'appTitle': 'गुडलाइफ मशीनें प्राइवेट लिमिटेड',
+      'technician': 'मैं एक तकनीशियन हूँ',
+      'user': 'मैं एक उपयोगकर्ता हूँ',
+      'login': 'लॉगिन',
+      'signUp': 'साइन अप',
+      'selectLanguage': 'भाषा चुनें',
+      'mobileNumber': 'मोबाइल नंबर',
+      'selectArea': 'क्षेत्र चुनें',
+      'enterValidMobile': 'वैध मोबाइल नंबर दर्ज करें',
+      'pleaseSelectArea': 'कृपया क्षेत्र चुनें',
+      'loginFailed': 'लॉगिन विफल रहा',
+      'username': 'उपयोगकर्ता नाम',
+      'contact': 'संपर्क',
+      'pleaseFillAllFields': 'कृपया सभी फ़ील्ड भरें',
+      'signupSuccessful': 'साइनअप सफल रहा',
+      'uploadSelfieNotice': 'कृपया अपनी सेल्फी के साथ मशीन की फोटो अपलोड करें। इसके बिना आपका अनुरोध स्वीकृत नहीं होगा।',
+      'uploading': 'अपलोड हो रहा है...',
+      'camera': 'कैमरा',
+      'gallery': 'गैलरी',
+      'signupSuccessTitle': 'साइनअप सफल',
+      'signupSuccessMsg': 'आपने सफलतापूर्वक साइन अप कर लिया है!',
+      'signupUnderApproval': 'आपका अनुरोध वर्तमान में अनुमोदन के अधीन है।\n\nस्वीकृत होने पर हम आपको सूचित करेंगे।\n\nआप अभी ऐप बंद कर सकते हैं और बाद में लॉगिन करने के लिए वापस आ सकते हैं।',
+      'navHome': 'होम',
+      'navSales': 'बिक्री',
+      'navSpareParts': 'स्पेयर पार्ट्स',
+      'navService': 'सेवा',
+      'navMyProfile': 'मेरी प्रोफाइल',
+      'viewCart': 'कार्ट देखें',
+      'exitApp': 'ऐप से बाहर निकलें',
+      'closeAppConfirm': 'क्या आप ऐप बंद करना चाहते हैं?',
+      'no': 'नहीं',
+      'yes': 'हाँ',
+      'machineInventory': 'मशीन इन्वेंटरी',
+      'byGoodlife': 'गुडलाइफ मशीनें प्राइवेट लिमिटेड द्वारा',
+      'searchMachines': 'मशीनों की खोज करें...',
+      'myMachines': 'मेरी मशीनें',
+      'welcomeBack': 'स्वागत है, {userName}',
+      'salesSupport': 'बिक्री सहायता',
+      'contactSalesExecutive': 'अपने बिक्री कार्यकारी से संपर्क करें',
+      'callSalesPerson': 'बिक्री व्यक्ति को कॉल करें',
+      'whatsAppSalesPerson': 'बिक्री व्यक्ति को व्हाट्सएप करें',
+      'spareParts': 'स्पेयर पार्ट्स',
+      'orderSparePartsSubtitle': 'अपनी मशीनों के लिए स्पेयर पार्ट्स ऑर्डर करें',
+      'chooseOrderType': 'ऑर्डर का प्रकार चुनें',
+      'chooseOrderTypeSubtitle': 'चुनें कि आप अपना स्पेयर पार्ट्स अनुरोध कैसे करना चाहते हैं।',
+      'expressOrderTitle': 'एक्सप्रेस डिलीवरी ऑर्डर दें',
+      'expressOrderDesc': 'अपनी मशीनों के स्पेयर पार्ट्स चुनें जो पहले से ही हमारे कैटलॉग में उपलब्ध हैं और उन्हें जल्दी प्राप्त करें।',
+      'customOrderTitle': 'कस्टम स्पेयर पार्ट ऑर्डर',
+      'customOrderDesc': 'हमें स्पेयर पार्ट की एक तस्वीर भेजें और हमारी टीम उपलब्धता की जांच करेगी और आगे आपकी सहायता करेगी।',
+      'myProfile': 'मेरी प्रोफाइल',
+      'partyProfile': 'पार्टी प्रोफाइल',
+      'mySparePartOrders': 'मेरे स्पेयर पार्ट ऑर्डर',
+      'myServiceRequests': 'मेरे सेवा अनुरोध',
+      'logout': 'लॉगआउट',
+      'deleteMyAccount': 'मेरा खाता हटाएं',
+      'deleteAccountTitle': 'खाता हटाएं',
+      'deleteAccountConfirm': 'क्या आप वाकई अपना खाता हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।',
+      'cancel': 'रद्द करें',
+      'delete': 'हटाएं',
+      'logoutConfirmTitle': 'लॉगआउट की पुष्टि',
+      'areYouSure': 'क्या आप सुनिश्चित हैं?',
+      'myCart': 'मेरी कार्ट',
+      'cartEmpty': 'आपकी कार्ट खाली है',
+      'subtotal': 'उप-योग',
+      'gst': 'जीएसटी (18%)',
+      'freightCharges': 'भाड़ा शुल्क',
+      'grandTotal': 'कुल योग',
+      'totalAmount': 'कुल राशि',
+      'placeOrder': 'ऑर्डर दें',
+      'payNow': 'अभी भुगतान करें',
+      'qrCode': 'क्यूआर कोड',
+      'bankTransfer': 'बैंक ट्रांसफर',
+      'uploadScreenshot': 'स्क्रीनशॉट अपलोड करें',
+      'submitPayment': 'भुगतान जमा करें',
+      'qrCodePayment': 'क्यूआर कोड भुगतान',
+      'maxPhotosAllowed': 'अधिकतम 4 फ़ोटो की अनुमति है',
+      'pleaseUploadPhotosOrMessage': 'कृपया फ़ोटो अपलोड करें या संदेश दर्ज करें।',
+      'inquirySubmittedSuccess': 'पूछताछ सफलतापूर्वक सबमिट की गई।',
+      'addPhoto': 'फोटो जोड़ें',
+      'customInquiry': 'कस्टम पूछताछ',
+      'uploadProductPhotosDetails': 'उत्पाद की तस्वीरें या विवरण अपलोड करें',
+      'cantFindProduct': 'अपना उत्पाद नहीं मिल रहा है?',
+      'uploadPhotosOrDescribe': 'तस्वीरें अपलोड करें या अपनी ज़रूरत के उत्पाद का वर्णन करें।',
+      'photosCount': 'तस्वीरें ({current}/4)',
+      'placeInquiryOrder': 'पूछताछ ऑर्डर दें',
+      'sparePartsOrders': 'स्पेयर पार्ट्स ऑर्डर',
+      'trackSparePartsDeliveries': 'अपने स्पेयर पार्ट्स की डिलीवरी को ट्रैक करें',
+      'executiveDelivery': 'एक्सप्रेस डिलीवरी',
+      'customOrders': 'कस्टम ऑर्डर',
+      'noExecutiveOrdersFound': 'कोई कार्यकारी ऑर्डर नहीं मिला',
+      'noCustomOrdersFound': 'कोई कस्टम ऑर्डर नहीं मिला',
+      'myServiceRequestsTitle': 'मेरे सेवा अनुरोध',
+      'trackServiceRequests': 'अपने सेवा और स्थापना अनुरोधों को ट्रैक करें',
+      'serviceTab': 'सेवा',
+      'installationTab': 'स्थापना',
+      'noServiceRequestsYet': 'अभी तक कोई सेवा अनुरोध नहीं है',
+      'noInstallationRequestsYet': 'अभी तक कोई स्थापना अनुरोध नहीं है',
+      'serviceRequestsHere': 'आपके सेवा अनुरोध यहां दिखाई देंगे।',
+      'installationRequestsHere': 'आपके स्थापना अनुरोध यहां दिखाई देंगे।',
+      'retry': 'पुनः प्रयास करें',
+      'maxPhotos6Allowed': 'अधिकतम 6 फ़ोटो की अनुमति है',
+      'pleaseSelectOneMachine': 'कृपया कम से कम एक मशीन चुनें।',
+      'pleaseDescribeDetails': 'कृपया अनुरोध विवरण का वर्णन करें।',
+      'serviceRequestSuccess': 'सेवा अनुरोध सफलतापूर्वक सबमिट किया गया।',
+      'submissionFailed': 'सबमिशन विफल रहा: {error}',
+      'noMachinesAssigned': 'आपके खाते में कोई मशीन असाइन नहीं की गई है।',
+      'clearAll': 'सभी साफ करें',
+      'serviceRequest': 'सेवा अनुरोध',
+      'requestInstallationSubtitle': 'स्थापना का अनुरोध करें या शिकायत दर्ज करें',
+      'selectMachines': 'मशीनें चुनें',
+      'selectedCount': '{count} चयनित',
+      'selectMachinesInstruction': 'उन सभी मशीनों का चयन करें जिन्हें सर्विसिंग की आवश्यकता है। एक तकनीशियन सभी चयनित मशीनों को ठीक करेगा।',
+      'selectRequestType': 'अनुरोध का प्रकार चुनें',
+      'description': 'विवरण',
+      'provideMoreDetailsHint': 'समस्या या अनुरोधित स्थापना सेवा के बारे में अधिक विवरण प्रदान करें...',
+      'whatsAppMoreInfoNote': 'यदि आपको वीडियो आदि जैसी अधिक जानकारी भेजनी है, तो कृपया हमें व्हाट्सएप करें ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'अनुरोध सबमिट करें',
+      'submittingRequest': 'अनुरोध सबमिट किया जा रहा है',
+      'requestDetails': 'अनुरोध विवरण',
+      'callTechnician': 'तकनीशियन को कॉल करें',
+      'assignedTechnician': 'असाइन किया गया तकनीशियन',
+      'technicianDetails': 'तकनीशियन विवरण',
+      'noTechnicianAssigned': 'अभी तक कोई तकनीशियन असाइन नहीं किया गया है',
+      'happyCode': 'हैप्पी कोड',
+      'shareHappyCodeNotice': 'सेवा पूरी होने के बाद ही यह हैप्पी कोड तकनीशियन के साथ साझा करें।',
+      'happyCodeCopied': 'हैप्पी कोड क्लिपबोर्ड पर कॉपी किया गया',
+      'cancelRequest': 'अनुरोध रद्द करें',
+      'voiceNote': 'वॉयस नोट',
+      'assignedMachine': 'असाइन की गई मशीन',
+      'assignedMachines': 'असाइन की गई मशीनें',
+      'timeline': 'समयरेखा',
+      'typeLabel': 'प्रकार',
+      'statusLabel': 'स्थिति',
+      'dateLabel': 'दिनांक',
+      'timeLabel': 'समय',
+      'areaLabel': 'क्षेत्र',
+      'technicianLabel': 'तकनीशियन',
+      'submittedPhotos': 'जमा की गई तस्वीरें',
+      'technicianWorkPhotos': 'तकनीशियन के काम की तस्वीरें',
+      'beforeService': 'सेवा से पहले',
+      'afterService': 'सेवा के बाद',
+      'serviceDone': 'सेवा पूरी हुई',
+      'cleaningDone': 'सफाई पूरी हुई',
+      'paymentLabel': 'भुगतान',
+      'paidVia': '{mode} के माध्यम से भुगतान किया गया',
+      'invoiceLabel': 'चालान',
+      'invoiceUploadedNotice': 'आपका इनवॉइस एडमिन द्वारा अपलोड कर दिया गया है।',
+      'tapToViewInvoice': 'पूरा इनवॉइस देखने के लिए टैप करें',
+      'tapToCopy': 'कॉपी करने के लिए कोड पर टैप करें',
+      'voiceNoteTitle': 'रिकॉर्ड किया गया वॉयस नोट',
+      'statusVerified': 'सत्यापित',
+      'statusClosed': 'बंद',
+      'statusResolved': 'हल किया गया',
+      'statusInProgress': 'प्रगति पर',
+      'statusAssigned': 'असाइन किया गया',
+      'statusApproved': 'स्वीकृत',
+      'statusPending': 'लंबित',
+    },
+    'bn': {
+      'appTitle': 'গুডলাইফ মেশিনস প্রাইভেট লিমিটেড',
+      'technician': 'আমি একজন টেকনিশিয়ান',
+      'user': 'আমি একজন ব্যবহারকারী',
+      'login': 'লগইন',
+      'signUp': 'সাইন আপ',
+      'selectLanguage': 'ভাষা নির্বাচন করুন',
+      'mobileNumber': 'মোবাইল নম্বর',
+      'selectArea': 'এলাকা নির্বাচন করুন',
+      'enterValidMobile': 'বৈধ মোবাইল নম্বর লিখুন',
+      'pleaseSelectArea': 'দয়া করে এলাকা নির্বাচন করুন',
+      'loginFailed': 'লগইন ব্যর্থ হয়েছে',
+      'username': 'ব্যবহারকারীর নাম',
+      'contact': 'যোগাযোগ',
+      'pleaseFillAllFields': 'দয়া করে সব ঘর পূরণ করুন',
+      'signupSuccessful': 'সাইনআপ সফল হয়েছে',
+      'uploadSelfieNotice': 'দয়া করে আপনার সেলফির সাথে মেশিনের ছবি আপলোড করুন। এটি ছাড়া আপনার অনুরোধ অনুমোদিত হবে না।',
+      'uploading': 'আপলোড হচ্ছে...',
+      'camera': 'ক্যামেরা',
+      'gallery': 'গ্যালারি',
+      'signupSuccessTitle': 'সাইনআপ সফল',
+      'signupSuccessMsg': 'আপনি সফলভাবে সাইন আপ করেছেন!',
+      'signupUnderApproval': 'আপনার অনুরোধ বর্তমানে অনুমোদনের অধীনে রয়েছে।\n\nঅনুমোদিত হলে আমরা আপনাকে অবহিত করব।\n\nআপনি এখন অ্যাপটি বন্ধ করতে পারেন এবং পরে লগইন করতে ফিরে আসতে পারেন।',
+      'navHome': 'হোম',
+      'navSales': 'বিক্রয়',
+      'navSpareParts': 'খুচরা যন্ত্রাংশ',
+      'navService': 'পরিষেবা',
+      'navMyProfile': 'আমার প্রোফাইল',
+      'viewCart': 'কার্ট দেখুন',
+      'exitApp': 'অ্যাপ থেকে প্রস্থান করুন',
+      'closeAppConfirm': 'আপনি কি অ্যাপটি বন্ধ করতে চান?',
+      'no': 'না',
+      'yes': 'হ্যাঁ',
+      'machineInventory': 'মেশিন ইনভেন্টরি',
+      'byGoodlife': 'গুডলাইফ মেশিনস প্রাইভেট লিমিটেড দ্বারা',
+      'searchMachines': 'মেশিন খুঁজুন...',
+      'myMachines': 'আমার মেশিনসমূহ',
+      'welcomeBack': 'স্বাগতম, {userName}',
+      'salesSupport': 'বিক্রয় সহায়তা',
+      'contactSalesExecutive': 'আপনার বিক্রয় কর্মকর্তার সাথে যোগাযোগ করুন',
+      'callSalesPerson': 'সেলস পারসনকে কল করুন',
+      'whatsAppSalesPerson': 'সেলস পারসনকে হোয়াটসঅ্যাপ করুন',
+      'spareParts': 'খুচরা যন্ত্রাংশ',
+      'orderSparePartsSubtitle': 'আপনার মেশিনের জন্য খুচরা যন্ত্রাংশ অর্ডার করুন',
+      'chooseOrderType': 'অর্ডারের ধরন চয়ন করুন',
+      'chooseOrderTypeSubtitle': 'আপনি কীভাবে আপনার খুচরা যন্ত্রাংশের অনুরোধ করতে চান তা নির্বাচন করুন।',
+      'expressOrderTitle': 'এক্সপ্রেস ডেলিভারি অর্ডার দিন',
+      'expressOrderDesc': 'আমাদের ক্যাটালগে ইতিমধ্যে উপলব্ধ আপনার মেশিনের খুচরা যন্ত্রাংশ চয়ন করুন এবং সেগুলি দ্রুত ডেলিভারি পান।',
+      'customOrderTitle': 'কাস্টম খুচরা যন্ত্রাংশ অর্ডার',
+      'customOrderDesc': 'আমাদের খুচরা যন্ত্রাংশের একটি ছবি পাঠান এবং আমাদের দল প্রাপ্যতা পরীক্ষা করে আপনাকে সাহায্য করবে।',
+      'myProfile': 'আমার প্রোফাইল',
+      'partyProfile': 'পার্টি প্রোফাইল',
+      'mySparePartOrders': 'আমার খুচরা যন্ত্রাংশ অর্ডার',
+      'myServiceRequests': 'আমার পরিষেবা অনুরোধ',
+      'logout': 'লগআউট',
+      'deleteMyAccount': 'আমার অ্যাকাউন্ট মুছুন',
+      'deleteAccountTitle': 'অ্যাকউন্ট মুছুন',
+      'deleteAccountConfirm': 'আপনি কি নিশ্চিত যে আপনার অ্যাকাউন্টটি মুছতে চান? এই কাজটি আর ফিরিয়ে আনা যাবে না।',
+      'cancel': 'বাতিল',
+      'delete': 'মুছুন',
+      'logoutConfirmTitle': 'লগআউট নিশ্চিতকরণ',
+      'areYouSure': 'আপনি কি নিশ্চিত?',
+      'myCart': 'আমার কার্ট',
+      'cartEmpty': 'আপনার কার্ট খালি',
+      'subtotal': 'উপ-সমষ্টি',
+      'gst': 'জিএসটি (১৮%)',
+      'freightCharges': 'পরিবহন খরচ',
+      'grandTotal': 'সর্বমোট',
+      'totalAmount': 'মোট পরিমাণ',
+      'placeOrder': 'অর্ডার দিন',
+      'payNow': 'এখনই অর্থ প্রদান করুন',
+      'qrCode': 'কিউআর কোড',
+      'bankTransfer': 'ব্যাংক ট্রান্সফার',
+      'uploadScreenshot': 'স্ক্রিনশট আপলোড করুন',
+      'submitPayment': 'পেমেন্ট জমা দিন',
+      'qrCodePayment': 'কিউআর কোড পেমেন্ট',
+      'maxPhotosAllowed': 'সর্বোচ্চ ৪টি ছবি অনুমোদিত',
+      'pleaseUploadPhotosOrMessage': 'দয়া করে ফটো আপলোড করুন বা একটি বার্তা লিখুন।',
+      'inquirySubmittedSuccess': 'অনুসন্ধান সফলভাবে জমা দেওয়া হয়েছে।',
+      'addPhoto': 'ফটো যোগ করুন',
+      'customInquiry': 'কাস্টম অনুসন্ধান',
+      'uploadProductPhotosDetails': 'পণ্যের ছবি বা বিবরণ আপলোড করুন',
+      'cantFindProduct': 'আপনার পণ্য খুঁজে পাচ্ছেন না?',
+      'uploadPhotosOrDescribe': 'ফটো আপলোড করুন বা আপনার প্রয়োজনীয় পণ্যটি বর্ণনা করুন।',
+      'photosCount': 'ফটো ({current}/৪)',
+      'placeInquiryOrder': 'অনুসন্ধান অর্ডার দিন',
+      'sparePartsOrders': 'খুচরা যন্ত্রাংশ অর্ডার',
+      'trackSparePartsDeliveries': 'আপনার খুচরা যন্ত্রাংশের ডেলিভারি ট্র্যাক করুন',
+      'executiveDelivery': 'এক্সপ্রেস ডেলিভারি',
+      'customOrders': 'কাস্টম অর্ডার',
+      'noExecutiveOrdersFound': 'কোন এক্সিকিউটিভ অর্ডার পাওয়া যায়নি',
+      'noCustomOrdersFound': 'কোন কাস্টম অর্ডার পাওয়া যায়নি',
+      'myServiceRequestsTitle': 'আমার পরিষেবা অনুরোধ',
+      'trackServiceRequests': 'আপনার পরিষেবা ও ইনস্টলেশন অনুরোধ ট্র্যাক করুন',
+      'serviceTab': 'পরিষেবা',
+      'installationTab': 'ইনস্টলেশন',
+      'noServiceRequestsYet': 'এখনও কোনো পরিষেবা অনুরোধ নেই',
+      'noInstallationRequestsYet': 'এখনও কোনো ইনস্টলেশন অনুরোধ নেই',
+      'serviceRequestsHere': 'আপনার পরিষেবা অনুরোধ এখানে প্রদর্শিত হবে।',
+      'installationRequestsHere': 'আপনার ইনস্টলেশন অনুরোধ এখানে প্রদর্শিত হবে।',
+      'retry': 'আবার চেষ্টা করুন',
+      'maxPhotos6Allowed': 'সর্বোচ্চ ৬টি ছবি অনুমোদিত',
+      'pleaseSelectOneMachine': 'দয়া করে কমপক্ষে একটি মেশিন নির্বাচন করুন।',
+      'pleaseDescribeDetails': 'দয়া করে অনুরোধের বিবরণ লিখুন।',
+      'serviceRequestSuccess': 'পরিষেবা অনুরোধ সফলভাবে জমা দেওয়া হয়েছে।',
+      'submissionFailed': 'জমা দেওয়া ব্যর্থ হয়েছে: {error}',
+      'noMachinesAssigned': 'আপনার অ্যাকাউন্টে কোনো মেশিন বরাদ্দ নেই।',
+      'clearAll': 'সব মুছে ফেলুন',
+      'serviceRequest': 'পরিষেবা অনুরোধ',
+      'requestInstallationSubtitle': 'ইনস্টলেশন বা অভিযোগ দায়েরের অনুরোধ করুন',
+      'selectMachines': 'মেশিন নির্বাচন করুন',
+      'selectedCount': '{count}টি নির্বাচিত',
+      'selectMachinesInstruction': 'পরিষেবার প্রয়োজন এমন সমস্ত মেশিন নির্বাচন করুন। একজন টেকনিশিয়ান সব নির্বাচিত মেশিন ঠিক করবেন।',
+      'selectRequestType': 'অনুরোধের ধরন নির্বাচন করুন',
+      'description': 'বিবরণ',
+      'provideMoreDetailsHint': 'সমস্যা বা অনুরোধ করা ইনস্টলেশন পরিষেবা সম্পর্কে আরও বিস্তারিত তথ্য দিন...',
+      'whatsAppMoreInfoNote': 'আপনার যদি ভিডিও ইত্যাদির মতো আরও তথ্য পাঠাতে হয়, তাহলে অনুগ্রহ করে আমাদের হোয়াটসঅ্যাপ করুন ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'অনুরোধ জমা দিন',
+      'submittingRequest': 'অনুরোধ জমা দেওয়া হচ্ছে',
+      'requestDetails': 'অনুরোধের বিবরণ',
+      'callTechnician': 'টেকনিশিয়ানকে কল করুন',
+      'assignedTechnician': 'নিযুক্ত টেকনিশিয়ান',
+      'technicianDetails': 'টেকনিশিয়ান বিবরণ',
+      'noTechnicianAssigned': 'এখনও কোনো টেকনিশিয়ান নিযুক্ত করা হয়নি',
+      'happyCode': 'হ্যাপি কোড',
+      'shareHappyCodeNotice': 'পরিষেবা সম্পন্ন হওয়ার পরেই এই হ্যাپی কোডটি টেকনিশியানের সাথে শেয়ার করুন।',
+      'happyCodeCopied': 'হ্যাপি কোড ক্লিপবোর্ডে কপি করা হয়েছে',
+      'cancelRequest': 'অনুরোধ বাতিল করুন',
+      'voiceNote': 'ভয়েস নোট',
+      'assignedMachine': 'বরাদ্দ করা মেশিন',
+      'assignedMachines': 'বরাদ্দ করা মেশিনসমূহ',
+      'timeline': 'সময়রেখা',
+    },
+    'mr': {
+      'appTitle': 'गुडलाइफ मशीन्स प्रा. लि.',
+      'technician': 'मी तंत्रज्ञ आहे',
+      'user': 'मी वापरकर्ता आहे',
+      'login': 'लॉगिन',
+      'signUp': 'साइन अप',
+      'selectLanguage': 'भाषा निवडा',
+      'mobileNumber': 'मोबाईल नंबर',
+      'selectArea': 'क्षेत्र निवडा',
+      'enterValidMobile': 'वैध मोबाईल नंबर प्रविष्ट करा',
+      'pleaseSelectArea': 'कृपया क्षेत्र निवडा',
+      'loginFailed': 'लॉगिन अयशस्वी',
+      'username': 'वापरकर्ता नाव',
+      'contact': 'संपर्क',
+      'pleaseFillAllFields': 'कृपया सर्व फील्ड भरा',
+      'signupSuccessful': 'साइनअप यशस्वी',
+      'uploadSelfieNotice': 'कृपया तुमच्या सेल्फीसह मशीनचा फोटो अपलोड करा. याशिवाय तुमच्या विनंतीला मंजुरी दिली जाणार नाही.',
+      'uploading': 'अपलोड होत आहे...',
+      'camera': 'कॅमेरा',
+      'gallery': 'गॅलरी',
+      'signupSuccessTitle': 'साइनअप यशस्वी',
+      'signupSuccessMsg': 'तुमचे साइन अप यशस्वी झाले आहे!',
+      'signupUnderApproval': 'तुमची विनंती सध्या मंजुरीच्या प्रतीक्षेत आहे.\n\nती मंजूर झाल्यावर आम्ही तुम्हाला सूचित करू.\n\nतुम्ही आता अॅप बंद करू शकता आणि नंतर लॉगिन करण्यासाठी परत येऊ शकता।',
+      'navHome': 'होम',
+      'navSales': 'विक्री',
+      'navSpareParts': 'स्पेयर पार्ट्स',
+      'navService': 'सेवा',
+      'navMyProfile': 'माझी प्रोफाइल',
+      'viewCart': 'कार्ट पहा',
+      'exitApp': 'अॅपमधून बाहेर पडा',
+      'closeAppConfirm': 'तुम्हाला अॅप बंद करायचे आहे का?',
+      'no': 'नाही',
+      'yes': 'होय',
+      'machineInventory': 'मशीन इन्व्हेंटरी',
+      'byGoodlife': 'गुडलाइफ मशीन्स प्रा. लि. द्वारे',
+      'searchMachines': 'मशीन शोधा...',
+      'myMachines': 'माझ्या मशीन्स',
+      'welcomeBack': 'स्वागत आहे, {userName}',
+      'salesSupport': 'विक्री सहाय्य',
+      'contactSalesExecutive': 'तुमच्या विक्री अधिकाऱ्याशी संपर्क साधा',
+      'callSalesPerson': 'विक्री व्यक्तीला कॉल करा',
+      'whatsAppSalesPerson': 'विक्री व्यक्तीला व्हॉट्सअॅप करा',
+      'spareParts': 'स्पेयर पार्ट्स',
+      'orderSparePartsSubtitle': 'तुमच्या मशीनसाठी स्पेयर पार्ट्सची ऑर्डर द्या',
+      'chooseOrderType': 'ऑर्डरचा प्रकार निवडा',
+      'chooseOrderTypeSubtitle': 'तुम्ही तुमची स्पेयर पार्ट्सची विनंती कशी करू इच्छिता ते निवडा.',
+      'expressOrderTitle': 'एक्सप्रेस डिलिव्हरी ऑर्डर द्या',
+      'expressOrderDesc': 'तुमच्या मशीनचे स्पेयर पार्ट्स निवडा जे आमच्या कॅटलॉगमध्ये आधीच उपलब्ध आहेत आणि ते जलद डिलिव्हर मिळवा.',
+      'customOrderTitle': 'कस्टम स्पेयर पार्ट ऑर्डर',
+      'customOrderDesc': 'आम्हाला स्पेयर पार्टचे चित्र पाठवा आणि आमची टीम उपलब्धतेची तपासणी करेल आणि तुम्हाला मदत करेल.',
+      'myProfile': 'माझी प्रोफाइल',
+      'partyProfile': 'पार्टी प्रोफाइल',
+      'mySparePartOrders': 'माझ्या स्पेयर पार्ट ऑर्डर्स',
+      'myServiceRequests': 'माझ्या सेवा विनंत्या',
+      'logout': 'लॉगआउट',
+      'deleteMyAccount': 'माझे खाते हटवा',
+      'deleteAccountTitle': 'खाते हटवा',
+      'deleteAccountConfirm': 'तुम्हालाचे खाते हटवायचे आहे याची खात्री आहे का? ही क्रिया पूर्ववत केली जाऊ शकत नाही.',
+      'cancel': 'रद्द करा',
+      'delete': 'हटवा',
+      'logoutConfirmTitle': 'लॉगआउटची पुष्टी',
+      'areYouSure': 'तुम्हाला खात्री आहे का?',
+      'myCart': 'माझी कार्ट',
+      'cartEmpty': 'तुमची कार्ट रिकामी आहे',
+      'subtotal': 'उपएकूण',
+      'gst': 'जीएसटी (१८%)',
+      'freightCharges': 'वाहतूक खर्च',
+      'grandTotal': 'एकूण रक्कम',
+      'totalAmount': 'एकूण रक्कम',
+      'placeOrder': 'ऑर्डर द्या',
+      'payNow': 'आता पैसे द्या',
+      'qrCode': 'क्यूआर कोड',
+      'bankTransfer': 'बँक ट्रान्सफर',
+      'uploadScreenshot': 'स्क्रीनशॉट अपलोड करा',
+      'submitPayment': 'पेमेंट सबमिट करा',
+      'qrCodePayment': 'क्यूआर कोड पेमेंट',
+      'maxPhotosAllowed': 'जास्तीत जास्त ४ फोटोंना परवानगी आहे',
+      'pleaseUploadPhotosOrMessage': 'कृपया फोटो अपलोड करा किंवा संदेश प्रविष्ट करा.',
+      'inquirySubmittedSuccess': 'चौकशी यशस्वीरित्या सबमिट केली गेली.',
+      'addPhoto': 'फोटो जोडा',
+      'customInquiry': 'कस्टम चौकशी',
+      'uploadProductPhotosDetails': 'उत्पादनाचे फोटो किंवा तपशील अपलोड करा',
+      'cantFindProduct': 'उत्पादन सापडत नाही?',
+      'uploadPhotosOrDescribe': 'फोटो अपलोड करा किंवा तुम्हाला हव्या असलेल्या उत्पादनाचे वर्णन करा.',
+      'photosCount': 'फोटो ({current}/४)',
+      'placeInquiryOrder': 'चौकशी ऑर्डर द्या',
+      'sparePartsOrders': 'स्पेयर पार्ट्स ऑर्डर्स',
+      'trackSparePartsDeliveries': 'तुमच्या स्पेयर पार्ट्सच्या डिलिव्हरीचा मागोवा घ्या',
+      'executiveDelivery': 'एक्सप्रेस डिलिव्हरी',
+      'customOrders': 'कस्टम ऑर्डर्स',
+      'noExecutiveOrdersFound': 'कोणत्याही कार्यकारी ऑर्डर्स सापडल्या नाहीत',
+      'noCustomOrdersFound': 'कोणत्याही कस्टम ऑर्डर्स सापडल्या नाहीत',
+      'myServiceRequestsTitle': 'माझ्या सेवा विनंत्या',
+      'trackServiceRequests': 'तुमच्या सेवा आणि इन्स्टॉलेशन विनंत्यांचा मागोवा घ्या',
+      'serviceTab': 'सेवा',
+      'installationTab': 'इन्स्टॉलेशन',
+      'noServiceRequestsYet': 'अद्याप कोणतीही सेवा विनंती नाही',
+      'noInstallationRequestsYet': 'अद्याप कोणतीही इन्स्टॉलेशन विनंती नाही',
+      'serviceRequestsHere': 'तुमच्या सेवा विनंत्या येथे दिसतील.',
+      'installationRequestsHere': 'तुमच्या इन्स्टॉलेशन विनंत्या येथे दिसतील.',
+      'retry': 'पुन्हा प्रयत्न करा',
+      'maxPhotos6Allowed': 'जास्तीत जास्त ६ फोटोंना परवानगी आहे',
+      'pleaseSelectOneMachine': 'कृपया किमान एक मशीन निवडा.',
+      'pleaseDescribeDetails': 'कृपया विनंतीच्या तपशीलांचे वर्णन करा.',
+      'serviceRequestSuccess': 'सेवा विनंती यशस्वीरित्या सबमिट केली गेली.',
+      'submissionFailed': 'सबमिशन अयशस्वी: {error}',
+      'noMachinesAssigned': 'तुमच्या खात्यावर कोणतीही मशीन नियुक्त केलेली नाही.',
+      'clearAll': 'सर्व साफ करा',
+      'serviceRequest': 'सेवा विनंती',
+      'requestInstallationSubtitle': 'इन्स्टॉलेशनची विनंती करा किंवा तक्रार नोंदवा',
+      'selectMachines': 'मशीन्स निवडा',
+      'selectedCount': '{count} निवडले',
+      'selectMachinesInstruction': 'सर्व्हिसिंगची आवश्यकता असलेल्या सर्व मशीन निवडा. एक तंत्रज्ञ सर्व निवडलेल्या मशीन दुरुस्त करेल.',
+      'selectRequestType': 'विनंतीचा प्रकार निवडा',
+      'description': 'वर्णन',
+      'provideMoreDetailsHint': 'समस्या किंवा विनंती केलेल्या इन्स्टॉलेशन सेवेबद्दल अधिक तपशील द्या...',
+      'whatsAppMoreInfoNote': 'तुम्हाला व्हिडिओ इत्यादी अधिक माहिती पाठवायची असेल तर कृपया आम्हाला व्हॉट्सअॅप करा ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'विनंती सबमिट करा',
+      'submittingRequest': 'विनंती सबमिट होत आहे',
+      'requestDetails': 'विनंतीचे तपशील',
+      'callTechnician': 'तंत्रज्ञांना कॉल करा',
+      'assignedTechnician': 'नियुक्त तंत्रज्ञ',
+      'technicianDetails': 'तंत्रज्ञ तपशील',
+      'noTechnicianAssigned': 'अद्याप कोणताही तंत्रज्ञ नियुक्त केलेला नाही',
+      'happyCode': 'हॅपी कोड',
+      'shareHappyCodeNotice': 'सेवा पूर्ण झाल्यावरच हा हॅपी कोड तंत्रज्ञांशी शेअर करा.',
+      'happyCodeCopied': 'हॅपी कोड क्लिपबोर्डवर कॉपी केला गेला',
+      'cancelRequest': 'विनंती रद्द करा',
+      'voiceNote': 'व्हॉइस नोट',
+      'assignedMachine': 'नियुक्त मशीन',
+      'assignedMachines': 'नियुक्त मशीन्स',
+      'timeline': 'टाइमलाइन',
+    },
+    'te': {
+      'appTitle': 'గుడ్‌లైఫ్ మెషీన్స్ ప్రైవేట్ లిమిటెడ్',
+      'technician': 'నేను ఒక టెక్నీషియన్‌ను',
+      'user': 'నేను ఒక వినియోగదారుని',
+      'login': 'లాగిన్',
+      'signUp': 'సైన్ అప్',
+      'selectLanguage': 'భాషను ఎంచుకోండి',
+      'mobileNumber': 'మొబైల్ సంఖ్య',
+      'selectArea': 'ప్రాంతాన్ని ఎంచుకోండి',
+      'enterValidMobile': 'సరైన మొబైల్ సంఖ్యను నమోదు చేయండి',
+      'pleaseSelectArea': 'దయచేసి ప్రాంతాన్ని ఎంచుకోండి',
+      'loginFailed': 'లాగిన్ విఫలమైంది',
+      'username': 'వినియోగదారు పేరు',
+      'contact': 'సంప్రదించండి',
+      'pleaseFillAllFields': 'దయచేసి అన్ని ఫీల్డ్‌లను పూరించండి',
+      'signupSuccessful': 'సైన్అప్ విజయవంతమైంది',
+      'uploadSelfieNotice': 'దయచేసి మీ సెల్ఫీతో పాటు మెషిన్ ఫోటోను అప్‌లోడ్ చేయండి. ఇది లేకుండా మీ అభ్యర్థన ఆమోదించబడదు.',
+      'uploading': 'అప్‌లోడ్ అవుతోంది...',
+      'camera': 'కెమెరా',
+      'gallery': 'గ్యాలరీ',
+      'signupSuccessTitle': 'సైన్అప్ విజయవంతమైంది',
+      'signupSuccessMsg': 'మీరు విజయవంతంగా సైన్ అప్ చేసారు!',
+      'signupUnderApproval': 'మీ అభ్యర్థన ప్రస్తుతం పరిశీలనలో ఉంది.\n\nఅది ఆమోదించబడిన తర్వాత మేము మీకు తెలియజేస్తాము.\n\nమీరు ఇప్పుడు యాప్‌ను మూసివేసి, లాగిన్ చేయడానికి తర్వాత తిరిగి రావచ్చు.',
+      'navHome': 'హోమ్',
+      'navSales': 'సేల్స్',
+      'navSpareParts': 'స్పేర్ పార్ట్స్',
+      'navService': 'సర్వీస్',
+      'navMyProfile': 'నా ప్రొఫైల్',
+      'viewCart': 'కార్ట్ చూడండి',
+      'exitApp': 'యాప్ నుండి నిష్క్రమించు',
+      'closeAppConfirm': 'మీరు యాప్‌ను మూసివేయాలనుకుంటున్నారా?',
+      'no': 'వద్దు',
+      'yes': 'అవును',
+      'machineInventory': 'మెషిన్ ఇన్వెంటరీ',
+      'byGoodlife': 'గుడ్‌లైఫ్ మెషీన్స్ ప్రైవేట్ లిమిటెడ్ ద్వారా',
+      'searchMachines': 'మెషీన్ల కోసం వెతకండి...',
+      'myMachines': 'నా మెషీన్లు',
+      'welcomeBack': 'स्वागताనికి స్వాగతం, {userName}',
+      'salesSupport': 'సేల్స్ సపోర్ట్',
+      'contactSalesExecutive': 'మీ సేల్స్ ఎగ్జిక్యూటివ్‌ను సంప్రదించండి',
+      'callSalesPerson': 'సేల్స్ పర్సన్‌కి కాల్ చేయండి',
+      'whatsAppSalesPerson': 'సేల్స్ పర్సన్‌కి వాట్సాప్ చేయండి',
+      'spareParts': 'స్పేర్ పార్ట్స్',
+      'orderSparePartsSubtitle': 'మీ యంత్రాల కోసం స్పేర్ పార్ట్స్ ఆర్డర్ చేయండి',
+      'chooseOrderType': 'ఆర్డర్ రకాన్ని ఎంచుకోండి',
+      'chooseOrderTypeSubtitle': 'మీరు స్పేర్ పార్ట్స్ అభ్యర్థనను ఎలా చేయాలనుకుంటున్నారో ఎంచుకోండి.',
+      'expressOrderTitle': 'ఎక్స్‌ప్రెస్ డెలివరీ ఆర్డర్ చేయండి',
+      'expressOrderDesc': 'మా కేటలాగ్‌లో ఇప్పటికే అందుబాటులో ఉన్న మీ యంత్రాల స్పేర్ పార్ట్స్‌ని ఎంచుకుని వాటిని త్వరగా డెలివరీ పొందండి.',
+      'customOrderTitle': 'కస్టమ్ స్పేర్ పార్ట్ ఆర్డర్',
+      'customOrderDesc': 'స్పేర్ పార్ట్ ఫోటోను మాకు పంపండి మరియు మా బృందం లభ్యతను తనిఖీ చేసి మీకు సహాయం చేస్తుంది.',
+      'myProfile': 'నా ప్రొఫైల్',
+      'partyProfile': 'పార్టీ ప్రొఫైల్',
+      'mySparePartOrders': 'నా స్పేర్ పార్ట్ ఆర్డర్లు',
+      'myServiceRequests': 'నా సర్వీస్ అభ్యర్థనలు',
+      'logout': 'లాగ్‌అవుట్',
+      'deleteMyAccount': 'నా ఖాతాను తొలగించు',
+      'deleteAccountTitle': 'ఖాతాను తొలగించు',
+      'deleteAccountConfirm': 'మీరు ఖచ్చితంగా మీ ఖాతాను తొలగించాలనుకుంటున్నారా? ఈ చర్యను తిరిగి పొందలేము.',
+      'cancel': 'రద్దు చేయి',
+      'delete': 'తొలగించు',
+      'logoutConfirmTitle': 'లాగ్‌అవుట్ నిర్ధారణ',
+      'areYouSure': 'మీరు నిశ్చయంగా ఉన్నారా?',
+      'myCart': 'నా కార్ట్',
+      'cartEmpty': 'మీ కార్ట్ ఖాళీగా ఉంది',
+      'subtotal': 'ఉపమొత్తం',
+      'gst': 'జీఎస్టీ (18%)',
+      'freightCharges': 'రవాణా ఛార్జీలు',
+      'grandTotal': 'మొత్తం గరిష్ట ధర',
+      'totalAmount': 'మొత్తం ధర',
+      'placeOrder': 'ఆర్డర్ చేయండి',
+      'payNow': 'ఇప్పుడే చెల్లించండి',
+      'qrCode': 'క్యూఆర్ కోడ్',
+      'bankTransfer': 'బ్యాంక్ బదిలీ',
+      'uploadScreenshot': 'స్క్రీన్‌షాట్ అప్‌లోడ్ చేయండి',
+      'submitPayment': 'చెల్లింపును సమర్పించండి',
+      'qrCodePayment': 'క్యూఆర్ కోడ్ చెల్లింపు',
+      'maxPhotosAllowed': 'గరిష్టంగా 4 ఫోటోలు మాత్రమే అనుమతించబడతాయి',
+      'pleaseUploadPhotosOrMessage': 'దయచేసి ఫోటోలను అప్‌లోడ్ చేయండి లేదా సందేశాన్ని నమోదు చేయండి.',
+      'inquirySubmittedSuccess': 'విచారణ విజయవంతంగా సమర్పించబడింది.',
+      'addPhoto': 'ఫోటోను జోడించు',
+      'customInquiry': 'కస్టమ్ విచారణ',
+      'uploadProductPhotosDetails': 'ఉత్పత్తి ఫోటోలు లేదా వివరాలను అప్‌లోడ్ చేయండి',
+      'cantFindProduct': 'మీ ఉత్పత్తి దొరకలేదా?',
+      'uploadPhotosOrDescribe': 'ఫోటోలను అప్‌లోడ్ చేయండి లేదా మీకు కావలసిన ఉత్పత్తిని వివరించండి.',
+      'photosCount': 'ఫోటోలు ({current}/4)',
+      'placeInquiryOrder': 'విచారణ ఆర్డర్ చేయండి',
+      'sparePartsOrders': 'స్పేర్ పార్ట్ ఆర్డర్లు',
+      'trackSparePartsDeliveries': 'మీ స్పేర్ పార్ట్ డెలివరీలను ట్రాక్ చేయండి',
+      'executiveDelivery': 'ఎక్స్‌ప్రెస్ డెలివరీ',
+      'customOrders': 'కస్టమ్ ఆర్డర్లు',
+      'noExecutiveOrdersFound': 'ఎగ్జిక్యూటివ్ ఆర్డర్‌లు కనుగొనబడలేదు',
+      'noCustomOrdersFound': 'కస్టమ్ ఆర్డర్‌లు కనుగొనబడలేదు',
+      'myServiceRequestsTitle': 'నా సర్వీస్ అభ్యర్థనలు',
+      'trackServiceRequests': 'నా సర్వీస్ & ఇన్‌స్టాలేషన్ అభ్యర్థనలను ట్రాక్ చేయండి',
+      'serviceTab': 'సర్వీస్',
+      'installationTab': 'ఇన్‌స్టాలేషన్',
+      'noServiceRequestsYet': 'ఇంకా ఎటువంటి సర్వీస్ అభ్యర్థనలు లేవు',
+      'noInstallationRequestsYet': 'ఇంకా ఎటువంటి ఇన్‌స్టాలేషన్ అభ్యర్థనలు లేవు',
+      'serviceRequestsHere': 'మీ సర్వీస్ అభ్యర్థనలు ఇక్కడ కనిపిస్తాయి.',
+      'installationRequestsHere': 'మీ ఇన్‌స్టాలేషన్ అభ్యర్థనలు ఇక్కడ కనిపిస్తాయి.',
+      'retry': 'మళ్లీ ప్రయత్నించు',
+      'maxPhotos6Allowed': 'గరిష్టంగా 6 ఫోటోలు మాత్రమే అనుమతించబడతాయి',
+      'pleaseSelectOneMachine': 'దయచేసి కనీసం ఒక యంత్రాన్ని ఎంచుకోండి.',
+      'pleaseDescribeDetails': 'దయచేసి అభ్యర్థన వివరాలను వివరించండి.',
+      'serviceRequestSuccess': 'సర్వీస్ అభ్యర్థన విజయవంతంగా సమర్పించబడింది.',
+      'submissionFailed': 'సమర్పణ విఫలమైంది: {error}',
+      'noMachinesAssigned': 'మీ ఖాతాకు ఎటువంటి యంత్రాలు కేటాయించబడలేదు.',
+      'clearAll': 'అన్నీ తుడిచివేయి',
+      'serviceRequest': 'సర్వీస్ అభ్యర్థన',
+      'requestInstallationSubtitle': 'ఇన్‌స్టాలేషన్ లేదా ఫిర్యాదులను నమోదు చేయండి',
+      'selectMachines': 'యంత్రాలను ఎంచుకోండి',
+      'selectedCount': '{count} ఎంచుకోబడ్డాయి',
+      'selectMachinesInstruction': 'సర్వీస్ అవసరమైన అన్ని యంత్రాలను ఎంచుకోండి. ఒక టెక్నీషియన్ ఎంచుకున్న అన్ని యంత్రాలను సరిచేస్తారు.',
+      'selectRequestType': 'అభ్యర్థన రకాన్ని ఎంచుకోండి',
+      'description': 'వివరణ',
+      'provideMoreDetailsHint': 'సమస్య లేదా ఇన్‌స్టాలేషన్ సర్వీస్ గురించి మరిన్ని వివరాలను అందించండి...',
+      'whatsAppMoreInfoNote': 'మీకు వీడియో మొదలైనవి లాంటి మరింత సమాచారం పంపాల్సిన అవసరం ఉంటే, దయచేసి మాకు వాట్సాప్ చేయండి ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'అభ్యర్థనను సమర్పించండి',
+      'submittingRequest': 'అభ్యర్థనను సమర్పిస్తోంది',
+      'requestDetails': 'అభ్యర్థన వివరాలు',
+      'callTechnician': 'టెక్నీషియన్‌కు కాల్ చేయండి',
+      'assignedTechnician': 'కేటాయించిన టెక్నీషియన్',
+      'technicianDetails': 'టెక్నీషియన్ వివరాలు',
+      'noTechnicianAssigned': 'ఇంకా ఎవరినీ కేటాయించలేదు',
+      'happyCode': 'హ్యాపీ కోడ్',
+      'shareHappyCodeNotice': 'సర్వీస్ పూర్తయిన తర్వాత మాత్రమే ఈ హ్యాపీ కోడ్‌ను టెక్నీషియన్‌తో పంచుకోండి.',
+      'happyCodeCopied': 'హ్యాపీ కోడ్ కాపీ చేయబడింది',
+      'cancelRequest': 'అభ్యర్థనను రద్దు చేయి',
+      'voiceNote': 'వాయిస్ నోట్',
+      'assignedMachine': 'కేటాయించిన యంత్రం',
+      'assignedMachines': 'కేటాయించిన యంత్రాలు',
+      'timeline': 'టైమ్‌లైన్',
+    },
+    'ta': {
+      'appTitle': 'குட்லைஃப் மெஷின்ஸ் பிரைவேட் லிமிடெட்',
+      'technician': 'நான் ஒரு தொழில்நுட்ப வல்லுநர்',
+      'user': 'நான் ஒரு பயனர்',
+      'login': 'உள்நுழை',
+      'signUp': 'பதிவு செய்க',
+      'selectLanguage': 'மொழியைத் தேர்ந்தெடுக்கவும்',
+      'mobileNumber': 'கைபேசி எண்',
+      'selectArea': 'பகுதியைத் தேர்ந்தெடுக்கவும்',
+      'enterValidMobile': 'சரியான கைபேசி எண்ணை உள்ளிடவும்',
+      'pleaseSelectArea': 'தயவுசெய்து பகுதியைத் தேர்ந்தெடுக்கவும்',
+      'loginFailed': 'உள்நுழைவு தோல்வியடைந்தது',
+      'username': 'பயனர் பெயர்',
+      'contact': 'தொடர்பு',
+      'pleaseFillAllFields': 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும்',
+      'signupSuccessful': 'பதிவு வெற்றிகரமாக முடிந்தது',
+      'uploadSelfieNotice': 'தயவுசெய்து உங்கள் செல்ஃபியுடன் இயந்திரத்தின் புகைப்படத்தையும் பதிவேற்றவும். இது இல்லாமல் உங்கள் கோரிக்கை அங்கீகரிக்கப்படாது.',
+      'uploading': 'பதிவேற்றப்படுகிறது...',
+      'camera': 'கேமரா',
+      'gallery': 'கேலரி',
+      'signupSuccessTitle': 'பதிவு வெற்றிகரமாக முடிந்தது',
+      'signupSuccessMsg': 'நீங்கள் வெற்றிகரமாக பதிவு செய்துள்ளீர்கள்!',
+      'signupUnderApproval': 'உங்கள் கோரிக்கை தற்போது ஒப்புதலுக்காக காத்திருக்கிறது.\n\nஅது அங்கீகரிக்கப்பட்டதும் உங்களுக்கு அறிவிப்போம்.\n\nநீங்கள் இப்போது செயலியை மூடிவிட்டு, பின்னர் உள்நுழைய வரலாம்.',
+      'navHome': 'முகப்பு',
+      'navSales': 'விற்பனை',
+      'navSpareParts': 'உதிரி பாகங்கள்',
+      'navService': 'சேவை',
+      'navMyProfile': 'எனது சுயவிவரம்',
+      'viewCart': 'வண்டியைப் பார்',
+      'exitApp': 'செயலியை மூடு',
+      'closeAppConfirm': 'செயலியை மூட விரும்புகிறீர்களா?',
+      'no': 'இல்லை',
+      'yes': 'ஆம்',
+      'machineInventory': 'இயந்திர இருப்பு ವಿವರம்',
+      'byGoodlife': 'குட்லைஃப் மெஷின்ஸ் பிரைவேட் லிமிடெட் தயாரிப்பு',
+      'searchMachines': 'இயந்திரங்களைத் தேடு...',
+      'myMachines': 'எனது இயந்திரங்கள்',
+      'welcomeBack': 'வரவேற்கிறோம், {userName}',
+      'salesSupport': 'விற்பனை ஆதரவு',
+      'contactSalesExecutive': 'உங்கள் விற்பனை அதிகாரியைத் தொடர்பு கொள்ளவும்',
+      'callSalesPerson': 'விற்பனைப் பிரதிநிதியை அழைக்கவும்',
+      'whatsAppSalesPerson': 'விற்பனைப் பிரதிநிதிக்கு வாட்ஸ்அப் செய்யவும்',
+      'spareParts': 'உதிரி பாகங்கள்',
+      'orderSparePartsSubtitle': 'உங்கள் இயந்திரங்களுக்கான உதிரி பாகங்களை ஆர்டர் செய்யுங்கள்',
+      'chooseOrderType': 'ஆர்டர் வகையைத் தேர்ந்தெடுக்கவும்',
+      'chooseOrderTypeSubtitle': 'உங்கள் உதிரி பாகங்கள் கோரிக்கையை எவ்வாறு வைக்க விரும்புகிறீர்கள் என்பதைத் தேர்ந்தெடுக்கவும்.',
+      'expressOrderTitle': 'விரைவு விநியோக ஆர்டர் செய்',
+      'expressOrderDesc': 'எங்கள் பட்டியலில் ஏற்கனவே கிடைக்கக்கூடிய உதிரி பாகங்களைத் தேர்ந்தெடுத்து அவற்றை விரைவாகப் பெறுங்கள்.',
+      'customOrderTitle': 'தனிப்பயன் உதிரி பாகங்கள் ஆர்டர்',
+      'customOrderDesc': 'உதிரி பாகத்தின் ஒரு புகைப்படத்தை எங்களுக்கு அனுப்புங்கள். எங்கள் குழு அதன் இருப்பை சரிபார்த்து உங்களுக்கு உதவும்.',
+      'myProfile': 'எனது சுயவிவரம்',
+      'partyProfile': 'வாடிக்கையாளர் சுயவிவரம்',
+      'mySparePartOrders': 'எனது உதிரி பாகங்கள் ஆர்டர்கள்',
+      'myServiceRequests': 'எனது சேவை கோரிக்கைகள்',
+      'logout': 'வெளியேறு',
+      'deleteMyAccount': 'எனது கணக்கை நீக்கு',
+      'deleteAccountTitle': 'கணக்கை நீக்கு',
+      'deleteAccountConfirm': 'உங்கள் கணக்கை நீக்க விரும்புகிறீர்களா? இந்த நடவடிக்கையை மாற்ற முடியாது.',
+      'cancel': 'ரத்துசெய்',
+      'delete': 'நீக்கு',
+      'logoutConfirmTitle': 'வெளியேறும் உறுதிப்படுத்தல்',
+      'areYouSure': 'நிச்சயமாக வெளியேற வேண்டுமா?',
+      'myCart': 'எனது வண்டி',
+      'cartEmpty': 'உங்கள் வண்டி காலியாக உள்ளது',
+      'subtotal': 'துணைத் தொகை',
+      'gst': 'ஜிஎஸ்டி (18%)',
+      'freightCharges': 'போக்குவரத்து கட்டணம்',
+      'grandTotal': 'மொத்தத் தொகை',
+      'totalAmount': 'மொத்தத் தொகை',
+      'placeOrder': 'ஆர்டர் செய்',
+      'payNow': 'இப்போது செலுத்து',
+      'qrCode': 'க்யூஆர் குறியீடு',
+      'bankTransfer': 'வங்கி பரிமாற்றம்',
+      'uploadScreenshot': 'திரைக்காட்சியைப் பதிவேற்று',
+      'submitPayment': 'கட்டணத்தைச் சமர்ப்பி',
+      'qrCodePayment': 'க்யூஆர் கட்டணம்',
+      'maxPhotosAllowed': 'அதிகபட்சம் 4 புகைப்படங்கள் மட்டுமே அனுமதிக்கப்படும்',
+      'pleaseUploadPhotosOrMessage': 'தயவுசெய்து புகைப்படங்களை பதிவேற்றவும் அல்லது செய்தியை உள்ளிடவும்.',
+      'inquirySubmittedSuccess': 'விசாரணை வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது.',
+      'addPhoto': 'புகைப்படத்தைச் சேர்',
+      'customInquiry': 'தனிப்பயன் விசாரணை',
+      'uploadProductPhotosDetails': 'தயாரிப்பு புகைப்படங்கள் அல்லது বিবরণங்களைப் பதிவேற்றவும்',
+      'cantFindProduct': 'தயாரிப்பைக் கண்டுபிடிக்க முடியவில்லையா?',
+      'uploadPhotosOrDescribe': 'புகைப்படங்களைப் பதிவேற்றவும் அல்லது உங்களுக்குத் தேவையான தயாரிப்பை விவரிக்கவும்.',
+      'photosCount': 'புகைப்படங்கள் ({current}/4)',
+      'placeInquiryOrder': 'விசாரணை ஆர்டர் செய்',
+      'sparePartsOrders': 'உதிரி பாகங்கள் ஆர்டர்கள்',
+      'trackSparePartsDeliveries': 'உங்கள் உதிரி பாகங்கள் விநியோகத்தைக் கண்காணிக்கவும்',
+      'executiveDelivery': 'விரைவு விநியோகம்',
+      'customOrders': 'தனிப்பயன் ஆர்டர்கள்',
+      'noExecutiveOrdersFound': 'ஆர்டர்கள் எதுவும் இல்லை',
+      'noCustomOrdersFound': 'தனிப்பயன் ஆர்டர்கள் எதுவும் இல்லை',
+      'myServiceRequestsTitle': 'எனது சேவை கோரிக்கைகள்',
+      'trackServiceRequests': 'உங்கள் சேவை மற்றும் நிறுவல் கோரிக்கைகளைக் கண்காணிக்கவும்',
+      'serviceTab': 'சேவை',
+      'installationTab': 'நிறுவல்',
+      'noServiceRequestsYet': 'சேவை கோரிக்கைகள் எதுவும் இல்லை',
+      'noInstallationRequestsYet': 'நிறுவல் கோரிக்கைகள் எதுவும் இல்லை',
+      'serviceRequestsHere': 'உங்கள் சேவை கோரிக்கைகள் இங்கே காண்பிக்கப்படும்.',
+      'installationRequestsHere': 'உங்கள் நிறுவல் கோரிக்கைகள் இங்கே காண்பிக்கப்படும்.',
+      'retry': 'மீண்டும் முயற்சி செய்',
+      'maxPhotos6Allowed': 'அதிகபட்சம் 6 புகைப்படங்கள் மட்டுமே அனுமதிக்கப்படும்',
+      'pleaseSelectOneMachine': 'தயவுசெய்து ஒரு இயந்திரத்தையாவது தேர்ந்தெடுக்கவும்.',
+      'pleaseDescribeDetails': 'தயவுசெய்து கோரிக்கையின் விவரங்களை விவரிக்கவும்.',
+      'serviceRequestSuccess': 'சேவை கோரிக்கை வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது.',
+      'submissionFailed': 'சமர்ப்பித்தல் தோல்வியடைந்தது: {error}',
+      'noMachinesAssigned': 'உங்கள் கணக்கில் இயந்திரங்கள் எதுவும் ஒதுக்கப்படவில்லை.',
+      'clearAll': 'அனைத்தையும் நீக்கு',
+      'serviceRequest': 'சேவை கோரிக்கை',
+      'requestInstallationSubtitle': 'நிறுவல் அல்லது புகார்களைப் பதிவு செய்யவும்',
+      'selectMachines': 'இயந்திரங்களைத் தேர்ந்தெடு',
+      'selectedCount': '{count} தேர்ந்தெடுக்கப்பட்டது',
+      'selectMachinesInstruction': 'சேவை தேவைப்படும் அனைத்து இயந்திரங்களையும் தேர்ந்தெடுக்கவும். ஒரு தொழில்நுட்ப வல்லுநர் அனைத்தையும் சரிசெய்வார்.',
+      'selectRequestType': 'கோரிக்கை வகையைத் தேர்ந்தெடு',
+      'description': 'விவரம்',
+      'provideMoreDetailsHint': 'பிரச்சனை அல்லது நிறுவல் சேவை பற்றிய கூடுதல் விவரங்களை வழங்கவும்...',
+      'whatsAppMoreInfoNote': 'வீடியோ போன்ற கூடுதல் தகவல்களை அனுப்ப வேண்டுமென்றால், தயவுசெய்து எங்களுக்கு வாட்ஸ்அப் செய்யவும் ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'கோரிக்கையைச் சமர்ப்பி',
+      'submittingRequest': 'கோரிக்கை சமர்ப்பிக்கப்படுகிறது',
+      'requestDetails': 'கோரிக்கை விவரங்கள்',
+      'callTechnician': 'தொழில்நுட்ப வல்லுநரை அழைக்கவும்',
+      'assignedTechnician': 'ஒதுக்கப்பட்ட தொழில்நுட்ப வல்லுநர்',
+      'technicianDetails': 'தொழில்நுட்ப வல்லுநர் விவரங்கள்',
+      'noTechnicianAssigned': 'தொழில்நுட்ப வல்லுநர் இன்னும் ஒதுக்கப்படவில்லை',
+      'happyCode': 'ஹேப்பி கோட்',
+      'shareHappyCodeNotice': 'சேவை முடிந்த பிறகு மட்டுமே இந்த ஹேப்பி கோடை தொழில்நுட்ப வல்லுநருடன் பகிர்ந்து கொள்ளவும்.',
+      'happyCodeCopied': 'ஹேப்பி கோட் நகலெடுக்கப்பட்டது',
+      'cancelRequest': 'கோரிக்கை ரத்து செய்',
+      'voiceNote': 'குரல் குறிப்பு',
+      'assignedMachine': 'ஒதுக்கப்பட்ட இயந்திரம்',
+      'assignedMachines': 'ஒதுக்கப்பட்ட இயந்திரங்கள்',
+      'timeline': 'காலவரிசை',
+    },
+    'kn': {
+      'appTitle': 'ಗುಡ್‌ಲೈಫ್ ಮೆಷಿನ್ಸ್ ಪ್ರೈವೇಟ್ ಲಿಮಿಟೆಡ್',
+      'technician': 'ನಾನು ತಂತ್ರಜ್ಞ',
+      'user': 'ನಾನು ಬಳಕೆದಾರ',
+      'login': 'ಲಾಗಿನ್',
+      'signUp': 'ಸೈನ್ ಅಪ್',
+      'selectLanguage': 'ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      'mobileNumber': 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ',
+      'selectArea': 'ಪ್ರದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      'enterValidMobile': 'ಮಾನ್ಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ',
+      'pleaseSelectArea': 'ದಯವಿಟ್ಟು ಪ್ರದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      'loginFailed': 'ಲಾಗಿನ್ ವಿಫಲವಾಗಿದೆ',
+      'username': 'ಬಳಕೆದಾರ ಹೆಸರು',
+      'contact': 'ಸಂಪರ್ಕಿಸಿ',
+      'pleaseFillAllFields': 'ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ',
+      'signupSuccessful': 'ಸೈನ್ಅಪ್ ಯಶಸ್ವಿಯಾಗಿದೆ',
+      'uploadSelfieNotice': 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸೆಲ್ಫಿಯೊಂದಿಗೆ ಯಂತ್ರದ ಫೋಟೋವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ. ಇದಿಲ್ಲದೆ ನಿಮ್ಮ ವಿನಂತಿಯನ್ನು ಅನುಮೋದಿಸಲಾಗುವುದಿಲ್ಲ.',
+      'uploading': 'ಅಪ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ...',
+      'camera': 'ಕ್ಯಾಮೆರಾ',
+      'gallery': 'ಗ್ಯಾಲರಿ',
+      'signupSuccessTitle': 'ಸೈನ್ಅಪ್ ಯಶಸ್ವಿಯಾಗಿದೆ',
+      'signupSuccessMsg': 'ನೀವು ಯಶಸ್ವಿಯಾಗಿ ಸೈನ್ ಅಪ್ ಮಾಡಿದ್ದೀರಿ!',
+      'signupUnderApproval': 'ನಿಮ್ಮ ವಿನಂತಿಯು ಪ್ರಸ್ತುತ ಅನುಮೋದನೆಯಲ್ಲಿದೆ.\n\nಅದು ಅನುಮೋದನೆಗೊಂಡ ನಂತರ ನಾವು ನಿಮಗೆ ತಿಳಿಸುತ್ತೇವೆ.\n\nನೀವು ಈಗ ಅಪ್ಲಿಕೇಶನ್ ಮುಚ್ಚಬಹುದು ಮತ್ತು ಲಾಗಿನ್ ಮಾಡಲು ನಂತರ ಬರಬಹುದು.',
+      'navHome': 'ಹೋಮ್',
+      'navSales': 'ಸೇಲ್ಸ್',
+      'navSpareParts': 'ಸ್ಪೇರ್ ಪಾರ್ಟ್ಸ್',
+      'navService': 'ಸರ್ವಿಸ್',
+      'navMyProfile': 'ನನ್ನ ಪ್ರೊಫೈಲ್',
+      'viewCart': 'ಕಾರ್ಟ್ ನೋಡಿ',
+      'exitApp': 'ಅಪ್ಲಿಕೇಶನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ',
+      'closeAppConfirm': 'ನೀವು ಅಪ್ಲಿಕೇಶನ್ ಮುಚ್ಚಲು ಬಯಸುವಿರಾ?',
+      'no': 'ಇಲ್ಲ',
+      'yes': 'ಹೌದು',
+      'machineInventory': 'ಯಂತ್ರ ಇನ್ವೆಂಟರಿ',
+      'byGoodlife': 'ಗುಡ್‌ಲೈಫ್ ಮೆಷಿನ್ಸ್ ಪ್ರೈವೇಟ್ ಲಿಮಿಟೆಡ್‌ನಿಂದ',
+      'searchMachines': 'ಯಂತ್ರಗಳನ್ನು ಹುಡುಕಿ...',
+      'myMachines': 'ನನ್ನ ಯಂತ್ರಗಳು',
+      'welcomeBack': 'ಸ್ವಾಗತ, {userName}',
+      'salesSupport': 'ಸೇಲ್ಸ್ ಸಪೋರ್ಟ್',
+      'contactSalesExecutive': 'ನಿಮ್ಮ ಸೇಲ್ಸ್ ಎಕ್ಸಿಕ್ಯೂಟಿವ್ ಅವರನ್ನು ಸಂಪರ್ಕಿಸಿ',
+      'callSalesPerson': 'ಸೇಲ್ಸ್ ಪರ್ಸನ್ ಅವರಿಗೆ ಕರೆ ಮಾಡಿ',
+      'whatsAppSalesPerson': 'ಸೇಲ್ಸ್ ಪರ್ಸನ್ ಅವರಿಗೆ ವಾಟ್ಸಾಪ್ ಮಾಡಿ',
+      'spareParts': 'ಸ್ಪೇರ್ ಪಾರ್ಟ್ಸ್',
+      'orderSparePartsSubtitle': 'ನಿಮ್ಮ ಯಂತ್ರಗಳಿಗಾಗಿ ಸ್ಪೇರ್ ಪಾರ್ಟ್ಸ್ ಆರ್ಡರ್ ಮಾಡಿ',
+      'chooseOrderType': 'ಆರ್ಡರ್ ಪ್ರಕಾರವನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      'chooseOrderTypeSubtitle': 'ನಿಮ್ಮ ಸ್ಪೇರ್ ಪಾರ್ಟ್ಸ್ ವಿನಂತಿಯನ್ನು ನೀವು ಹೇಗೆ ಮಾಡಲು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.',
+      'expressOrderTitle': 'ಎಕ್ಸ್‌ಪ್ರೆಸ್ ಡೆಲಿವರಿ ಆರ್ಡರ್ ಮಾಡಿ',
+      'expressOrderDesc': 'ನಮ್ಮ ಕ್ಯಾಟಲಾಗ್‌ನಲ್ಲಿ ಈಗಾಗಲೇ ಲಭ್ಯವಿರುವ ನಿಮ್ಮ ಯಂತ್ರಗಳ ಸ್ಪೇರ್ ಪಾರ್ಟ್ಸ್ ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಅವುಗಳನ್ನು ವೇಗವಾಗಿ ಡೆಲಿವರಿ ಪಡೆಯಿರಿ.',
+      'customOrderTitle': 'ಕಸ್ಟಮ್ ಸ್ಪೇರ್ ಪಾರ್ಟ್ ಆರ್ಡರ್',
+      'customOrderDesc': 'ಸ್ಪೇರ್ ಪಾರ್ಟ್‌ನ ಫೋಟೋವನ್ನು ನಮಗೆ ಕಳುಹಿಸಿ ಮತ್ತು ನಮ್ಮ ತಂಡವು ಲಭ್ಯತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.',
+      'myProfile': 'ನನ್ನ ಪ್ರೊಫೈಲ್',
+      'partyProfile': 'ಪಾರ್ಟಿ ಪ್ರೊಫೈಲ್',
+      'mySparePartOrders': 'ನನ್ನ ಸ್ಪೇರ್ ಪಾರ್ಟ್ ಆರ್ಡರ್‌ಗಳು',
+      'myServiceRequests': 'ನನ್ನ ಸರ್ವಿಸ್ ವಿನಂತಿಗಳು',
+      'logout': 'ಲಾಗ್ ಔಟ್',
+      'deleteMyAccount': 'ನನ್ನ ಖಾತೆಯನ್ನು ಅಳಿಸಿ',
+      'deleteAccountTitle': 'ಖಾತೆಯನ್ನು ಅಳಿಸಿ',
+      'deleteAccountConfirm': 'ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ.',
+      'cancel': 'ರದ್ದುಮಾಡಿ',
+      'delete': 'ಅಳಿಸಿ',
+      'logoutConfirmTitle': 'ಲಾಗ್ ಔಟ್ ದೃಢೀಕರಣ',
+      'areYouSure': 'ನೀವು ಖಚಿತವಾಗಿರುವಿರಾ?',
+      'myCart': 'ನನ್ನ ಕಾರ್ಟ್',
+      'cartEmpty': 'ನಿಮ್ಮ ಕಾರ್ಟ್ ಖಾಲಿಯಾಗಿದೆ',
+      'subtotal': 'ಉಪಮೊತ್ತ',
+      'gst': 'ಜಿಎಸ್ಟಿ (18%)',
+      'freightCharges': 'ಸಾರಿಗೆ ಶುಲ್ಕಗಳು',
+      'grandTotal': 'ಒಟ್ಟು ಮೊತ್ತ',
+      'totalAmount': 'ಒಟ್ಟು ಮೊತ್ತ',
+      'placeOrder': 'ಆರ್ಡರ್ ಮಾಡಿ',
+      'payNow': 'ಈಗಲೇ ಪಾವತಿಸಿ',
+      'qrCode': 'ಕ್ಯೂಆರ್ ಕೋಡ್',
+      'bankTransfer': 'ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆ',
+      'uploadScreenshot': 'ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',
+      'submitPayment': 'ಪಾವತಿಯನ್ನು ಸಲ್ಲಿಸಿ',
+      'qrCodePayment': 'ಕ್ಯೂಆರ್ ಕೋಡ್ ಪಾವತಿ',
+      'maxPhotosAllowed': 'ಗರಿಷ್ಠ 4 ಫೋಟೋಗಳಿಗೆ ಮಾತ್ರ ಅನುಮತಿ ಇದೆ',
+      'pleaseUploadPhotosOrMessage': 'ದಯವಿಟ್ಟು ಫೋಟೋಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ ಅಥವಾ ಸಂದೇಶವನ್ನು ನಮೂದಿಸಿ.',
+      'inquirySubmittedSuccess': 'ವಿಚಾರಣೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ.',
+      'addPhoto': 'ಫೋಟೋ ಸೇರಿಸಿ',
+      'customInquiry': 'ಕಸ್ಟಮ್ ವಿಚಾರಣೆ',
+      'uploadProductPhotosDetails': 'ಉತ್ಪನ್ನದ ಫೋಟೋಗಳು ಅಥವಾ ವಿವರಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',
+      'cantFindProduct': 'ನಿಮ್ಮ ಉತ್ಪನ್ನ ಸಿಗುತ್ತಿಲ್ಲವೇ?',
+      'uploadPhotosOrDescribe': 'ಫೋಟೋಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ ಅಥವಾ ನಿಮಗೆ ಅಗತ್ಯವಿರುವ ಉತ್ಪನ್ನವನ್ನು ವಿವರಿಸಿ.',
+      'photosCount': 'ಫೋಟೋಗಳು ({current}/4)',
+      'placeInquiryOrder': 'ವಿಚಾರಣೆ ಆರ್ಡರ್ ಮಾಡಿ',
+      'sparePartsOrders': 'ಸ್ಪೇರ್ ಪಾರ್ಟ್ ಆರ್ಡರ್‌ಗಳು',
+      'trackSparePartsDeliveries': 'ನಿಮ್ಮ ಸ್ಪೇರ್ ಪಾರ್ಟ್ಸ್ ಡೆಲಿವರಿಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+      'executiveDelivery': 'ಎಕ್ಸ್‌ಪ್ರೆಸ್ ಡೆಲಿವರಿ',
+      'customOrders': 'ಕಸ್ಟಮ್ ಆರ್ಡರ್‌ಗಳು',
+      'noExecutiveOrdersFound': 'ಯಾವುದೇ ಆರ್ಡರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ',
+      'noCustomOrdersFound': 'ಯಾವುದೇ ಕಸ್ಟಮ್ ಆರ್ಡರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ',
+      'myServiceRequestsTitle': 'ನನ್ನ ಸರ್ವಿಸ್ ವಿನಂತಿಗಳು',
+      'trackServiceRequests': 'ನನ್ನ ಸರ್ವಿಸ್ ಮತ್ತು ಇನ್‌ಸ್ಟಾಲೇಶನ್ ವಿನಂತಿಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+      'serviceTab': 'ಸರ್ವಿಸ್',
+      'installationTab': 'ಇನ್‌ಸ್ಟಾಲೇಶನ್',
+      'noServiceRequestsYet': 'ಇನ್ನೂ ಯಾವುದೇ ಸರ್ವಿಸ್ ವಿನಂತಿಗಳಿಲ್ಲ',
+      'noInstallationRequestsYet': 'ಇನ್ನೂ ಯಾವುದೇ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ವಿನಂತಿಗಳಿಲ್ಲ',
+      'serviceRequestsHere': 'ನಿಮ್ಮ ಸರ್ವಿಸ್ ವಿನಂತಿಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ.',
+      'installationRequestsHere': 'ನಿಮ್ಮ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ವಿನಂತಿಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ.',
+      'retry': 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
+      'maxPhotos6Allowed': 'ಗರಿಷ್ಠ 6 ಫೋಟೋಗಳಿಗೆ ಮಾತ್ರ ಅನುಮತಿ ಇದೆ',
+      'pleaseSelectOneMachine': 'ದಯವಿಟ್ಟು ಕನಿಷ್ಠ ಒಂದು ಯಂತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ.',
+      'pleaseDescribeDetails': 'ದಯವಿಟ್ಟು ವಿನಂತಿಯ ವಿವರಗಳನ್ನು ವಿವರಿಸಿ.',
+      'serviceRequestSuccess': 'ಸರ್ವಿಸ್ ವಿನಂತಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ.',
+      'submissionFailed': 'ಸಲ್ಲಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: {error}',
+      'noMachinesAssigned': 'ನಿಮ್ಮ ಖಾತೆಗೆ ಯಾವುದೇ ಯಂತ್ರಗಳನ್ನು ನಿಯೋಜಿಸಲಾಗಿಲ್ಲ.',
+      'clearAll': 'ಎಲ್ಲವನ್ನೂ ತೆರವುಗೊಳಿಸಿ',
+      'serviceRequest': 'ಸರ್ವಿಸ್ ವಿನಂತಿ',
+      'requestInstallationSubtitle': 'ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಅಥವಾ ದೂರುಗಳನ್ನು ಸಲ್ಲಿಸಿ',
+      'selectMachines': 'ಯಂತ್ರಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      'selectedCount': '{count} ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ',
+      'selectMachinesInstruction': 'ಸರ್ವಿಸ್ ಅಗತ್ಯವಿರುವ ಎಲ್ಲಾ ಯಂತ್ರಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ. ಒಬ್ಬ ತಂತ್ರಜ್ಞನು ಎಲ್ಲಾ ಆಯ್ಕೆಮಾಡಿದ ಯಂತ್ರಗಳನ್ನು ದುರಸ್ತಿ ಮಾಡುತ್ತಾನೆ.',
+      'selectRequestType': 'ವಿನಂತಿ ಪ್ರಕಾರವನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      'description': 'ವಿವರಣೆ',
+      'provideMoreDetailsHint': 'ಸಮಸ್ಯೆ ಅಥವಾ ವಿನಂತಿಸಿದ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಸೇವೆಯ ಬಗ್ಗೆ ಹೆಚ್ಚಿನ ವಿವರಗಳನ್ನು ಒದಗಿಸಿ...',
+      'whatsAppMoreInfoNote': 'ವೀಡಿಯೊ ಇತ್ಯಾದಿಗಳಂತಹ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಯನ್ನು ಕಳುಹಿಸಬೇಕಾದರೆ, ದಯವಿಟ್ಟು ನಮಗೆ ವಾಟ್ಸಾಪ್ ಮಾಡಿ ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'ವಿನಂತಿಯನ್ನು ಸಲ್ಲಿಸಿ',
+      'submittingRequest': 'ವಿನಂತಿಯನ್ನು ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ',
+      'requestDetails': 'ವಿನಂತಿಯ ವಿವರಗಳು',
+      'callTechnician': 'ತಂತ್ರಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ',
+      'assignedTechnician': 'ನಿಯೋಜಿತ ತಂತ್ರಜ್ಞ',
+      'technicianDetails': 'ತಂತ್ರಜ್ಞರ ವಿವರಗಳು',
+      'noTechnicianAssigned': 'ಇನ್ನೂ ಯಾರನ್ನೂ ನಿಯೋಜಿಸಿಲ್ಲ',
+      'happyCode': 'ಹ್ಯಾಪಿ ಕೋಡ್',
+      'shareHappyCodeNotice': 'ಸರ್ವಿಸ್ ಪೂರ್ಣಗೊಂಡ ನಂತರವೇ ಈ ಹ್ಯಾಪಿ ಕೋಡ್ ಅನ್ನು ತಂತ್ರಜ್ಞರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ.',
+      'happyCodeCopied': 'ಹ್ಯಾಪಿ ಕೋಡ್ ನಕಲು ಮಾಡಲಾಗಿದೆ',
+      'cancelRequest': 'ವಿನಂತಿಯನ್ನು ರದ್ದುಮಾಡಿ',
+      'voiceNote': 'ಧ್ವನಿ ಟಿಪ್ಪಣಿ',
+      'assignedMachine': 'ನಿಯೋಜಿತ ಯಂತ್ರ',
+      'assignedMachines': 'ನಿಯೋಜಿತ ಯಂತ್ರಗಳು',
+      'timeline': 'ಟೈಮ್‌ಲೈನ್',
+    },
+    'or': {
+      'appTitle': 'ଗୁଡ଼ଲାଇଫ ମେସିନ୍ସ ପ୍ରାଇଭେଟ ଲିମିଟେଡ୍',
+      'technician': 'ମୁଁ ଜଣେ ଟେକ୍ନିସିଆନ୍',
+      'user': 'ମୁଁ ଜଣେ ବ୍ୟବହାରକାରୀ',
+      'login': 'ଲଗଇନ୍',
+      'signUp': 'ସାଇନ୍ ଅପ୍',
+      'selectLanguage': 'ଭାଷା ଚୟନ କରନ୍ତು',
+      'mobileNumber': 'ମୋବାଇଲ୍ ନମ୍ବର',
+      'selectArea': 'ଅଞ୍ଚଳ ଚୟନ କରନ୍ତୁ',
+      'enterValidMobile': 'ବୈଧ ମୋବାଇଲ୍ ନମ୍ବର ପ୍ରବେଶ କରନ୍ତು',
+      'pleaseSelectArea': 'ଦୟାକରି ଅଞ୍ଚଳ ଚୟନ କରନ୍ତು',
+      'loginFailed': 'ଲଗଇନ୍ ବିଫଳ ହେଲା',
+      'username': 'ଉପଭୋକ୍ତା ନାମ',
+      'contact': 'ସମ୍ପର୍କ',
+      'pleaseFillAllFields': 'ଦୟାକରି ସମସ୍ତ ବିବରଣୀ ପୂରଣ କରନ୍ତು',
+      'signupSuccessful': 'ସାଇନ୍ଅପ୍ ସଫଳ ହେଲା',
+      'uploadSelfieNotice': 'ଦୟାକରି ଆପଣଙ୍କର ସେଲଫି ସହିତ ମେସିନର ଫଟୋ ଅପଲୋଡ୍ କରନ୍ତು। ଏହା ବିନା ଆପଣଙ୍କର ଅନୁରୋଧ ଗ୍ରହଣ କରାଯିବ ନାହିଁ।',
+      'uploading': 'ଅପଲୋଡ୍ ହେଉଛି...',
+      'camera': 'କ୍ୟାମେରା',
+      'gallery': 'ଗ୍ୟାଲେରୀ',
+      'signupSuccessTitle': 'ସାଇନ୍ଅପ୍ ସଫଳ ହେଲା',
+      'signupSuccessMsg': 'ଆପଣ ସଫଳତାର ସହିତ ସାଇନ୍ ଅପ୍ କରିଛନ୍ତି!',
+      'signupUnderApproval': 'ଆପଣଙ୍କର ଅନୁରୋଧ ବର୍ତ୍ତମାନ ଅନୁମୋଦନ ଅଧୀନରେ ଅଛି।\n\nଅନୁମୋଦିତ ହେବା ପରେ ଆମେ ଆପଣଙ୍କୁ ଜଣାଇବୁ।\n\nଆପଣ ବର୍ତ୍ତମାନ ଆପ୍ ବନ୍ଦ କରିପାରିବେ ଏବଂ ପରେ ଲଗଇନ୍ କରିବାକୁ ଆସିପାରିବେ।',
+      'navHome': 'ହୋମ୍',
+      'navSales': 'ବିକ୍ରୟ',
+      'navSpareParts': 'ସ୍ପେୟାର ପାର୍ଟସ୍',
+      'navService': 'ସେବା',
+      'navMyProfile': 'ମୋର ପ୍ରୋଫାଇଲ୍',
+      'viewCart': 'କାର୍ଟ ଦେଖନ୍ତು',
+      'exitApp': 'ଆପ୍ ବନ୍ଦ କରନ୍ତು',
+      'closeAppConfirm': 'ଆପଣ ଆପ୍ ବନ୍ଦ କରିବାକୁ ଚାହାଁନ୍ତି କି?',
+      'no': 'ନା',
+      'yes': 'ହଁ',
+      'machineInventory': 'ମେସିନ୍ ଇନଭେଣ୍ଟ୍ରି',
+      'byGoodlife': 'ଗୁଡ଼ଲାଇଫ ମେସିନ୍ସ ପ୍ରାଇଭେଟ ଲିମିଟେଡ୍ ଦ୍ଵାରା',
+      'searchMachines': 'ମେସିନ୍ ସନ୍ଧାନ କରନ୍ତು...',
+      'myMachines': 'ମୋର ମେସିନ୍ ସମୂହ',
+      'welcomeBack': 'ସ୍ୱାଗତ, {userName}',
+      'salesSupport': 'ବିକ୍ରୟ ସହାୟତା',
+      'contactSalesExecutive': 'ଆପଣଙ୍କ ବିକ୍ରୟ ଅଧିକାରୀଙ୍କ ସହ ସମ୍ପର୍କ କରନ୍ତು',
+      'callSalesPerson': 'ସେଲ୍ସ ପର୍ସନଙ୍କୁ କଲ୍ କରନ୍ତು',
+      'whatsAppSalesPerson': 'ସେଲ୍ସ ପର୍ସନଙ୍କୁ ହ୍ଵାଟ୍ସଆପ୍ କରନ୍ତು',
+      'spareParts': 'ସ୍ପେୟାର ପାର୍ଟସ୍',
+      'orderSparePartsSubtitle': 'ଆପଣଙ୍କ ମେସିନ୍ ପାଇଁ ସ୍ପେୟାର ପାର୍ଟସ୍ ଅର୍ଡਰ କରନ୍ତು',
+      'chooseOrderType': 'ଅର୍ଡਰ ପ୍ରକାର ଚୟନ କରନ୍ତು',
+      'chooseOrderTypeSubtitle': 'ଆପଣ କିପରି ସ୍ପେୟାର ପାର୍ଟସ୍ ଅନୁରୋਧ କରିବାକୁ ଚାହୁଁଛନ୍ତି ଚୟନ କରନ୍ତୁ।',
+      'expressOrderTitle': 'ଏକ୍ସପ୍ରେସ୍ ଡେଲିଭରି ଅର୍ଡਰ କରନ୍ତು',
+      'expressOrderDesc': 'ଆମର କାଟାଲଗ୍‌ରେ ପୂର୍ବରୁ ଉପଲବ୍ଧ ସ୍ପେୟାର ପାର୍ଟସ୍ ଚୟନ କରି ଶୀଘ୍ର ଡେଲିଭରି ପାଆନ୍ତು।',
+      'customOrderTitle': 'କଷ୍ଟମ୍ ସ୍ପେୟାର ପାର୍ଟ ଅର୍ଡਰ',
+      'customOrderDesc': 'ସ୍ପେୟାର ପାର୍ଟର ଏକ ଫଟୋ ପଠାନ୍ତು ଏବଂ ଆମର ଟିମ୍ ଉପଲବ୍ଧତା ଯାଞ୍ଚ କରି ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବ।',
+      'myProfile': 'ମୋର ପ୍ରୋଫାଇଲ୍',
+      'partyProfile': 'ଗ୍ରାହକ ପ୍ରୋଫାଇଲ୍',
+      'mySparePartOrders': 'ମୋର ସ୍ପେୟାର ପାର୍ଟସ୍ ଅର୍ଡਰ',
+      'myServiceRequests': 'ମୋର ସେବା ଅନୁରୋଧ',
+      'logout': 'ଲଗଆଉଟ୍',
+      'deleteMyAccount': 'ମୋର ଆକାଉଣ୍ଟ୍ ବିଲୋପ କରନ୍ତು',
+      'deleteAccountTitle': 'ଆକାଉଣ୍ଟ୍ ବିଲୋପ କରନ୍ତು',
+      'deleteAccountConfirm': 'ଆପଣ ନିଶ୍ଚିତ ଭାବରେ ଆପଣଙ୍କର ଆକาଉଣ୍ଟ୍ ବିଲୋପ କରିବାକୁ ଚାହାଁନ୍ତି କି? ଏହା ପରିବର୍ତ୍ତਨ କରାଯାଇପାରିବ ନାହିଁ।',
+      'cancel': 'ବାତିଲ୍ କରନ୍ତು',
+      'delete': 'ବିଲୋପ କରନ୍ତು',
+      'logoutConfirmTitle': 'ଲଗଆଉଟ୍ ନିଶ୍ଚିତକରଣ',
+      'areYouSure': 'ଆପଣ ନିଶ୍ଚିତ କି?',
+      'myCart': 'ମୋର କାର୍ଟ',
+      'cartEmpty': 'ଆପଣଙ୍କ କାର୍ଟ ଖାଲି ଅଛି',
+      'subtotal': 'ଉପ-ମୋଟ୍',
+      'gst': 'ଜିଏସଟି (୧୮%)',
+      'freightCharges': 'ପରିବହନ ଖର୍ଚ୍ଚ',
+      'grandTotal': 'ସର୍ବମୋଟ୍',
+      'totalAmount': 'ମୋଟ୍ ପରିମାଣ',
+      'placeOrder': 'ଅର୍ଡਰ କରନ୍ତು',
+      'payNow': 'ଏବେ ପେମେଣ୍ଟ୍ କରନ୍ତು',
+      'qrCode': 'କ୍ୟୁଆର୍ କୋଡ୍',
+      'bankTransfer': 'ବ୍ୟାଙ୍କ୍ ଟ୍ରାନ୍ସଫର',
+      'uploadScreenshot': 'ସ୍କ୍ରିନସଟ୍ ଅପଲୋଡ୍ କରନ୍ତು',
+      'submitPayment': 'ପେମେଣ୍ଟ୍ ଦାଖଲ କରନ୍ତು',
+      'qrCodePayment': 'କ୍ୟୁଆର୍ କୋଡ୍ ପେମେଣ୍ଟ୍',
+      'maxPhotosAllowed': 'ସର୍ବାଧିକ ୪ଟି ଫଟୋ ଅନୁମତିପ୍ରାପ୍ତ',
+      'pleaseUploadPhotosOrMessage': 'ଦୟାକରି ଫଟୋ ଅପଲୋଡ୍ କରନ୍ତು କିମ୍ବା ବାର୍ତ୍ତା ଲେଖନ୍ତು।',
+      'inquirySubmittedSuccess': 'ଅնୁସନ୍ଧาน ସଫଳତାର ସହିତ ଦାଖଲ ହେଲା।',
+      'addPhoto': 'ଫଟୋ ଯୋଡ଼ନ୍ତು',
+      'customInquiry': 'କଷ୍ଟମ୍ ଅନୁସନ୍ଧାନ',
+      'uploadProductPhotosDetails': 'ଉତ୍ପାଦର ଫଟୋ କିମ୍ବା ବିବରଣୀ ଅପଲୋଡ୍ କରନ୍ତು',
+      'cantFindProduct': 'ଆପଣଙ୍କ ଉତ୍ପାਦ ମିଳୁନାହିଁ କି?',
+      'uploadPhotosOrDescribe': 'ଫଟୋ ଅପଲୋଡ୍ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର ଆବଶ୍ୟକ ଉତ୍ପାଦ ବର୍ଣ୍ଣନା କରନ୍ତୁ।',
+      'photosCount': 'ଫଟୋ ({current}/୪)',
+      'placeInquiryOrder': 'ଅନୁସନ୍ଧାନ ଅର୍ଡର କରନ୍ତୁ',
+      'sparePartsOrders': 'ସ୍ପେୟାର ପାର୍ଟସ୍ ଅର୍ଡର',
+      'trackSparePartsDeliveries': 'ଆପଣଙ୍କ ସ୍ପେୟାର ପାର୍ଟସ୍ ଡେଲିଭରି ଟ୍ରାକ୍ କରନ୍ତୁ',
+      'executiveDelivery': 'Express Delivery',
+      'customOrders': 'କଷ୍ଟମ୍ ଅର୍ଡର',
+      'noExecutiveOrdersFound': 'କୌଣସି ଅର୍ଡର ମିଳିଲା ନାହିଁ',
+      'noCustomOrdersFound': 'କୌଣସି କଷ୍ଟମ୍ ଅର୍ଡର ମିଳିଲା ନାହିଁ',
+      'myServiceRequestsTitle': 'ମୋର ସେବା ଅନୁରୋଧ',
+      'trackServiceRequests': 'ଆପଣଙ୍କର ସେବା ଏବଂ ସ୍ଥାପନ ଅନୁରୋଧ ଟ୍ରାକ୍ କରନ୍ତୁ',
+      'serviceTab': 'ସେବା',
+      'installationTab': 'ସ୍ଥାପନ',
+      'noServiceRequestsYet': 'କୌଣସି ସେବା ଅନୁରୋଧ ନାହିଁ',
+      'noInstallationRequestsYet': 'କୌଣସି ସ୍ଥାପନ ଅନୁରୋଧ ନାହିଁ',
+      'serviceRequestsHere': 'ଆପଣଙ୍କର ସେବା ଅନୁରୋଧ ଏଠାରେ ଦେଖାଯିବ।',
+      'installationRequestsHere': 'ଆପଣଙ୍କର ସ୍ଥାପନ ଅନୁରୋଧ ଏଠାରେ ଦେଖାଯିବ।',
+      'retry': 'ପୁଣି ଚେଷ୍ଟା କରନ୍ତು',
+      'maxPhotos6Allowed': 'ସର୍ବାଧିକ ୬ଟି ଫଟୋ ଅନୁମତିପ୍ରାପ୍ତ',
+      'pleaseSelectOneMachine': 'ଦୟาକରି ଅତିକମରେ ଗୋଟିଏ ମେସିନ୍ ଚୟନ କରନ୍ତು।',
+      'pleaseDescribeDetails': 'ଦୟାକରି ଅନୁରୋଧର ବିବରଣୀ ବର୍ଣ୍ଣନା କରନ୍ତು।',
+      'serviceRequestSuccess': 'ସେବା ଅନୁରୋଧ ସଫଳତାର ସହିତ ଦାଖଲ ହେଲା।',
+      'submissionFailed': 'ଦାଖଲ ବିଫଳ ହେଲା: {error}',
+      'noMachinesAssigned': 'ଆପଣଙ୍କ ଆକାଉଣ୍ଟ୍‌ରେ କୌଣସି ମେସିନ୍ ସଂଯୋਗ ହୋଇନାହିଁ।',
+      'clearAll': 'ସବୁ ସଫା କରନ୍ତು',
+      'serviceRequest': 'ସେବା ଅନୁରୋଧ',
+      'requestInstallationSubtitle': 'ସ୍ଥାପନ ଅନୁରୋਧ କରନ୍ତು କିମ୍ବା ଅଭିଯୋਗ ଦାଖଲ କରନ୍ତು',
+      'selectMachines': 'ମେସିନ୍ ଚୟନ କରନ୍ତು',
+      'selectedCount': '{count}ଟି ଚୟନ ହୋଇଛି',
+      'selectMachinesInstruction': 'ସେବା ଆବଶ୍ୟକ କରୁଥିବା ସମସ୍ତ ମେସିନ୍ ଚୟନ କରନ୍ତು। ଜଣେ ଟେକ୍ନିସିଆନ୍ ସମସ୍ତ ଚୟନିତ ମେସିନ୍ ମରାମତି କରିବେ।',
+      'selectRequestType': 'ଅନୁରୋਧ ପ୍ରକାର ଚୟନ କରନ୍ତು',
+      'description': 'ବିବରଣୀ',
+      'provideMoreDetailsHint': 'ସମସ୍ୟା କିମ୍ବା ସ୍ଥାପନ ସେବା ବିଷୟରେ ଅଧିକ ବିବରଣୀ ପ୍ରଦାନ କରନ୍ତು...',
+      'whatsAppMoreInfoNote': 'ଯଦି ଆପଣଙ୍କୁ ଭିଡିଓ ଇତ୍ୟାଦି ଅଧିକ ସୂଚନା ପଠାଇବାକୁ ପଡ଼ିବ, ଦୟାକରି ଆମକୁ ହ୍ୱାଟ୍ସଆପ୍ କରନ୍ତୁ ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'ଅନୁରୋਧ ଦାଖଲ କରନ୍ତು',
+      'submittingRequest': 'ଅନୁରୋਧ ଦାଖଲ କରାଯାଉଛି',
+      'requestDetails': 'ଅନୁରୋਧ ବିବରଣୀ',
+      'callTechnician': 'ଟେକ୍ନିସିଆନ୍‌ଙ୍କୁ କଲ୍ କରନ୍ତು',
+      'assignedTechnician': 'ନିଯୁକ୍ତ ଟେକ୍ନିସିଆନ୍',
+      'technicianDetails': 'ଟେକ୍ନିସିଆନ୍ ବିବରଣୀ',
+      'noTechnicianAssigned': 'କୌଣସି ଟେକ୍ନିସିଆନ୍ ନିଯୁକ୍ତ ହୋଇନାହାନ୍ତି',
+      'happyCode': 'ହାପି କୋଡ୍',
+      'shareHappyCodeNotice': 'ସେବା ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ହିଁ ଏହି ହାପି କୋଡ୍ ଟେକ୍ନିସିଆନ୍‌ଙ୍କ ସହ ସେୟାର୍ କରନ୍ତು।',
+      'happyCodeCopied': 'ହାପି କୋଡ୍ କପି ହେଲା',
+      'cancelRequest': 'ଅନୁରୋਧ ବାତିଲ୍ କରନ୍ତು',
+      'voiceNote': 'ଭଏସ୍ ନୋଟ୍',
+      'assignedMachine': 'ନିଯୁକ୍ତ ମେସିନ୍',
+      'assignedMachines': 'ନିଯୁକ୍ତ ମେସିନ୍ ସମୂହ',
+      'timeline': 'ଟାଇମଲାଇନ',
+    },
+    'ml': {
+      'appTitle': 'ഗുഡ്‌ലൈഫ് മെഷീൻസ് പ്രൈവറ്റ് ലിമിറ്റഡ്',
+      'technician': 'ഞാൻ ഒരു ടെക്നീഷ്യൻ ആണ്',
+      'user': 'ഞാൻ ഒരു ഉപയോക്താവ് ആണ്',
+      'login': 'ലോഗിൻ',
+      'signUp': 'সাইন্ അപ്പ്',
+      'selectLanguage': 'ഭാഷ തിരഞ്ഞെടുക്കുക',
+      'mobileNumber': 'മൊബൈൽ നമ്പർ',
+      'selectArea': 'പ്രദേശം തിരഞ്ഞെടുക്കുക',
+      'enterValidMobile': 'സാധുവായ മൊബൈൽ നമ്പർ നൽകുക',
+      'pleaseSelectArea': 'ദയവായി പ്രദേശം തിരഞ്ഞെടുക്കുക',
+      'loginFailed': 'ലോഗിൻ പരാജയപ്പെട്ടു',
+      'username': 'ഉപയോക്തൃനാമം',
+      'contact': 'ബന്ധപ്പെടുക',
+      'pleaseFillAllFields': 'ദയവായി എല്ലാ വിവരങ്ങളും പൂരിപ്പിക്കുക',
+      'signupSuccessful': 'സൈൻഅപ്പ് വിജയകരമായി പൂർത്തിയായി',
+      'uploadSelfieNotice': 'ദയവായി നിങ്ങളുടെ സെൽഫിയോടൊപ്പം മെഷീന്റെ ഫോട്ടോയും അപ്‌ലോഡ് ചെയ്യുക. ഇതുകൂടാതെ നിങ്ങളുടെ അപേക്ഷ അംഗീകരിക്കപ്പെടില്ല.',
+      'uploading': 'അപ്‌ലോഡ് ചെയ്യുന്നു...',
+      'camera': 'ക്യാമറ',
+      'gallery': 'ഗാലറി',
+      'signupSuccessTitle': 'സൈൻഅപ്പ് വിജയകരം',
+      'signupSuccessMsg': 'നിങ്ങൾ വിജയകരമായി സൈൻ അപ്പ് ചെയ്തു!',
+      'signupUnderApproval': 'നിങ്ങളുടെ അപേക്ഷ നിലവിൽ അംഗീകാരത്തിനായി കാത്തിരിക്കുകയാണ്.\n\nഅത് അംഗീകരിക്കപ്പെടുമ്പോൾ ഞങ്ങൾ നിങ്ങളെ അറിയിക്കും.\n\nനിങ്ങൾക്ക് ഇപ്പോൾ ആപ്പ് അടച്ചുപൂട്ടാം, ലോഗിൻ ചെയ്യാൻ പിന്നീട് വരാം.',
+      'navHome': 'ഹോം',
+      'navSales': 'സെയിൽസ്',
+      'navSpareParts': 'സ്പെയർ പാർട്സ്',
+      'navService': 'സർവീസ്',
+      'navMyProfile': 'എന്റെ പ്രൊഫൈൽ',
+      'viewCart': 'കാർട്ട് കാണുക',
+      'exitApp': 'ആപ്പിൽ നിന്നും പുറത്തു കടക്കുക',
+      'closeAppConfirm': 'നിങ്ങൾക്ക് ആപ്പ് അടയ്ക്കണോ?',
+      'no': 'അല്ല',
+      'yes': 'അതെ',
+      'machineInventory': 'മെഷീൻ ഇൻവെന്ററി',
+      'byGoodlife': 'ഗുഡ്‌ലൈഫ് മെഷീൻസ് പ്രൈവറ്റ് ലിമിറ്റഡ് നൽകുന്നത്',
+      'searchMachines': 'മെഷീനുകൾ തിരയുക...',
+      'myMachines': 'എന്റെ മെഷീനുകൾ',
+      'welcomeBack': 'സ്വാഗതം, {userName}',
+      'salesSupport': 'സെയിൽസ് സപ്പോർട്ട്',
+      'contactSalesExecutive': 'നിങ്ങളുടെ സെയിൽസ് എക്സിക്യൂട്ടീവുമായി ബന്ധപ്പെടുക',
+      'callSalesPerson': 'സെയിൽസ് പേഴ്സണെ വിളിക്കുക',
+      'whatsAppSalesPerson': 'സെയിൽസ് പേഴ്സണെ വാട്സാപ്പ് ചെയ്യുക',
+      'spareParts': 'സ്പെയർ പാർട്സ്',
+      'orderSparePartsSubtitle': 'നിങ്ങളുടെ മെഷീനുകൾക്കായി സ്പെയർ പാർട്സുകൾ ഓർഡർ ചെയ്യുക',
+      'chooseOrderType': 'ഓർഡർ തരം തിരഞ്ഞെടുക്കുക',
+      'chooseOrderTypeSubtitle': 'നിങ്ങളുടെ സ്പെയർ പാർട്സ് അപേക്ഷ എങ്ങനെ നൽകണമെന്ന് തിരഞ്ഞെടുക്കുക.',
+      'expressOrderTitle': 'എക്സ്പ്രസ് ഡെലിവറി ഓർഡർ ചെയ്യുക',
+      'expressOrderDesc': 'ഞങ്ങളുടെ കാറ്റലോഗിൽ ലഭ്യമായ സ്പെയർ പാർട്സുകൾ തിരഞ്ഞെടുത്ത് വേഗത്തിൽ ഡെലിവറി നേടുക.',
+      'customOrderTitle': 'കസ്റ്റം സ്പെയർ പാർട്ട് ഓർഡർ',
+      'customOrderDesc': 'സ്പെയർ പാർട്ടിന്റെ ഒരു ചിത്രം ഞങ്ങൾക്ക് അയച്ചുതരൂ, ലഭ്യമാണോ എന്ന് പരിശോധിച്ച് ഞങ്ങളുടെ ടീം സഹായിക്കും.',
+      'myProfile': 'എന്റെ പ്രൊഫൈൽ',
+      'partyProfile': 'പാർട്ടി പ്രൊഫൈൽ',
+      'mySparePartOrders': 'എന്റെ സ്പെയർ പാർട്ട് ഓർഡറുകൾ',
+      'myServiceRequests': 'എന്റെ സർവീസ് അപേക്ഷകൾ',
+      'logout': 'ലോഗ് ഔട്ട്',
+      'deleteMyAccount': 'എന്റെ അക്കൗണ്ട് ഇല്ലാതാക്കുക',
+      'deleteAccountTitle': 'അക്കൗണ്ട് ഇല്ലാതാക്കുക',
+      'deleteAccountConfirm': 'നിങ്ങൾക്ക് അക്കൗണ്ട് ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ? ഈ നടപടി മാറ്റാൻ കഴിയില്ല.',
+      'cancel': 'റദ്ദാക്കുക',
+      'delete': 'ഇല്ലാതാക്കുക',
+      'logoutConfirmTitle': 'ലോഗ് ഔട്ട് സ്ഥിരീകരണം',
+      'areYouSure': 'തീർച്ചയാണോ?',
+      'myCart': 'എന്റെ കാർട്ട്',
+      'cartEmpty': 'നിങ്ങളുടെ കാർട്ട് ശൂന്യമാണ്',
+      'subtotal': 'സബ്‌ടോട്ടൽ',
+      'gst': 'জিഎസ്റ്റി (18%)',
+      'freightCharges': 'ട്രാൻസ്പോർട്ട് ചാർജ്ജ്',
+      'grandTotal': 'ആകെ തുക',
+      'totalAmount': 'ആകെ തുക',
+      'placeOrder': 'ഓർഡർ ചെയ്യുക',
+      'payNow': 'ഇപ്പോൾ പണമടയ്ക്കുക',
+      'qrCode': 'ക്യുആർ കോഡ്',
+      'bankTransfer': 'ബാങ്ക് ട്രാൻസ്ഫർ',
+      'uploadScreenshot': 'സ്ക്രീൻഷോട്ട് അപ്‌ലോഡ് ചെയ്യുക',
+      'submitPayment': 'പേയ്‌മെന്റ് സമർപ്പിക്കുക',
+      'qrCodePayment': 'ക്യുആർ കോഡ് പേയ്‌മെന്റ്',
+      'maxPhotosAllowed': 'പരമാവധി 4 ഫോട്ടോകൾ മാത്രം',
+      'pleaseUploadPhotosOrMessage': 'ദയവായി ഫോട്ടോകൾ അപ്‌ലോഡ് ചെയ്യുക അല്ലെങ്കിൽ സന്ദേശം രേഖപ്പെടുത്തുക.',
+      'inquirySubmittedSuccess': 'അന്വേഷണം വിജയകരമായി സമർപ്പിച്ചു.',
+      'addPhoto': 'ഫോട്ടോ ചേർക്കുക',
+      'customInquiry': 'കസ്റ്റം അന്വേഷണം',
+      'uploadProductPhotosDetails': 'ഉൽപ്പന്ന ഫോട്ടോകളോ വിവരങ്ങളോ അപ്‌ലോഡ് ചെയ്യുക',
+      'cantFindProduct': 'ഉൽപ്പന്നം കണ്ടെത്താൻ കഴിഞ്ഞില്ലേ?',
+      'uploadPhotosOrDescribe': 'ഫോട്ടോകൾ അപ്‌ലോഡ് ചെയ്യുക അല്ലെങ്കിൽ ആവശ്യമുള്ള ഉൽപ്പന്നം വിവരിക്കുക.',
+      'photosCount': 'ഫോട്ടോകൾ ({current}/4)',
+      'placeInquiryOrder': 'അന്വേഷണ ഓർഡർ ചെയ്യുക',
+      'sparePartsOrders': 'സ്പെയർ പാർട്ട് ഓർഡറുകൾ',
+      'trackSparePartsDeliveries': 'നിങ്ങളുടെ സ്പെയർ പാർട്സ് ഡെലിവറി ട്രാക്ക് ചെയ്യുക',
+      'executiveDelivery': 'എക്സ്പ്രസ് ഡെലിവറി',
+      'customOrders': 'കസ്റ്റം ഓർഡറുകൾ',
+      'noExecutiveOrdersFound': 'ഓർഡറുകളൊന്നും കണ്ടെത്തിയില്ല',
+      'noCustomOrdersFound': 'കസ്റ്റം ഓർഡറുകളൊന്നും കണ്ടെത്തിയില്ല',
+      'myServiceRequestsTitle': 'എന്റെ സർവീസ് അപേക്ഷകൾ',
+      'trackServiceRequests': 'സർവീസ്, ഇൻസ്റ്റാളേഷൻ അപേക്ഷകൾ ട്രാക്ക് ചെയ്യുക',
+      'serviceTab': 'സർവീസ്',
+      'installationTab': 'ഇൻസ്റ്റാളേഷൻ',
+      'noServiceRequestsYet': 'സർവീസ് അപേക്ഷകളൊന്നും ഇതുവരെയില്ല',
+      'noInstallationRequestsYet': 'ഇൻസ്റ്റാളേഷൻ അപേക്ഷകളൊന്നും ഇതുവരെയില്ല',
+      'serviceRequestsHere': 'നിങ്ങളുടെ സർവീസ് അപേക്ഷകൾ ഇവിടെ കാണാം.',
+      'installationRequestsHere': 'നിങ്ങളുടെ ഇൻസ്റ്റാളേഷൻ അപേക്ഷകൾ ഇവിടെ കാണാം.',
+      'retry': 'വീണ്ടും ശ്രമിക്കുക',
+      'maxPhotos6Allowed': 'പരമാവധി 6 ഫോട്ടോകൾ മാത്രം',
+      'pleaseSelectOneMachine': 'ദയവായി ഒരു മെഷീനെങ്കിലും തിരഞ്ഞെടുക്കുക.',
+      'pleaseDescribeDetails': 'ദയവായി അപേക്ഷാ വിവരങ്ങൾ വിവരിക്കുക.',
+      'serviceRequestSuccess': 'സർവീസ് അപേക്ഷ വിജയകരമായി സമർപ്പിച്ചു.',
+      'submissionFailed': 'സമർപ്പിക്കൽ പരാജയപ്പെട്ടു: {error}',
+      'noMachinesAssigned': 'നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് മെഷീനുകളൊന്നും നിയോഗിച്ചിട്ടില്ല.',
+      'clearAll': 'എല്ലാം ഒഴിവാക്കുക',
+      'serviceRequest': 'സർവീസ് അപേക്ഷ',
+      'requestInstallationSubtitle': 'ഇൻസ്റ്റാളേഷനായി അപേക്ഷിക്കുകയോ പരാതി നൽകുകയോ ചെയ്യുക',
+      'selectMachines': 'മെഷീനുകൾ തിരഞ്ഞെടുക്കുക',
+      'selectedCount': '{count} എണ്ണം തിരഞ്ഞെടുത്തു',
+      'selectMachinesInstruction': 'സർവീസ് ചെയ്യേണ്ട എല്ലാ മെഷീനുകളും തിരഞ്ഞെടുക്കുക. ഒരു ടെക്നീഷ്യൻ തിരഞ്ഞെടുക്കപ്പെട്ട എല്ലാ മെഷീനുകളും ശരിയാക്കും.',
+      'selectRequestType': 'അപേക്ഷാ തരം തിരഞ്ഞെടുക്കുക',
+      'description': 'വിവരണം',
+      'provideMoreDetailsHint': 'പ്രശ്നത്തെക്കുറിച്ചോ ഇൻസ്റ്റാളേഷൻ സർവീസിനെക്കുറിച്ചോ കൂടുതൽ വിവരങ്ങൾ നൽകുക...',
+      'whatsAppMoreInfoNote': 'വീഡിയോ മുതലായവ പോലുള്ള കൂടുതൽ വിവരങ്ങൾ അയയ്‌ക്കണമെങ്കിൽ, ദയവായി ഞങ്ങളെ വാട്സാപ്പ് ചെയ്യുക ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'അപേക്ഷ സമർപ്പിക്കുക',
+      'submittingRequest': 'അപേക്ഷ സമർപ്പിക്കുന്നു',
+      'requestDetails': 'അപേക്ഷാ വിവരങ്ങൾ',
+      'callTechnician': 'ടെക്നീഷ്യനെ വിളിക്കുക',
+      'assignedTechnician': 'നിയോഗിക്കപ്പെട്ട ടെക്നീഷ്യൻ',
+      'technicianDetails': 'ടെക്നീഷ്യന്റെ വിവരങ്ങൾ',
+      'noTechnicianAssigned': 'ടെക്നീഷ്യനെ ഇതുവരെ നിയോഗിച്ചിട്ടില്ല',
+      'happyCode': 'ഹാപ്പി കോഡ്',
+      'shareHappyCodeNotice': 'സർവീസ് പൂർത്തിയായ ശേഷം മാത്രം ഹാപ്പി കോഡ് ടെക്നീഷ്യനുമായി പങ്കിടുക.',
+      'happyCodeCopied': 'ഹാപ്പി കോഡ് കോപ്പി ചെയ്തു',
+      'cancelRequest': 'അപേക്ഷ റദ്ദാക്കുക',
+      'voiceNote': 'വോയിസ് നോട്ട്',
+      'assignedMachine': 'നിയോഗിക്കപ്പെട്ട മെഷീൻ',
+      'assignedMachines': 'നിയോഗിക്കപ്പെട്ട മെഷീനുകൾ',
+      'timeline': 'ടൈംലൈൻ',
+    },
+    'pa': {
+      'appTitle': 'ਗੁੱਡਲਾਈਫ ਮਸ਼ੀਨਜ਼ ਪ੍ਰਾਈਵੇਟ ਲਿਮਟਿਡ',
+      'technician': 'ਮੈਂ ਇੱਕ ਟੈਕਨੀਸ਼ੀਅਨ ਹਾਂ',
+      'user': 'ਮੈਂ ਇੱਕ ਉਪਭੋਗਤਾ ਹਾਂ',
+      'login': 'ਲੌਗਇਨ',
+      'signUp': 'ਸਾਈਨ ਅੱਪ',
+      'selectLanguage': 'ਭਾਸ਼ਾ ਚੁਣੋ',
+      'mobileNumber': 'ਮੋਬਾਈਲ ਨੰਬਰ',
+      'selectArea': 'ਖੇਤਰ ਚੁਣੋ',
+      'enterValidMobile': 'ਮਾਨਤਾ ਪ੍ਰਾਪਤ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ',
+      'pleaseSelectArea': 'ਕਿਰਪา ਕਰਕੇ ਖੇਤਰ ਚੁਣੋ',
+      'loginFailed': 'ਲੌਗਇਨ ਅਸਫਲ ਰਿਹਾ',
+      'username': 'ਉਪਭੋਗਤਾ ਨਾਮ',
+      'contact': 'ਸੰਪਰਕ',
+      'pleaseFillAllFields': 'ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਖੇਤਰ ਭਰੋ',
+      'signupSuccessful': 'ਸਾਈਨਅਪ ਸਫਲ ਰਿਹਾ',
+      'uploadSelfieNotice': 'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਸੈਲਫੀ ਦੇ ਨਾਲ ਮਸ਼ੀਨ ਦੀ ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ। ਇਸ ਤੋਂ ਬਿਨਾਂ ਤੁਹਾਡੀ ਬੇਨਤੀ ਸਵੀਕਾਰ ਨਹੀਂ ਹੋਵੇਗੀ।',
+      'uploading': 'ਅਪਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...',
+      'camera': 'ਕੈਮਰਾ',
+      'gallery': 'ਗੈਲਰੀ',
+      'signupSuccessTitle': 'ਸਾਈਨਅਪ ਸਫਲ',
+      'signupSuccessMsg': 'ਤੁਸੀਂ ਸਫਲਤਾਪੂਰਵਕ ਸਾਈਨ ਅੱਪ ਕਰ ਲਿਆ ਹੈ!',
+      'signupUnderApproval': 'ਤੁਹਾਡੀ ਬੇਨਤੀ ਵਰਤਮਾਨ ਵਿੱਚ ਪ੍ਰਵਾਨਗੀ ਦੇ ਅਧੀਨ ਹੈ।\n\nਪ੍ਰਵਾਨਗੀ ਮਿਲਣ ਤੇ ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ।\n\nਤੁਸੀਂ ਹੁਣ ਐਪ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਬਾਅਦ ਵਿੱਚ ਲੌਗਇਨ ਕਰਨ ਲਈ ਵਾਪਸ ਆ ਸਕਦੇ ਹੋ।',
+      'navHome': 'ਹੋਮ',
+      'navSales': 'ਬਿਕਰੀ',
+      'navSpareParts': 'ਸਪੇਅਰ ਪਾਰਟਸ',
+      'navService': 'ਸੇਵਾ',
+      'navMyProfile': 'ਮੇਰੀ ਪ੍ਰੋਫਾਈਲ',
+      'viewCart': 'ਕਾਰਟ ਦੇਖੋ',
+      'exitApp': 'ਐਪ ਤੋਂ ਬਾਹਰ ਜਾਓ',
+      'closeAppConfirm': 'ਕੀ ਤੁਸੀਂ ਐਪ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?',
+      'no': 'ਨਹੀਂ',
+      'yes': 'ਹਾਂ',
+      'machineInventory': 'ਮਸ਼ੀਨ ਇਨਵੈਂਟਰੀ',
+      'byGoodlife': 'ਗੁੱਡਲਾਈਫ ਮਸ਼ੀਨਜ਼ ਪ੍ਰਾਈਵੇਟ ਲਿਮਟਿਡ ਵੱਲੋਂ',
+      'searchMachines': 'ਮਸ਼ੀਨਾਂ ਦੀ ਖੋਜ ਕਰੋ...',
+      'myMachines': 'ਮੇਰੀਆਂ ਮਸ਼ੀਨਾਂ',
+      'welcomeBack': 'ਜੀ ਆਇਆਂ ਨੂੰ, {userName}',
+      'salesSupport': 'ਸੇਲਜ਼ ਸਪੋਰਟ',
+      'contactSalesExecutive': 'ਆਪਣੇ ਸੇਲਜ਼ ਅਧਿਕਾਰੀ ਨਾਲ ਸੰਪਰਕ ਕਰੋ',
+      'callSalesPerson': 'ਸੇਲਜ਼ ਕਰਮਚਾਰੀ ਨੂੰ ਕਾਲ ਕਰੋ',
+      'whatsAppSalesPerson': 'ਸੇਲਜ਼ ਕਰਮਚਾਰੀ ਨੂੰ ਵ੍ਹਟਸਐਪ ਕਰੋ',
+      'spareParts': 'ਸਪੇਅਰ ਪਾਰਟਸ',
+      'orderSparePartsSubtitle': 'ਆਪਣੀਆਂ ਮਸ਼ੀਨਾਂ ਲਈ ਸਪੇਅਰ ਪਾਰਟਸ ਆਰਡਰ ਕਰੋ',
+      'chooseOrderType': 'ਆਰਡਰ ਦੀ ਕਿਸਮ ਚੁਣੋ',
+      'chooseOrderTypeSubtitle': 'ਚੁਣੋ ਕਿ ਤੁਸੀਂ ਆਪਣੀ ਸਪੇਅਰ ਪਾਰਟਸ ਦੀ ਬੇਨਤੀ ਕਿਵੇਂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ।',
+      'expressOrderTitle': 'ਐਕਸਪ੍ਰੈਸ ਡਿਲਿਵਰੀ ਆਰਡਰ ਦਿਓ',
+      'expressOrderDesc': 'ਆਪਣੀਆਂ ਮਸ਼ੀਨਾਂ ਦੇ ਸਪੇਅਰ ਪਾਰਟਸ ਚੁਣੋ ਜੋ ਪਹਿਲਾਂ ਹੀ ਸਾਡੇ ਕੈਟਾਲਾਗ ਵਿੱਚ ਉਪਲਬਧ ਹਨ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਜਲਦੀ ਪ੍ਰਾਪਤ ਕਰੋ।',
+      'customOrderTitle': 'ਕਸਟਮ ਸਪੇਅਰ ਪਾਰਟ ਆਰਡਰ',
+      'customOrderDesc': 'ਸਾਨੂੰ ਸਪੇਅਰ ਪਾਰਟ ਦੀ ਇੱਕ ਤਸਵੀਰ ਭੇਜੋ ਅਤੇ ਸਾਡੀ ਟੀਮ ਉਪਲਬਧਤਾ ਦੀ ਜਾਂਚ ਕਰੇਗੀ ਅਤੇ ਅੱਗੇ ਤੁਹਾਡੀ ਮਦਦ ਕਰੇਗੀ।',
+      'myProfile': 'ਮੇਰੀ ਪ੍ਰੋਫਾਈਲ',
+      'partyProfile': 'ਪਾਰਟੀ ਪ੍ਰੋਫਾਈਲ',
+      'mySparePartOrders': 'ਮੇਰੇ ਸਪੇਅਰ ਪਾਰਟ ਆਰਡਰ',
+      'myServiceRequests': 'ਮੇਰੀਆਂ ਸੇਵਾ ਬੇਨਤੀਆਂ',
+      'logout': 'ਲੌਗਆਊਟ',
+      'deleteMyAccount': 'ਮੇਰਾ ਖਾਤਾ ਮਿਟਾਓ',
+      'deleteAccountTitle': 'ਖਾਤਾ ਮਿਟਾਓ',
+      'deleteAccountConfirm': 'ਕੀ ਤੁਸੀਂ ਸੱਚਮੁੱਚ ਆਪਣਾ ਖਾਤਾ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ? ਇਹ ਕਾਰਵਾਈ ਵਾਪਸ ਨਹੀਂ ਲਈ ਜਾ ਸਕਦੀ।',
+      'cancel': 'ਰੱਦ ਕਰੋ',
+      'delete': 'ਮਿਟਾਓ',
+      'logoutConfirmTitle': 'ਲੌਗਆਊਟ ਦੀ ਪੁਸ਼ਟੀ',
+      'areYouSure': 'ਕੀ ਤੁਹਾਨੂੰ ਯਕੀਨ ਹੈ?',
+      'myCart': 'ਮੇਰੀ ਕਾਰਟ',
+      'cartEmpty': 'ਤੁਹਾਡੀ ਕਾਰਟ ਖਾਲੀ ਹੈ',
+      'subtotal': 'ਉਪ-ਜੋੜ',
+      'gst': 'ਜੀਐਸਟੀ (18%)',
+      'freightCharges': 'ਭਾੜਾ ਖਰਚਾ',
+      'grandTotal': 'ਕੁੱਲ ਜੋੜ',
+      'totalAmount': 'ਕੁੱਲ ਰਕਮ',
+      'placeOrder': 'ਆਰਡਰ ਦਿਓ',
+      'payNow': 'ਹੁਣੇ ਭੁਗਤਾਨ ਕਰੋ',
+      'qrCode': 'ਕਿਊਆਰ ਕੋਡ',
+      'bankTransfer': 'ਬੈਂਕ ਟ੍ਰਾਂਸਫਰ',
+      'uploadScreenshot': 'ਸਕ੍ਰੀਨਸ਼ਾਟ ਅਪਲੋਡ ਕਰੋ',
+      'submitPayment': 'ਭੁਗਤਾਨ ਜਮ੍ਹਾਂ ਕਰੋ',
+      'qrCodePayment': 'ਕਿਊਆਰ ਕੋਡ ਭੁਗਤਾਨ',
+      'maxPhotosAllowed': 'ਵੱਧ ਤੋਂ ਵੱਧ 4 ਫੋਟੋਆਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ',
+      'pleaseUploadPhotosOrMessage': 'ਕਿਰਪਾ ਕਰਕੇ ਫੋਟੋਆਂ ਅਪਲੋਡ ਕਰੋ ਜਾਂ ਸੁਨੇਹਾ ਦਰਜ ਕਰੋ।',
+      'inquirySubmittedSuccess': 'ਪੁੱਛਗਿੱਛ ਸਫਲਤਾਪੂਰਵਕ ਜਮ੍ਹਾਂ ਹੋ ਗਈ ਹੈ।',
+      'addPhoto': 'ਫੋਟੋ ਜੋੜੋ',
+      'customInquiry': 'ਕਸਟਮ ਪੁੱਛਗਿੱਛ',
+      'uploadProductPhotosDetails': 'ਉਤਪਾਦ ਦੀਆਂ ਫੋਟੋਆਂ ਜਾਂ ਵੇਰਵੇ ਅਪਲੋਡ ਕਰੋ',
+      'cantFindProduct': 'ਆਪਣਾ ਉਤਪਾਦ ਨਹੀਂ ਲੱਭ ਰਿਹਾ?',
+      'uploadPhotosOrDescribe': 'ਫੋਟੋਆਂ ਅਪਲੋਡ ਕਰੋ ਜਾਂ ਆਪਣੀ ਲੋੜੀਂਦੀ ਉਤਪਾਦ ਦਾ ਵਰਣਨ ਕਰੋ।',
+      'photosCount': 'ਫੋਟੋਆਂ ({current}/4)',
+      'placeInquiryOrder': 'ਪੁੱਛਗਿੱਛ ਆਰਡਰ ਦਿਓ',
+      'sparePartsOrders': 'ਸਪੇਅਰ ਪਾਰਟ ਆਰਡਰ',
+      'trackSparePartsDeliveries': 'ਆਪਣੇ ਸਪੇਅਰ ਪਾਰਟਸ ਦੀ ਡਿਲੀਵਰੀ ਨੂੰ ਟ੍ਰੈਕ ਕਰੋ',
+      'executiveDelivery': 'ਐਕਸਪ੍ਰੈਸ ਡਿਲਿਵਰੀ',
+      'customOrders': 'ਕਸਟਮ ਆਰਡਰ',
+      'noExecutiveOrdersFound': 'ਕੋਈ ਕਾਰਜਕਾਰੀ ਆਰਡਰ ਨਹੀਂ ਮਿਲਿਆ',
+      'noCustomOrdersFound': 'ਕੋਈ ਕਸਟਮ ਆਰਡਰ ਨਹੀਂ ਮਿਲਿਆ',
+      'myServiceRequestsTitle': 'ਮੇਰੀਆਂ ਸੇਵਾ ਬੇਨਤੀਆਂ',
+      'trackServiceRequests': 'ਆਪਣੀਆਂ ਸੇਵਾ ਅਤੇ ਸਥਾਪਨਾ ਬੇਨਤੀਆਂ ਨੂੰ ਟ੍ਰੈਕ ਕਰੋ',
+      'serviceTab': 'ਸੇਵਾ',
+      'installationTab': 'ਸਥਾਪਨਾ',
+      'noServiceRequestsYet': 'ਅਜੇ ਤੱਕ ਕੋਈ ਸੇਵਾ ਬੇਨਤੀ ਨਹੀਂ ਹੈ',
+      'noInstallationRequestsYet': 'ਅਜੇ ਤੱਕ ਕੋਈ ਸਥਾਪਨਾ ਬੇਨਤੀ ਨਹੀਂ ਹੈ',
+      'serviceRequestsHere': 'ਤੁਹਾਡੀਆਂ ਸੇਵਾ ਬੇਨਤੀਆਂ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੀਆਂ।',
+      'installationRequestsHere': 'ਤੁਹਾਡੀਆਂ ਸਥਾਪਨਾ ਬੇਨਤੀਆਂ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੀਆਂ।',
+      'retry': 'ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ',
+      'maxPhotos6Allowed': 'ਵੱਧ ਤੋਂ ਵੱਧ 6 ਫੋਟੋਆਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ',
+      'pleaseSelectOneMachine': 'ਕਿਰਪਾ ਕਰਕੇ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਮਸ਼ੀਨ ਚੁਣੋ।',
+      'pleaseDescribeDetails': 'ਕਿਰਪਾ ਕਰਕੇ ਬੇਨਤੀ ਦੇ ਵੇਰਵੇ ਲਿਖੋ।',
+      'serviceRequestSuccess': 'ਸੇਵਾ ਬੇਨਤੀ ਸਫਲਤਾਪੂਰਵਕ ਜਮ੍ਹਾਂ ਹੋ ਗਈ ਹੈ।',
+      'submissionFailed': 'ਜਮ੍ਹਾਂ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ: {error}',
+      'noMachinesAssigned': 'ਤੁਹਾਡੇ ਖਾਤੇ ਵਿੱਚ ਕੋਈ ਮਸ਼ੀਨ ਨਹੀਂ ਲਗਾਈ ਗਈ ਹੈ।',
+      'clearAll': 'ਸਭ ਸਾਫ਼ ਕਰੋ',
+      'serviceRequest': 'ਸੇਵਾ ਬੇਨਤੀ',
+      'requestInstallationSubtitle': 'ਸਥਾਪਨਾ ਦੀ ਬੇਨਤੀ ਕਰੋ ਜਾਂ ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰੋ',
+      'selectMachines': 'ਮਸ਼ੀਨਾਂ ਚੁਣੋ',
+      'selectedCount': '{count} ਚੁਣੇ ਗਏ',
+      'selectMachinesInstruction': 'ਸਰਵਿਸ ਦੀ ਲੋੜ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਮਸ਼ੀਨਾਂ ਦੀ ਚੋਣ ਕਰੋ। ਇੱਕ ਟੈਕਨੀਸ਼ੀਅਨ ਸਾਰੀਆਂ ਚੁਣੀਆਂ ਮਸ਼ੀਨਾਂ ਨੂੰ ਠੀਕ ਕਰੇਗਾ।',
+      'selectRequestType': 'ਬੇਨਤੀ ਦੀ ਕਿਸਮ ਚੁਣੋ',
+      'description': 'ਵੇਰਵਾ',
+      'provideMoreDetailsHint': 'ਸਮੱਸਿਆ ਜਾਂ ਬੇਨਤੀ ਕੀਤੀ ਸਥਾਪਨਾ ਸੇਵਾ ਬਾਰੇ ਹੋਰ ਵੇਰਵੇ ਦਿਓ...',
+      'whatsAppMoreInfoNote': 'ਜੇਕਰ ਤੁਹਾਨੂੰ ਵੀਡੀਓ ਆਦਿ ਵਰਗੀ ਹੋਰ ਜਾਣਕਾਰੀ ਭੇਜਣੀ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਸਾਨੂੰ ਵਟਸਐਪ ਕਰੋ ',
+      'whatsAppSupportPhone': '+91 9999999999',
+      'submitRequest': 'ਬੇਨਤੀ ਜਮ੍ਹਾਂ ਕਰੋ',
+      'submittingRequest': 'ਬੇਨਤੀ ਜਮ੍ਹਾਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ',
+      'requestDetails': 'ਬੇਨਤੀ ਵੇਰਵੇ',
+      'callTechnician': 'ਟੈਕਨੀਸ਼ੀਅਨ ਨੂੰ ਕਾਲ ਕਰੋ',
+      'assignedTechnician': 'ਨਿਯੁਕਤ ਟੈਕਨੀਸ਼ੀਅਨ',
+      'technicianDetails': 'ਟੈਕਨੀਸ਼ੀਅਨ ਵੇਰਵੇ',
+      'noTechnicianAssigned': 'ਅਜੇ ਤੱਕ ਕੋਈ ਟੈਕਨੀਸ਼ੀਅਨ ਨਿਯੁਕਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ',
+      'happyCode': 'ਹੈਪੀ ਕੋਡ',
+      'shareHappyCodeNotice': 'ਸੇਵਾ ਪੂਰੀ ਹੋਣ ਤੋਂ ਬਾਅਦ ਹੀ ਇਹ ਹੈਪੀ ਕੋਡ ਟੈਕਨੀਸ਼ੀਅਨ ਨਾਲ ਸਾਂਝਾ ਕਰੋ।',
+      'happyCodeCopied': 'ਹੈਪੀ ਕੋਡ ਕਾਪੀ ਕੀਤਾ ਗਿਆ',
+      'cancelRequest': 'ਬੇਨਤੀ ਰੱਦ ਕਰੋ',
+      'voiceNote': 'ਵੌਇਸ ਨੋਟ',
+      'assignedMachine': 'ਨਿਯੁਕਤ ਮਸ਼ੀਨ',
+      'assignedMachines': 'ਨਿਯੁਕਤ ਮਸ਼ੀਨਾਂ',
+      'timeline': 'ਸਮਾਂਰੇਖา',
+    },
+  };
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -131,29 +1629,16 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 
   @override
   Future<AppLocalizations> load(Locale locale) {
-    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+    return SynchronousFuture<AppLocalizations>(AppLocalizations(locale));
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'hi'].contains(locale.languageCode);
+  bool isSupported(Locale locale) {
+    return <String>[
+      'en', 'hi', 'bn', 'mr', 'te', 'ta', 'gu', 'kn', 'or', 'ml', 'pa'
+    ].contains(locale.languageCode);
+  }
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
-}
-
-AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
-  // Lookup logic when only language code is specified.
-  switch (locale.languageCode) {
-    case 'en': return AppLocalizationsEn();
-    case 'hi': return AppLocalizationsHi();
-  }
-
-  throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
-  );
 }

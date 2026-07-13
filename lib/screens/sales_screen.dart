@@ -3,6 +3,7 @@ import 'package:goodlife_party/providers/auth_provider.dart';
 import 'package:goodlife_party/widgets/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 
 class SalesScreen extends StatelessWidget {
   const SalesScreen({super.key});
@@ -34,6 +35,7 @@ class SalesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     final salesPerson = authProvider.salesPerson;
     final salesContact = authProvider.salesContact.toString();
@@ -87,9 +89,9 @@ class SalesScreen extends StatelessWidget {
                       crossAxisAlignment:
                           CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Sales Support',
-                          style: TextStyle(
+                        Text(
+                          l10n.salesSupport,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -98,7 +100,7 @@ class SalesScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Contact your sales executive',
+                          l10n.contactSalesExecutive,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color:
@@ -199,8 +201,8 @@ class SalesScreen extends StatelessWidget {
                       onPressed: () =>
                           _call(salesContact),
                       icon: const Icon(Icons.call),
-                      label: const Text(
-                        'Call Sales Person',
+                      label: Text(
+                        l10n.callSalesPerson,
                       ),
                     ),
                   ),
@@ -214,8 +216,8 @@ class SalesScreen extends StatelessWidget {
                       onPressed: () =>
                           _whatsapp(salesContact),
                       icon: const Icon(Icons.chat),
-                      label: const Text(
-                        'WhatsApp Sales Person',
+                      label: Text(
+                        l10n.whatsAppSalesPerson,
                       ),
                     ),
                   ),

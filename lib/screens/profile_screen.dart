@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:goodlife_party/providers/auth_provider.dart';
+import 'package:goodlife_party/providers/outstanding_balance_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
 import 'package:goodlife_party/widgets/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
+import '../providers/locale_provider.dart';
+import '../l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,6 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     // If not logged in, auto-redirect to home route
     if (!authProvider.isLoggedIn) {
@@ -80,9 +84,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'My Profile',
-                          style: TextStyle(
+                        Text(
+                          l10n.myProfile,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -91,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          distributor?.distributorName ?? 'Party Profile',
+                          distributor?.distributorName ?? l10n.partyProfile,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.85),
@@ -108,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Colors.white,
                       size: 24,
                     ),
-                    tooltip: 'Logout',
+                    tooltip: l10n.logout,
                     onPressed: () => _showLogoutConfirmation(context, authProvider),
                   ),
                 ],
@@ -212,6 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildOptionsCard(BuildContext context, AuthProvider authProvider) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       elevation: 2,
       child: Column(
@@ -225,9 +230,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: const Icon(Icons.receipt_long_rounded, color: Colors.green),
             ),
-            title: const Text(
-              'My Spare Part Orders',
-              style: TextStyle(fontWeight: FontWeight.w600),
+            title: Text(
+              l10n.mySparePartOrders,
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
             onTap: () {
@@ -244,9 +249,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: const Icon(Icons.build_rounded, color: Colors.blue),
             ),
-            title: const Text(
-              'My Service Requests',
-              style: TextStyle(fontWeight: FontWeight.w600),
+            title: Text(
+              l10n.myServiceRequests,
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
             onTap: () {
@@ -258,14 +263,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
+                color: Colors.purple.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.translate_rounded, color: Colors.purple),
+            ),
+            title: Text(
+              l10n.selectLanguage,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+            onTap: () => _showLanguageSelector(context),
+          ),
+          const Divider(height: 1, indent: 56),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
                 color: Colors.orange.shade50,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.logout_rounded, color: Colors.orange),
             ),
-            title: const Text(
-              'Logout',
-              style: TextStyle(fontWeight: FontWeight.w600),
+            title: Text(
+              l10n.logout,
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
             onTap: () => _showLogoutConfirmation(context, authProvider),
@@ -280,9 +302,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: const Icon(Icons.delete_forever_rounded, color: Colors.red),
             ),
-            title: const Text(
-              'Delete my account',
-              style: TextStyle(fontWeight: FontWeight.w600, color: Colors.red),
+            title: Text(
+              l10n.deleteMyAccount,
+              style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.red),
             ),
             trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
             onTap: () => _showDeleteAccountConfirmation(context, authProvider),
@@ -292,21 +314,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showDeleteAccountConfirmation(BuildContext context, AuthProvider authProvider) {
+  void _showLanguageSelector(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    final currentLocale = localeProvider.locale.languageCode;
+    final l10n = AppLocalizations.of(context)!;
+
+    const languages = {
+      'en': 'English',
+      'hi': 'हिन्दी (Hindi)',
+      'bn': 'বাংলা (Bengali)',
+      'mr': 'मराठी (Marathi)',
+      'te': 'తెలుగు (Telugu)',
+      'ta': 'தமிழ் (Tamil)',
+      'gu': 'ગુજરાતી (Gujarati)',
+      'kn': 'ಕನ್ನಡ (Kannada)',
+      'or': 'ଓଡ଼ିଆ (Odia)',
+      'ml': 'മലയാളം (Malayalam)',
+      'pa': 'ਪੰਜਾਬੀ (Punjabi)',
+    };
+
     showDialog(
       context: context,
       builder: (dialogCtx) {
         return AlertDialog(
-          title: const Text('Delete Account'),
-          content: const Text('Are you sure you want to delete your account? This action cannot be undone.'),
+          title: Text(l10n.selectLanguage),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: languages.length,
+              itemBuilder: (ctx, index) {
+                final entry = languages.entries.elementAt(index);
+                final isSelected = entry.key == currentLocale;
+                return ListTile(
+                  title: Text(
+                    entry.value,
+                    style: TextStyle(
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                    ),
+                  ),
+                  trailing: isSelected ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary) : null,
+                  onTap: () {
+                    localeProvider.setLocale(entry.key);
+                    Navigator.pop(dialogCtx);
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDeleteAccountConfirmation(BuildContext context, AuthProvider authProvider) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return AlertDialog(
+          title: Text(l10n.deleteAccountTitle),
+          content: Text(l10n.deleteAccountConfirm),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogCtx),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () async {
                 Navigator.pop(dialogCtx); // close dialog
+                // Stop the outstanding balance listener before logout
+                if (context.mounted) {
+                  Provider.of<OutstandingBalanceProvider>(context, listen: false)
+                      .stopListening();
+                }
                 // Assuming logout handles local clearing for now, until API is ready
                 await authProvider.logout();
                 if (!context.mounted) return;
@@ -316,7 +398,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   (route) => false,
                 );
               },
-              child: const Text('Delete', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              child: Text(l10n.delete, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
             ),
           ],
         );
@@ -325,20 +407,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showLogoutConfirmation(BuildContext context, AuthProvider authProvider) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (dialogCtx) {
         return AlertDialog(
-          title: const Text('Logout Confirmation'),
-          content: const Text('Are you sure?'),
+          title: Text(l10n.logoutConfirmTitle),
+          content: Text(l10n.areYouSure),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogCtx),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () async {
                 Navigator.pop(dialogCtx); // close dialog
+                // Stop the outstanding balance listener before logout
+                if (context.mounted) {
+                  Provider.of<OutstandingBalanceProvider>(context, listen: false)
+                      .stopListening();
+                }
                 await authProvider.logout();
                 if (!context.mounted) return;
                 // Redirect to Home with cleared history
@@ -348,7 +436,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   (route) => false,
                 );
               },
-              child: const Text('YES', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              child: Text(l10n.yes, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
             ),
           ],
         );

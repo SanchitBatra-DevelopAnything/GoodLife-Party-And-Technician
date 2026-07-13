@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:goodlife_party/providers/cart_provider.dart';
 import 'package:goodlife_party/providers/order_provider.dart';
 import 'package:goodlife_party/screens/order_success_screen.dart';
+import 'package:goodlife_party/services/storage_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -192,8 +193,12 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
 
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      final storagePath =
-          'sparePartPayments/${now.year}/${now.month}/${now.day}/$paymentUuid/$fileName';
+      final storagePath = StorageService.buildDateBasedStoragePath(
+        category: 'sparePartPayments',
+        fileName: fileName,
+        intermediateSegments: [paymentUuid],
+        dateTime: now,
+      );
 
       final firebaseStorage = FirebaseStorage.instance;
 

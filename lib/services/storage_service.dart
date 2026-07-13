@@ -5,15 +5,37 @@ import 'package:firebase_storage/firebase_storage.dart';
 class StorageService {
   final FirebaseStorage storage = FirebaseStorage.instance;
 
+  static String buildDateBasedStoragePath({
+    required String category,
+    required String fileName,
+    List<String> intermediateSegments = const [],
+    DateTime? dateTime,
+  }) {
+    final now = dateTime ?? DateTime.now();
+    final parts = [
+      category,
+      '${now.year}',
+      now.month.toString().padLeft(2, '0'),
+      now.day.toString().padLeft(2, '0'),
+      ...intermediateSegments,
+      fileName,
+    ];
+    return parts.join('/');
+  }
+
   Future<String> uploadImageWithProgress(
     File file,
     Function(double) onProgress,
   ) async {
-    final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final now = DateTime.now();
+    final fileName = '${now.millisecondsSinceEpoch}.jpg';
 
     final Reference ref = storage
         .ref()
         .child('distributor_images')
+        .child('${now.year}')
+        .child(now.month.toString().padLeft(2, '0'))
+        .child(now.day.toString().padLeft(2, '0'))
         .child(fileName);
 
     final UploadTask uploadTask = ref.putFile(
@@ -76,16 +98,20 @@ class StorageService {
   }
 }
 
-Future<String> uploadPurchaseOrder({
-  required String firebaseOrderId,
-  required Uint8List pdfBytes,
-  required String fileName,
-}) async {
-  final ref = FirebaseStorage.instance
-      .ref()
-      .child('purchase_orders')
-      .child(firebaseOrderId)
-      .child(fileName);
+  Future<String> uploadPurchaseOrder({
+    required String firebaseOrderId,
+    required Uint8List pdfBytes,
+    required String fileName,
+  }) async {
+    final now = DateTime.now();
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('purchase_orders')
+        .child('${now.year}')
+        .child(now.month.toString().padLeft(2, '0'))
+        .child(now.day.toString().padLeft(2, '0'))
+        .child(firebaseOrderId)
+        .child(fileName);
 
   await ref.putData(
     pdfBytes,
@@ -111,6 +137,7 @@ Future<String> uploadPurchaseOrder({
         .child('service_requests')
         .child('${now.year}')
         .child(now.month.toString().padLeft(2, '0'))
+        .child(now.day.toString().padLeft(2, '0'))
         .child(fileName);
 
     String contentType = 'application/octet-stream';
@@ -150,4 +177,39 @@ Future<String> uploadPurchaseOrder({
     }
   }
 
-}
+  Future<Map<String, String>> uploadPartyDocument({
+    required File file,
+    required String partyId,
+    required String technicianId,
+  }) async {
+    final now = DateTime.now();
+    final fileName = '${technicianId}_${now.millisecondsSinceEpoch}.jpg';
+    final storagePath = buildDateBasedStoragePath(
+      category: 'partyDocuments',
+      fileName: fileName,
+      intermediateSegments: [partyId],
+      dateTime: now,
+    );
+
+    final Reference ref = storage.ref().child(storagePath);
+
+    final UploadTask uploadTask = ref.putFile(
+      file,
+      SettableMetadata(contentType: 'image/jpeg'),
+    );
+
+    final TaskSnapshot snapshot = await uploadTask;
+
+    if (snapshot.state == TaskState.success) {
+      final url = await snapshot.ref.getDownloadURL();
+      return {
+        'url': url,
+        'storagePath': storagePath,
+        'fileName': fileName,
+      };
+    } else {
+      throw Exception('Party document upload failed');
+    }
+  }
+
+}

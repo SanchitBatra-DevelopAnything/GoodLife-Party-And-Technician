@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:goodlife_party/widgets/custom_order_loader.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/order_provider.dart';
 import '../widgets/custom_order_loader.dart';
+import '../l10n/app_localizations.dart';
+import '../widgets/voice_recorder_widget.dart';
+import '../widgets/whatsapp_more_info_note.dart';
 
 class CustomOrderScreen extends StatefulWidget {
   const CustomOrderScreen({
@@ -27,13 +29,14 @@ class CustomOrderScreenState
       ImagePicker();
 
   final List<File> selectedImages = [];
+  File? selectedAudio;
 
   Future<void> pickImage() async {
     if (selectedImages.length >= 4) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Maximum 4 photos allowed',
+            AppLocalizations.of(context)!.maxPhotosAllowed,
           ),
         ),
       );
@@ -63,11 +66,12 @@ class CustomOrderScreenState
         messageController.text.trim();
 
     if (selectedImages.isEmpty &&
-        message.isEmpty) {
+        message.isEmpty &&
+        selectedAudio == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Please upload photos or enter a message.',
+            AppLocalizations.of(context)!.pleaseUploadPhotosOrMessage, // Can be improved but good for now
           ),
         ),
       );
@@ -81,6 +85,7 @@ class CustomOrderScreenState
           .placeInquiryOrder(
             images: selectedImages,
             message: message,
+            audio: selectedAudio,
           );
 
       if (!mounted) {
@@ -88,9 +93,9 @@ class CustomOrderScreenState
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Inquiry submitted successfully.',
+            AppLocalizations.of(context)!.inquirySubmittedSuccess,
           ),
         ),
       );
@@ -183,9 +188,9 @@ class CustomOrderScreenState
 
             const SizedBox(height: 10),
 
-            const Text(
-              'Add Photo',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.addPhoto,
+              style: const TextStyle(
                 fontWeight:
                     FontWeight.w600,
               ),
@@ -419,27 +424,27 @@ class CustomOrderScreenState
                         width: 16,
                       ),
 
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment:
                               CrossAxisAlignment
                                   .start,
                           children: [
                             Text(
-                              'Can’t find your product?',
+                              AppLocalizations.of(context)!.cantFindProduct,
                               style:
-                                  TextStyle(
+                                  const TextStyle(
                                 fontWeight:
                                     FontWeight.bold,
                                 fontSize:
                                     18,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 4,
                             ),
                             Text(
-                              'Upload photos or describe the product you need.',
+                              AppLocalizations.of(context)!.uploadPhotosOrDescribe,
                             ),
                           ],
                         ),
@@ -456,7 +461,7 @@ class CustomOrderScreenState
                   alignment:
                       Alignment.centerLeft,
                   child: Text(
-                    'Photos (${selectedImages.length}/4)',
+                    AppLocalizations.of(context)!.photosCount(selectedImages.length),
                     style:
                         const TextStyle(
                       fontWeight:
@@ -543,6 +548,36 @@ class CustomOrderScreenState
                 ),
 
                 const SizedBox(
+                  height: 24,
+                ),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    AppLocalizations.of(context)!.voiceNote,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                VoiceRecorderWidget(
+                  onAudioRecorded: (file) {
+                    setState(() {
+                      selectedAudio = file;
+                    });
+                  },
+                ),
+
+                const SizedBox(
+                  height: 16,
+                ),
+                const WhatsAppMoreInfoNote(),
+
+                const SizedBox(
                   height: 100,
                 ),
               ],
@@ -565,8 +600,8 @@ class CustomOrderScreenState
                           ? null
                           : submitInquiry,
                   child:
-                      const Text(
-                    'Place Inquiry Order',
+                      Text(
+                    AppLocalizations.of(context)!.placeInquiryOrder,
                   ),
                 ),
               ),

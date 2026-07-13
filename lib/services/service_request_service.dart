@@ -52,9 +52,9 @@ class ServiceRequestService {
     if (body is Map<String, dynamic>) {
       for (final entry in body.entries) {
         try {
-          requests.add(ServiceRequestModel.fromJson(
-            Map<String, dynamic>.from(entry.value),
-          ));
+          final data = Map<String, dynamic>.from(entry.value);
+          data['firebasePushId'] = entry.key;
+          requests.add(ServiceRequestModel.fromJson(data));
         } catch (_) {
           // Skip malformed entries
         }
@@ -68,6 +68,78 @@ class ServiceRequestService {
       return b.requestTime.compareTo(a.requestTime);
     });
 
-    return requests;
+    // Return only the most recent 10, matching order history behaviour
+    return requests.take(10).toList();
+  }
+
+  /// Fetches a single service request by party name and Firebase push key.
+  Future<ServiceRequestModel?> fetchServiceRequestByKey({
+    required String orderedBy,
+    required String firebasePushId,
+  }) async {
+    final url = '$_baseUrl/serviceRequests/$orderedBy/$firebasePushId.json';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      return null;
+    }
+
+    final body = jsonDecode(response.body);
+    if (body == null || body is! Map<String, dynamic>) {
+      return null;
+    }
+
+    final data = Map<String, dynamic>.from(body);
+    data['firebasePushId'] = firebasePushId;
+    if ((data['orderedBy'] ?? '').toString().isEmpty) {
+      data['orderedBy'] = orderedBy;
+    }
+
+    return ServiceRequestModel.fromJson(data);
+  }
+
+  Future<ServiceRequestModel> submitTechnicianRating({
+    required ServiceRequestModel request,
+    required int rating,
+    String? comment,
+  }) async {
+    if (request.firebasePushId == null || request.orderedBy.isEmpty) {
+      throw Exception('Missing Firebase reference for this request');
+    }
+    if (rating < 1 || rating > 5) {
+      throw Exception('Rating must be between 1 and 5');
+    }
+    if (!request.canRateTechnician) {
+      throw Exception('This request cannot be rated');
+    }
+
+    final url =
+        '$_baseUrl/serviceRequests/${request.orderedBy}/${request.firebasePushId}.json';
+
+    final payload = <String, dynamic>{
+      'technicianRating': rating,
+      'technicianRatingAt': DateTime.now().toIso8601String(),
+    };
+
+    final trimmedComment = comment?.trim();
+    if (trimmedComment != null && trimmedComment.isNotEmpty) {
+      payload['technicianRatingComment'] = trimmedComment;
+    }
+
+    final response = await http.patch(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Failed to submit rating');
+    }
+
+    return request.copyWith(
+      technicianRating: rating,
+      technicianRatingComment: trimmedComment,
+      technicianRatingAt: payload['technicianRatingAt'] as String,
+    );
   }
 }

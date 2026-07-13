@@ -90,10 +90,6 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
               order.freightCharges,
             ),
 
-            buildAmountRow(
-              'GST',
-              order.gstAmount,
-            ),
 
             const Divider(
               height: 24,

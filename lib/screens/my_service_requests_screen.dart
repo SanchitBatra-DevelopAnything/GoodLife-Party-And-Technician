@@ -3,7 +3,9 @@ import 'package:goodlife_party/models/service_request_model.dart';
 import 'package:goodlife_party/providers/auth_provider.dart';
 import 'package:goodlife_party/providers/service_request_provider.dart';
 import 'package:goodlife_party/routes/app_routes.dart';
+import 'package:goodlife_party/utils/service_request_status_helper.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 
 class MyServiceRequestsScreen extends StatefulWidget {
   const MyServiceRequestsScreen({super.key});
@@ -14,6 +16,8 @@ class MyServiceRequestsScreen extends StatefulWidget {
 }
 
 class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
+  String selectedType = 'SERVICE';
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +36,7 @@ class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(90),
@@ -74,25 +79,25 @@ class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'My Service Requests',
-                          style: TextStyle(
+                          l10n.myServiceRequestsTitle,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.4,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          'Track your service & installation requests',
+                          l10n.trackServiceRequests,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
@@ -107,95 +112,138 @@ class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
           ),
         ),
       ),
-      body: Consumer<ServiceRequestProvider>(
-        builder: (context, provider, _) {
-          if (provider.isFetching) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (provider.fetchError != null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.error_outline_rounded,
-                        size: 64, color: Colors.grey.shade400),
-                    const SizedBox(height: 16),
-                    Text(
-                      provider.fetchError!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: _loadRequests,
-                      icon: const Icon(Icons.refresh_rounded),
-                      label: const Text('Retry'),
-                    ),
-                  ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: SegmentedButton<String>(
+              segments: [
+                ButtonSegment<String>(
+                  value: 'SERVICE',
+                  label: const Text('Service/Complaint'),
+                  icon: const Icon(Icons.build_rounded),
                 ),
-              ),
-            );
-          }
+                ButtonSegment<String>(
+                  value: 'INSTALLATION',
+                  label: Text(l10n.installationTab),
+                  icon: const Icon(Icons.construction_rounded),
+                ),
+              ],
+              selected: {selectedType},
+              onSelectionChanged: (value) {
+                setState(() {
+                  selectedType = value.first;
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: Consumer<ServiceRequestProvider>(
+              builder: (context, provider, _) {
+                if (provider.isFetching) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (provider.serviceRequests.isEmpty) {
-            return RefreshIndicator(
-              onRefresh: _loadRequests,
-              child: ListView(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.25,
-                  ),
-                  Center(
-                    child: Column(
-                      children: [
-                        Icon(Icons.build_circle_outlined,
-                            size: 90, color: Colors.grey.shade400),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'No Service Requests Yet',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                if (provider.fetchError != null) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.error_outline_rounded,
+                              size: 64, color: Colors.grey.shade400),
+                          const SizedBox(height: 16),
+                          Text(
+                            provider.fetchError!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey.shade600),
                           ),
+                          const SizedBox(height: 20),
+                          ElevatedButton.icon(
+                            onPressed: _loadRequests,
+                            icon: const Icon(Icons.refresh_rounded),
+                            label: Text(l10n.retry),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                final filteredRequests = provider.serviceRequests
+                    .where((r) => r.type == selectedType)
+                    .toList();
+
+                if (filteredRequests.isEmpty) {
+                  final isService = selectedType == 'SERVICE';
+                  return RefreshIndicator(
+                    onRefresh: _loadRequests,
+                    child: ListView(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.2,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Your service and installation requests\nwill appear here.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey.shade600),
+                        Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                isService
+                                    ? Icons.build_circle_outlined
+                                    : Icons.construction_outlined,
+                                size: 90,
+                                color: Colors.grey.shade400,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                isService
+                                    ? l10n.noServiceRequestsYet
+                                    : l10n.noInstallationRequestsYet,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                isService
+                                    ? l10n.serviceRequestsHere
+                                    : l10n.installationRequestsHere,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-            );
-          }
+                  );
+                }
 
-          return RefreshIndicator(
-            onRefresh: _loadRequests,
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: provider.serviceRequests.length,
-              itemBuilder: (context, index) {
-                final req = provider.serviceRequests[index];
-                return _ServiceRequestCard(
-                  request: req,
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.serviceRequestDetails,
-                      arguments: req,
-                    );
-                  },
+                return RefreshIndicator(
+                  onRefresh: _loadRequests,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    itemCount: filteredRequests.length,
+                    itemBuilder: (context, index) {
+                      final req = filteredRequests[index];
+                      return _ServiceRequestCard(
+                        request: req,
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.serviceRequestDetails,
+                            arguments: req,
+                          );
+                        },
+                      );
+                    },
+                  ),
                 );
               },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -210,33 +258,9 @@ class _ServiceRequestCard extends StatelessWidget {
     required this.onTap,
   });
 
-  Color _statusColor(String status) {
-    switch (status.toUpperCase()) {
-      case 'RESOLVED':
-        return Colors.green;
-      case 'IN_PROGRESS':
-        return Colors.blue;
-      case 'PENDING':
-      default:
-        return Colors.orange;
-    }
-  }
-
-  String _statusLabel(String status) {
-    switch (status.toUpperCase()) {
-      case 'RESOLVED':
-        return 'Resolved';
-      case 'IN_PROGRESS':
-        return 'In Progress';
-      case 'PENDING':
-      default:
-        return 'Pending';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final color = _statusColor(request.status);
+    final color = ServiceRequestStatusHelper.color(request.status);
     final machines = request.machineNames.isNotEmpty
         ? request.machineNames.join(', ')
         : request.machineIds.join(', ');
@@ -287,7 +311,7 @@ class _ServiceRequestCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      _statusLabel(request.status),
+                      ServiceRequestStatusHelper.label(request.status),
                       style: TextStyle(
                         color: color,
                         fontWeight: FontWeight.bold,

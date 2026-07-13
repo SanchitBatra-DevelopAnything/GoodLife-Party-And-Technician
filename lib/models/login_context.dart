@@ -31,6 +31,7 @@ class LoginContext {
 class DistributorDetails {
   final bool allowPayLater;
   final String area;
+  final String address;
   final String contact;
   final String deviceToken;
   final String distributorName;
@@ -39,6 +40,7 @@ class DistributorDetails {
   DistributorDetails({
     required this.allowPayLater,
     required this.area,
+    required this.address,
     required this.contact,
     required this.deviceToken,
     required this.distributorName,
@@ -49,6 +51,7 @@ class DistributorDetails {
     return DistributorDetails(
       allowPayLater: json['allowPayLater'] ?? false,
       area: json['area'] ?? '',
+      address: json['address'] ?? '',
       contact: json['contact'] ?? '',
       deviceToken: json['deviceToken'] ?? '',
       distributorName: json['distributorName'] ?? '',
@@ -62,6 +65,7 @@ class DistributorDetails {
     return {
       'allowPayLater': allowPayLater,
       'area': area,
+      'address': address,
       'contact': contact,
       'deviceToken': deviceToken,
       'distributorName': distributorName,

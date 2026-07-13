@@ -60,6 +60,8 @@ dependencies:
   firebase_messaging: ^16.4.1
   flutter_local_notifications: ^22.0.1
   audioplayers: ^6.8.1
+  cloud_firestore: ^6.6.0
+  firebase_database: ^12.4.4
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +89,7 @@ flutter:
   assets:
     - assets/logo.jpeg
     - assets/qr_code.jpeg
+    - assets/Google_Review_QR.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

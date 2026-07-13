@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/login_context.dart';
+import '../utils/session_status.dart';
 
 class AuthService {
   Future<LoginContext> login({
@@ -30,6 +31,34 @@ class AuthService {
     }
 
     throw Exception("Login failed");
+  }
+
+  Future<SessionStatus> validateUserSession({
+    required String mobile,
+    required String areaName,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+          "https://loginparty-kind2bfhcq-as.a.run.app",
+        ),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "mobile": mobile,
+          "areaName": areaName,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return SessionStatus.valid;
+      }
+
+      return SessionStatus.invalid;
+    } catch (_) {
+      return SessionStatus.inconclusive;
+    }
   }
 
   Future<void> updateDeviceToken(String mobile, String token) async {

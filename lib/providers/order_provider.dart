@@ -163,6 +163,7 @@ String get inquiryProgressMessage =>
 Future<void> placeInquiryOrder({
   required List<File> images,
   required String? message,
+  File? audio,
 }) async {
   try {
     _isPlacingOrder = true;
@@ -226,6 +227,20 @@ Future<void> placeInquiryOrder({
       photoUrls.add(imageUrl);
     }
 
+    String? audioUrl;
+    if (audio != null) {
+      _inquiryProgressMessage = 'Uploading audio...';
+      notifyListeners();
+      
+      final ext = audio.path.split('.').last;
+      audioUrl = await _storageService.uploadServiceRequestMedia(
+        file: audio,
+        fileType: 'audio',
+        extension: ext,
+        onProgress: (progress) {},
+      );
+    }
+
     _inquiryProgressMessage =
         'Creating inquiry order...';
 
@@ -259,6 +274,7 @@ Future<void> placeInquiryOrder({
 
       paymentLink: null,
       firebaseOrderId: null,
+      audioUrl: audioUrl,
     );
 
     await _orderService.placeInquiryOrder(

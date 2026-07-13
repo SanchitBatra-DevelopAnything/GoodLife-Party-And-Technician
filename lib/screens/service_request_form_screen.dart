@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 
 import '../providers/auth_provider.dart';
 import '../providers/categories_provider.dart';
@@ -10,6 +11,7 @@ import '../providers/service_request_provider.dart';
 import '../routes/app_routes.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/voice_recorder_widget.dart';
+import '../widgets/whatsapp_more_info_note.dart';
 
 class ServiceRequestFormScreen extends StatefulWidget {
   const ServiceRequestFormScreen({super.key});
@@ -42,9 +44,10 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
   }
 
   Future<void> pickImage() async {
+    final l10n = AppLocalizations.of(context)!;
     if (selectedImages.length >= 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Maximum 6 photos allowed')),
+        SnackBar(content: Text(l10n.maxPhotos6Allowed)),
       );
       return;
     }
@@ -62,9 +65,10 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
   }
 
   Future<void> submitRequest() async {
+    final l10n = AppLocalizations.of(context)!;
     if (selectedMachines.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one machine.')),
+        SnackBar(content: Text(l10n.pleaseSelectOneMachine)),
       );
       return;
     }
@@ -72,7 +76,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
     final description = descriptionController.text.trim();
     if (description.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please describe the request details.')),
+        SnackBar(content: Text(l10n.pleaseDescribeDetails)),
       );
       return;
     }
@@ -90,8 +94,8 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Service request submitted successfully.')),
+        SnackBar(
+            content: Text(l10n.serviceRequestSuccess)),
       );
 
       Navigator.pushNamedAndRemoveUntil(
@@ -102,12 +106,13 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Submission failed: $e')),
+        SnackBar(content: Text(l10n.submissionFailed(e.toString()))),
       );
     }
   }
 
   Widget buildTypeSelector() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
@@ -119,11 +124,11 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
         children: [
           Expanded(
             child: buildTypeButton(
-                'SERVICE', 'Service', Icons.warning_amber_rounded),
+                'SERVICE', 'Service/Complaint', Icons.warning_amber_rounded),
           ),
           Expanded(
             child: buildTypeButton(
-                'INSTALLATION', 'Installation', Icons.build_circle_outlined),
+                'INSTALLATION', l10n.installationTab, Icons.build_circle_outlined),
           ),
         ],
       ),
@@ -182,6 +187,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
 
   /// Multi-select machine list with checkboxes
   Widget buildMachineSelector(List<CategoryModel> machines) {
+    final l10n = AppLocalizations.of(context)!;
     if (machines.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -189,7 +195,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
           color: Colors.red.shade50,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Text('No machines assigned to your account.'),
+        child: Text(l10n.noMachinesAssigned),
       );
     }
 
@@ -291,6 +297,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
   }
 
   Widget buildImageSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -298,7 +305,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Photos (${selectedImages.length}/6)',
+              l10n.photosCount(selectedImages.length).replaceAll('/4', '/6'),
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             if (selectedImages.isNotEmpty)
@@ -308,7 +315,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                     selectedImages.clear();
                   });
                 },
-                child: const Text('Clear All'),
+                child: Text(l10n.clearAll),
               ),
           ],
         ),
@@ -384,9 +391,9 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Add Photo',
-                      style: TextStyle(
+                    Text(
+                      l10n.addPhoto,
+                      style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
@@ -402,12 +409,13 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
   }
 
   Widget buildMediaSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Attach Audio / Recording',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        Text(
+          l10n.voiceNote,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 12),
         VoiceRecorderWidget(
@@ -524,6 +532,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ServiceRequestProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Stack(
       children: [
@@ -569,24 +578,24 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Service Request',
-                              style: TextStyle(
+                              l10n.serviceRequest,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.4,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
-                              'Request installation or file complaints',
-                              style: TextStyle(
+                              l10n.requestInstallationSubtitle,
+                              style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 14,
                               ),
@@ -608,10 +617,10 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                 // --- Machine Selection ---
                 Row(
                   children: [
-                    const Text(
-                      'Select Machines',
+                    Text(
+                      l10n.selectMachines,
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     const SizedBox(width: 8),
                     if (selectedMachines.isNotEmpty)
@@ -623,7 +632,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          '${selectedMachines.length} selected',
+                          l10n.selectedCount(selectedMachines.length),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -635,7 +644,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Select all machines that need servicing. One technician will fix all selected machines.',
+                  l10n.selectMachinesInstruction,
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey.shade600,
@@ -653,9 +662,9 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                 const SizedBox(height: 24),
 
                 // --- Request Type ---
-                const Text(
-                  'Select Request Type',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  l10n.selectRequestType,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 12),
                 buildTypeSelector(),
@@ -670,9 +679,9 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                 const SizedBox(height: 24),
 
                 // --- Description ---
-                const Text(
-                  'Description',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  l10n.description,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 12),
                 Card(
@@ -688,14 +697,15 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
                       maxLength: 1000,
                       minLines: 4,
                       maxLines: 8,
-                      decoration: const InputDecoration(
-                        hintText:
-                            'Provide more details about the issue or requested installation service...',
+                      decoration: InputDecoration(
+                        hintText: l10n.provideMoreDetailsHint,
                         border: InputBorder.none,
                       ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+                const WhatsAppMoreInfoNote(),
                 const SizedBox(height: 100),
               ],
             ),
@@ -706,12 +716,12 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: provider.isSubmitting ? null : submitRequest,
-            label: const Row(
+            label: Row(
               children: [
-                Icon(Icons.send_rounded),
-                SizedBox(width: 8),
-                Text('Submit Request',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const Icon(Icons.send_rounded),
+                const SizedBox(width: 8),
+                Text(l10n.submitRequest,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -735,6 +745,7 @@ class ServiceRequestLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: Colors.black.withOpacity(0.45),
       child: Center(
@@ -754,10 +765,10 @@ class ServiceRequestLoader extends StatelessWidget {
                 child: CircularProgressIndicator(),
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Submitting Request',
+              Text(
+                l10n.submittingRequest,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
