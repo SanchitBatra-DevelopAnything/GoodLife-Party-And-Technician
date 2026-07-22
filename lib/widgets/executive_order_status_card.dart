@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/executive_delivery_order.dart';
 import '../utils/executive_order_status_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class ExecutiveOrderStatusCard
     extends StatelessWidget {
@@ -14,6 +15,7 @@ class ExecutiveOrderStatusCard
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final color =
         ExecutiveOrderStatusHelper
             .getStatusColor(order);
@@ -43,7 +45,7 @@ class ExecutiveOrderStatusCard
           Expanded(
             child: Text(
               ExecutiveOrderStatusHelper
-                  .getStatusText(order),
+                  .getStatusText(order, l10n),
               style: TextStyle(
                 color: color,
                 fontWeight:

@@ -49,12 +49,19 @@ class CartItemCard extends StatelessWidget {
             borderRadius:
                 BorderRadius.circular(16),
 
-            child: CachedNetworkImage(
-              imageUrl: cartItem.imageUrl,
-              width: 90,
-              height: 90,
-              fit: BoxFit.cover,
-            ),
+            child: cartItem.imageUrl.isEmpty
+                ? Container(
+                    width: 90,
+                    height: 90,
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.image, color: Colors.grey),
+                  )
+                : CachedNetworkImage(
+                    imageUrl: cartItem.imageUrl,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                  ),
           ),
 
           const SizedBox(width: 14),

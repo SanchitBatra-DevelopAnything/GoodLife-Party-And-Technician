@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/executive_delivery_order.dart';
+import '../l10n/app_localizations.dart';
 
 class ExecutiveOrderCard extends StatelessWidget {
   final ExecutiveDeliveryOrder order;
@@ -12,24 +13,24 @@ class ExecutiveOrderCard extends StatelessWidget {
     required this.onTap,
   });
 
-  String getStatusText() {
+  String getStatusText(AppLocalizations l10n) {
     if (order.status == 'PENDING') {
-      return 'Payment Rejected';
+      return l10n.paymentRejectedStatus;
     }
 
     if (order.status == 'PAYMENT_VERIFICATION') {
-      return 'Payment Verification';
+      return l10n.paymentVerificationStatus;
     }
 
     if (order.status == 'PAYMENT_VERIFIED' &&
         order.dispatchedOn == null) {
-      return 'Payment Verified';
+      return l10n.paymentVerifiedStatus;
     }
 
     if ((order.status == 'PAYMENT_VERIFIED' ||
             order.status == 'DISPATCHED') &&
         order.dispatchedOn != null) {
-      return 'Order Dispatched';
+      return l10n.orderDispatchedStatus;
     }
 
     return order.status;
@@ -69,6 +70,7 @@ class ExecutiveOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = getStatusColor();
 
     final shortOrderId =
@@ -140,7 +142,7 @@ class ExecutiveOrderCard extends StatelessWidget {
                           width: 8,
                         ),
                         Text(
-                          getStatusText(),
+                          getStatusText(l10n),
                           style: TextStyle(
                             color:
                                 statusColor,
@@ -174,7 +176,7 @@ class ExecutiveOrderCard extends StatelessWidget {
                   ),
 
                   Text(
-                    '${order.items.length} Items',
+                    l10n.itemsCount(order.items.length),
                     style: TextStyle(
                       color:
                           Colors.grey.shade600,
@@ -327,7 +329,7 @@ class ExecutiveOrderCard extends StatelessWidget {
                           ),
                           Expanded(
                             child: Text(
-                              'Dispatched on ${order.dispatchedOn}',
+                              l10n.dispatchedOnText(order.dispatchedOn!),
                               style:
                                   const TextStyle(
                                 fontWeight:
@@ -357,9 +359,9 @@ class ExecutiveOrderCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize:
                           MainAxisSize.min,
-                      children: const [
+                      children: [
                         Text(
-                          'View Details',
+                          l10n.viewDetails,
                           style:
                               TextStyle(
                             fontWeight:

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:goodlife_party/l10n/app_localizations.dart';
 
 class VoiceRecorderWidget extends StatefulWidget {
   final Function(File? audioFile) onAudioRecorded;
@@ -87,6 +88,7 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget> {
 
   // Start Audio Recording
   Future<void> _startRecording() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       // Explicitly request microphone permission (required on real iOS devices)
       final hasPermission = await _audioRecorder.hasPermission();
@@ -96,11 +98,8 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Microphone Access Required'),
-            content: const Text(
-              'This app needs microphone access to record a voice note. '
-              'Please enable it in Settings → Privacy & Security → Microphone.',
-            ),
+            title: Text(l10n.micAccessRequired),
+            content: Text(l10n.micAccessMessage),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
@@ -225,6 +224,7 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     // State 1: We have a recorded file ready
     if (_recordedFilePath != null) {
@@ -348,7 +348,7 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget> {
             // Cancel Recording
             TextButton(
               onPressed: _cancelRecording,
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(l10n.cancelRecording, style: const TextStyle(color: Colors.grey)),
             ),
             const SizedBox(width: 8),
             // Stop & Save Button
@@ -381,16 +381,16 @@ class _VoiceRecorderWidgetState extends State<VoiceRecorderWidget> {
           children: [
             Icon(Icons.mic_none_rounded, size: 36, color: primaryColor),
             const SizedBox(height: 10),
-            const Text(
-              'Tap to Record Voice Note',
-              style: TextStyle(
+            Text(
+              l10n.tapToRecordVoiceNote,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              'Upto 1 minute recording allowed',
+              l10n.uptoOneMinuteRecording,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey.shade500,

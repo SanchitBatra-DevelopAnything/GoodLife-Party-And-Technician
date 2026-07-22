@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/category_item.dart';
 import '../widgets/category_shimmer.dart';
+import '../l10n/app_localizations.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -64,7 +65,7 @@ void initState() {
       backgroundColor: Colors.grey.shade50,
 
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
+        preferredSize: const Size.fromHeight(110),
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
@@ -113,9 +114,9 @@ void initState() {
                       crossAxisAlignment:
                           CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'My Machines',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.myMachines,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -126,7 +127,7 @@ void initState() {
                         const SizedBox(height: 4),
 
                         Text(
-                          'Welcome back, $userName',
+                          AppLocalizations.of(context)!.welcomeBack(userName),
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color:
@@ -173,7 +174,7 @@ void initState() {
               child: TextField(
                 onChanged: provider.search,
                 decoration: InputDecoration(
-                  hintText: 'Search machines...',
+                  hintText: AppLocalizations.of(context)!.searchMachines,
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
                   fillColor: Colors.grey.shade100,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -116,9 +117,40 @@ class NotificationService {
   }
 
   Future<String?> getToken() async {
-    final token = await _fcm.getToken();
-    print('🔔 FCM Token: $token');
-    return token;
+    try {
+      if (Platform.isIOS) {
+        // iOS Simulator pe APNS support nahi hota.
+        // SIMULATOR_DEVICE_NAME env var sirf simulator pe hoti hai, real device pe nahi.
+        final bool isSimulator =
+            Platform.environment.containsKey('SIMULATOR_DEVICE_NAME');
+
+        if (isSimulator) {
+          print('ℹ️ iOS Simulator detected — APNS/FCM not supported. Skipping token fetch.');
+          return null;
+        }
+
+        // Real device: APNS token ka wait karo FCM token se pehle.
+        // Bina iske [firebase_messaging/apns-token-not-set] error aata hai.
+        String? apnsToken;
+        for (int attempt = 0; attempt < 3; attempt++) {
+          apnsToken = await _fcm.getAPNSToken();
+          if (apnsToken != null) break;
+          await Future.delayed(const Duration(seconds: 1));
+        }
+
+        if (apnsToken == null) {
+          print('⚠️ APNS token unavailable (no push permission). FCM token skipped.');
+          return null;
+        }
+      }
+
+      final token = await _fcm.getToken();
+      print('🔔 FCM Token: $token');
+      return token;
+    } catch (e) {
+      print('⚠️ FCM getToken() failed: $e');
+      return null;
+    }
   }
 
   void _handleNotificationTap(String? payload) {

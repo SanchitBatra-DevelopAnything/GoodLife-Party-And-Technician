@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/custom_order_model.dart';
+import '../l10n/app_localizations.dart';
 
 class CustomOrderCard
     extends StatelessWidget {
@@ -14,8 +15,9 @@ class CustomOrderCard
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state =
-        _getDisplayState();
+        _getDisplayState(l10n);
 
     return Card(
       margin:
@@ -47,11 +49,11 @@ class CustomOrderCard
                   const SizedBox(
                     width: 8,
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Custom Order',
+                      l10n.customOrderTitle,
                       style:
-                          TextStyle(
+                          const TextStyle(
                         fontSize: 16,
                         fontWeight:
                             FontWeight
@@ -80,7 +82,7 @@ class CustomOrderCard
               ),
 
               Text(
-                '${order.requestedItems.length} Photos Uploaded',
+                l10n.photosUploadedCount(order.requestedItems.length),
               ),
 
               const SizedBox(
@@ -131,48 +133,48 @@ class CustomOrderCard
   }
 
   _DisplayState
-      _getDisplayState() {
+      _getDisplayState(AppLocalizations l10n) {
     switch (
         order.orderStatus) {
       case 'WAITING_ON_CUSTOMER':
-        return const _DisplayState(
-          'Quotation Ready',
-          'Review quotation and upload payment proof.',
+        return _DisplayState(
+          l10n.quotationReady,
+          l10n.quotationReadyDesc,
           Colors.orange,
         );
 
       case 'PAYMENT_VERIFICATION':
-        return const _DisplayState(
-          'Verification In Progress',
-          'Payment verification is underway.',
+        return _DisplayState(
+          l10n.verificationInProgress,
+          l10n.verificationInProgressDesc,
           Colors.blue,
         );
 
       case 'PAYMENT_VERIFIED':
-        return const _DisplayState(
-          'Order Confirmed',
-          'Your order will be dispatched soon.',
+        return _DisplayState(
+          l10n.orderConfirmed,
+          l10n.orderConfirmedDesc,
           Colors.green,
         );
 
       case 'PAYMENT_REJECTED':
-        return const _DisplayState(
-          'Action Required',
-          'Payment was rejected. Please contact support to further process this order.',
+        return _DisplayState(
+          l10n.actionRequired,
+          l10n.paymentRejectedDesc,
           Colors.red,
         );
 
       case 'DISPATCHED':
-        return const _DisplayState(
-          'Dispatched',
-          'Your order has been dispatched.',
+        return _DisplayState(
+          l10n.dispatched,
+          l10n.dispatchedDesc,
           Colors.teal,
         );
 
       default:
-        return const _DisplayState(
-          'Awaiting Quotation',
-          'We are preparing your quotation.',
+        return _DisplayState(
+          l10n.awaitingQuotation,
+          l10n.awaitingQuotationDesc,
           Colors.orange,
         );
     }

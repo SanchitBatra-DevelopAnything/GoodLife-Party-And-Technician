@@ -5,6 +5,8 @@ import 'package:goodlife_party/providers/cart_provider.dart';
 import 'package:goodlife_party/screens/item_details_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
+
 class ItemCard extends StatelessWidget {
   final ItemModel item;
 
@@ -48,11 +50,17 @@ class ItemCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(18),
                   ),
-                  child: CachedNetworkImage(
-                    imageUrl: item.imgUrl,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: item.imgUrl.isEmpty
+                      ? Container(
+                          width: double.infinity,
+                          color: Colors.grey.shade200,
+                          child: const Icon(Icons.image, color: Colors.grey, size: 40),
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: item.imgUrl,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
             ),
@@ -198,8 +206,8 @@ class ItemCard extends StatelessWidget {
               customizedMessage,
             );
           },
-          child: const Text(
-            'Add To Cart',
+          child: Text(
+            AppLocalizations.of(context)!.addToCart,
           ),
         ),
       );

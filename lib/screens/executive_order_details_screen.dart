@@ -4,6 +4,7 @@ import '../models/executive_delivery_order.dart';
 import '../widgets/executive_order_documents_section.dart';
 import '../widgets/executive_order_items_section.dart';
 import '../widgets/executive_order_status_card.dart';
+import '../l10n/app_localizations.dart';
 
 class ExecutiveOrderDetailsScreen extends StatelessWidget {
   final ExecutiveDeliveryOrder order;
@@ -15,10 +16,11 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Order Details',
+        title: Text(
+          l10n.orderDetailsTitle,
         ),
       ),
       body: SingleChildScrollView(
@@ -31,7 +33,7 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            buildPriceBreakdownCard(),
+            buildPriceBreakdownCard(l10n),
 
             const SizedBox(height: 16),
 
@@ -47,7 +49,7 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            buildOrderInformationCard(),
+            buildOrderInformationCard(l10n),
 
             const SizedBox(height: 24),
           ],
@@ -56,7 +58,7 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildPriceBreakdownCard() {
+  Widget buildPriceBreakdownCard(AppLocalizations l10n) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -69,9 +71,9 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
           crossAxisAlignment:
               CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Price Breakdown',
-              style: TextStyle(
+            Text(
+              l10n.priceBreakdown,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight:
                     FontWeight.bold,
@@ -81,12 +83,12 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             buildAmountRow(
-              'Item Total',
+              l10n.itemTotal,
               order.itemTotal,
             ),
 
             buildAmountRow(
-              'Freight Charges',
+              l10n.freightCharges,
               order.freightCharges,
             ),
 
@@ -96,7 +98,7 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
             ),
 
             buildAmountRow(
-              'Grand Total',
+              l10n.grandTotal,
               order.totalPrice,
               isBold: true,
             ),
@@ -106,7 +108,7 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildOrderInformationCard() {
+  Widget buildOrderInformationCard(AppLocalizations l10n) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -119,9 +121,9 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
           crossAxisAlignment:
               CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Order Information',
-              style: TextStyle(
+            Text(
+              l10n.orderInformation,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight:
                     FontWeight.bold,
@@ -131,39 +133,39 @@ class ExecutiveOrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             buildInfoRow(
-              'Order ID',
+              l10n.orderId,
               order.orderId,
             ),
 
             buildInfoRow(
-              'Order Date',
+              l10n.orderDateStr,
               order.orderDate,
             ),
 
             buildInfoRow(
-              'Order Time',
+              l10n.orderTimeStr,
               order.orderTime,
             ),
 
             buildInfoRow(
-              'Ordered By',
+              l10n.orderedBy,
               order.orderedBy,
             ),
 
             buildInfoRow(
-              'Contact',
+              l10n.contact,
               order.contact,
             ),
 
             buildInfoRow(
-              'Area',
+              l10n.areaText,
               order.area,
             ),
 
             if (order.dispatchedOn !=
                 null)
               buildInfoRow(
-                'Dispatched On',
+                l10n.dispatchedOnStr,
                 order.dispatchedOn!,
               ),
           ],

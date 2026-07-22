@@ -31,10 +31,14 @@ class CategoryItem extends StatelessWidget {
                       child: InteractiveViewer(
                         minScale: 1,
                         maxScale: 4,
-                        child: CachedNetworkImage(
-                          imageUrl: category.imageUrl,
-                          fit: BoxFit.contain,
-                        ),
+                        child: category.imageUrl.isEmpty
+                          ? const Center(child: Icon(Icons.image, color: Colors.grey, size: 60))
+                          : CachedNetworkImage(
+                              imageUrl: category.imageUrl,
+                              fit: BoxFit.contain,
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.image_not_supported),
+                            ),
                       ),
                     ),
                   ),

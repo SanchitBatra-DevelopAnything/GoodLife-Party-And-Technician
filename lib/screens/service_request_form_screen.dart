@@ -124,7 +124,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
         children: [
           Expanded(
             child: buildTypeButton(
-                'SERVICE', 'Service/Complaint', Icons.warning_amber_rounded),
+                'SERVICE', l10n.serviceComplaintTab, Icons.warning_amber_rounded),
           ),
           Expanded(
             child: buildTypeButton(
@@ -534,12 +534,14 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
     final provider = context.watch<ServiceRequestProvider>();
     final l10n = AppLocalizations.of(context)!;
 
-    return Stack(
-      children: [
-        Scaffold(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Stack(
+        children: [
+          Scaffold(
           backgroundColor: Colors.grey.shade50,
           appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(90),
+            preferredSize: const Size.fromHeight(110),
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
@@ -731,6 +733,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
             message: provider.progressMessage,
           ),
       ],
+    ),
     );
   }
 }
@@ -742,6 +745,25 @@ class ServiceRequestLoader extends StatelessWidget {
     super.key,
     required this.message,
   });
+
+  String _getLocalizedMessage(BuildContext context, String msg) {
+    final l10n = AppLocalizations.of(context)!;
+    if (msg.startsWith('Uploading')) {
+      final regex = RegExp(r'(\d+)\s*of\s*(\d+)');
+      final match = regex.firstMatch(msg);
+      if (match != null) {
+        return '${l10n.uploading.replaceAll("...", "")} ${match.group(1)}/${match.group(2)}';
+      }
+      return l10n.uploading;
+    } else if (msg.contains('Creating') || msg.contains('Preparing') || msg.contains('Saving') || msg.contains('Validating')) {
+      return l10n.submittingRequest;
+    } else if (msg == 'Request submitted successfully') {
+      return l10n.serviceRequestSuccess;
+    } else if (msg.startsWith('Failed to submit')) {
+      return l10n.submissionFailed('');
+    }
+    return msg;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -775,7 +797,7 @@ class ServiceRequestLoader extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                message,
+                _getLocalizedMessage(context, message),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 14,

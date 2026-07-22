@@ -4,6 +4,7 @@ import 'package:goodlife_party/screens/full_screen_image_screen.dart';
 import 'package:goodlife_party/screens/pdf_viewer_screen.dart';
 import 'package:goodlife_party/widgets/custom_order_payment_bottom_sheet.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 
 import '../models/custom_order_model.dart';
 import '../providers/auth_provider.dart';
@@ -20,21 +21,22 @@ class CustomOrderDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final allowPayLater = context.watch<AuthProvider>().allowPayLater;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Order Details')),
+      appBar: AppBar(title: Text(l10n.orderDetailsTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildStatusCard(),
+            _buildStatusCard(l10n),
 
             const SizedBox(height: 20),
 
             if (order.requestedItems.isNotEmpty) ...[
-              _buildSectionTitle('Requested Items'),
+              _buildSectionTitle(l10n.requestedItems),
 
               const SizedBox(height: 12),
 
@@ -44,7 +46,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
             ],
 
             if (order.audioUrl != null && order.audioUrl!.isNotEmpty) ...[
-              _buildSectionTitle('Voice Note'),
+              _buildSectionTitle(l10n.voiceNote),
               const SizedBox(height: 12),
               AudioPlayerWidget(audioUrl: order.audioUrl!),
               const SizedBox(height: 24),
@@ -52,7 +54,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
 
             if (order.requestedMessage != null &&
                 order.requestedMessage!.trim().isNotEmpty) ...[
-              _buildSectionTitle('Request Message'),
+              _buildSectionTitle(l10n.requestMessage),
 
               const SizedBox(height: 12),
 
@@ -66,7 +68,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
               const SizedBox(height: 24),
             ],
 
-            _buildSectionTitle('Order Information'),
+            _buildSectionTitle(l10n.orderInformation),
 
             const SizedBox(height: 12),
 
@@ -75,9 +77,9 @@ class CustomOrderDetailsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    _buildInfoRow('Order Date', order.orderDate),
+                    _buildInfoRow(l10n.orderDateStr, order.orderDate),
                     const SizedBox(height: 12),
-                    _buildInfoRow('Order Time', order.orderTime),
+                    _buildInfoRow(l10n.orderTimeStr, order.orderTime),
                   ],
                 ),
               ),
@@ -86,7 +88,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
             if (order.additionalDocuments.isNotEmpty) ...[
               const SizedBox(height: 24),
 
-              _buildSectionTitle('Additional Documents'),
+              _buildSectionTitle(l10n.additionalDocuments),
 
               const SizedBox(height: 12),
 
@@ -95,7 +97,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
 
                 return _buildDocumentTile(
                   context: context,
-                  title: 'Document ${entry.key + 1}',
+                  title: l10n.documentNumber(entry.key + 1),
                   url: document.url,
                   isPdf: document.type == 'pdf',
                 );
@@ -105,7 +107,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
             if (_shouldShowPi()) ...[
               const SizedBox(height: 24),
 
-              _buildSectionTitle('Proforma Invoice'),
+              _buildSectionTitle(l10n.proformaInvoice),
 
               const SizedBox(height: 12),
 
@@ -115,8 +117,8 @@ class CustomOrderDetailsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Goodlife has provided a PI for this inquiry.',
+                      Text(
+                        l10n.piProvidedMsg,
                       ),
                       const SizedBox(height: 12),
                       ElevatedButton(
@@ -125,13 +127,13 @@ class CustomOrderDetailsScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => PdfViewerScreen(
-                                title: 'Proforma Invoice',
+                                title: l10n.proformaInvoice,
                                 pdfUrl: order.piLink!,
                               ),
                             ),
                           );
                         },
-                        child: const Text('VIEW PI'),
+                        child: Text(l10n.viewPi),
                       ),
                     ],
                   ),
@@ -142,13 +144,13 @@ class CustomOrderDetailsScreen extends StatelessWidget {
             if (_shouldShowPo()) ...[
               const SizedBox(height: 24),
 
-              _buildSectionTitle('Purchase Order'),
+              _buildSectionTitle(l10n.purchaseOrder),
 
               const SizedBox(height: 12),
 
               _buildDocumentTile(
                 context: context,
-                title: 'View PO',
+                title: l10n.viewPo,
                 url: order.poLink!,
                 isPdf: true,
               ),
@@ -157,7 +159,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
             if (_shouldShowPayment()) ...[
               const SizedBox(height: 24),
 
-              _buildSectionTitle('Payment Screenshot'),
+              _buildSectionTitle(l10n.paymentScreenshot),
 
               const SizedBox(height: 12),
 
@@ -196,21 +198,21 @@ class CustomOrderDetailsScreen extends StatelessWidget {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(_getStatusMessage()),
+                child: Text(_getStatusMessage(l10n)),
               ),
             ),
 
             const SizedBox(height: 24),
 
             if (order.orderStatus == 'WAITING_ON_CUSTOMER')
-              _buildActionSection(context, allowPayLater),
+              _buildActionSection(context, allowPayLater, l10n),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatusCard() {
+  Widget _buildStatusCard(AppLocalizations l10n) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -220,7 +222,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                order.orderStatus,
+                _getStatusMessage(l10n),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -312,7 +314,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionSection(BuildContext context, bool allowPayLater) {
+  Widget _buildActionSection(BuildContext context, bool allowPayLater, AppLocalizations l10n) {
     final isLoading = context.watch<OrderProvider>().isPlacingOrder;
 
     return Column(
@@ -320,8 +322,8 @@ class CustomOrderDetailsScreen extends StatelessWidget {
       children: [
         Text(
           allowPayLater
-              ? 'Please complete the payment or attach the PO to confirm the order.'
-              : 'Please complete the payment to confirm the order.',
+              ? l10n.statusWaitingOnCustomer
+              : l10n.completePaymentToConfirm,
         ),
 
         const SizedBox(height: 16),
@@ -348,7 +350,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
                 Navigator.pop(context, true);
               }
             },
-            child: const Text('PAY NOW'),
+            child: Text(l10n.payNow),
           ),
         ),
 
@@ -385,8 +387,8 @@ class CustomOrderDetailsScreen extends StatelessWidget {
 
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('PO uploaded successfully'),
+                            SnackBar(
+                              content: Text(l10n.poUploadedSuccess),
                             ),
                           );
 
@@ -406,7 +408,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
                       width: 18,
                       child: CircularProgressIndicator(),
                     )
-                  : const Text('ATTACH PO'),
+                  : Text(l10n.attachPo),
             ),
           ),
         ],
@@ -426,25 +428,25 @@ class CustomOrderDetailsScreen extends StatelessWidget {
     return order.paymentLink != null && order.paymentLink!.isNotEmpty;
   }
 
-  String _getStatusMessage() {
+  String _getStatusMessage(AppLocalizations l10n) {
     switch (order.orderStatus) {
       case 'INQUIRY':
-        return 'Goodlife is yet to provide a PI for this order. Once they provide a PI, you will be notified.';
+        return l10n.statusInquiry;
 
       case 'WAITING_ON_CUSTOMER':
-        return 'Please complete the payment or attach the PO to confirm the order.';
+        return l10n.statusWaitingOnCustomer;
 
       case 'PAYMENT_VERIFICATION':
-        return 'Your payment is getting verified currently. Order will be dispatched once the payment is verified.';
+        return l10n.statusPaymentVerification;
 
       case 'PAYMENT_REJECTED':
-        return 'Payment is rejected. Please contact Goodlife if you have any concerns or re-place the order with correct payment data.';
+        return l10n.statusPaymentRejected;
 
       case 'PAYMENT_VERIFIED':
-        return 'Payment details are verified. Order will be dispatched soon.';
+        return l10n.statusPaymentVerified;
 
       case 'DISPATCHED':
-        return 'This order is dispatched.';
+        return l10n.statusDispatched;
 
       default:
         return '';

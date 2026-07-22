@@ -21,10 +21,15 @@ class ItemDetailsScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
                 tag: item.id,
-                child: CachedNetworkImage(
-                  imageUrl: item.imgUrl,
-                  fit: BoxFit.cover,
-                ),
+                child: item.imgUrl.isEmpty
+                    ? Container(
+                        color: Colors.grey.shade200,
+                        child: const Icon(Icons.image, color: Colors.grey, size: 60),
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: item.imgUrl,
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
           ),

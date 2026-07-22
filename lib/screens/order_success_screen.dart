@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 import '../widgets/payment_option_bottom_sheet.dart';
 
@@ -13,11 +14,11 @@ class OrderSuccessScreen
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text(
-          'Order Placed',
+        title: Text(
+          l10n.orderPlacedSuccessfullyTitle,
         ),
         automaticallyImplyLeading:
             false,
@@ -53,8 +54,8 @@ class OrderSuccessScreen
                 height: 28,
               ),
 
-              const Text(
-                'Your order has been placed successfully!',
+              Text(
+                  l10n.orderPlacedSuccessfullyTitle,
                 textAlign:
                     TextAlign.center,
 
@@ -72,19 +73,15 @@ class OrderSuccessScreen
 
               Text(
                 paymentDone
-                    ? 'Your payment screenshot has been uploaded successfully.\n\nYour order is currently under payment verification.\nWe will start processing your order once the payment is verified.'
-                    : 'Your order has been placed successfully.\n\nPlease complete your payment soon so that we can start processing your order.\n\nPlease contact us to get your payment verified.',
-
+                    ? l10n.orderPlacedSuccessWithPayment
+                    : l10n.orderPlacedSuccessWithoutPayment,
                 textAlign:
                     TextAlign.center,
-
                 style:
                     const TextStyle(
                   fontSize: 16,
-
                   color:
                       Colors.black54,
-
                   height: 1.6,
                 ),
               ),
@@ -125,9 +122,8 @@ class OrderSuccessScreen
                           Icons.qr_code,
                         ),
 
-                        title:
-                            const Text(
-                          'Pay Using QR Code',
+                        title: Text(
+                          l10n.qrCode,
                         ),
 
                         trailing:
@@ -173,9 +169,8 @@ class OrderSuccessScreen
                               .account_balance,
                         ),
 
-                        title:
-                            const Text(
-                          'Bank Transfer Details',
+                        title: Text(
+                          l10n.bankTransfer,
                         ),
 
                         trailing:
@@ -228,8 +223,8 @@ class OrderSuccessScreen
                   },
 
                   child:
-                      const Text(
-                    'Continue',
+                      Text(
+                  l10n.continueBtn,
                   ),
                 ),
               ),

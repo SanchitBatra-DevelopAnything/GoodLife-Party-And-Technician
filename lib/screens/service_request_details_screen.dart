@@ -18,10 +18,7 @@ import 'package:goodlife_party/screens/pdf_viewer_screen.dart';
 class ServiceRequestDetailsScreen extends StatefulWidget {
   final ServiceRequestModel request;
 
-  const ServiceRequestDetailsScreen({
-    super.key,
-    required this.request,
-  });
+  const ServiceRequestDetailsScreen({super.key, required this.request});
 
   @override
   State<ServiceRequestDetailsScreen> createState() =>
@@ -37,7 +34,8 @@ class _ServiceRequestDetailsScreenState
   bool _isRefreshing = false;
   String? _technicianPhone;
   int? _selectedRating;
-  final TextEditingController _ratingCommentController = TextEditingController();
+  final TextEditingController _ratingCommentController =
+      TextEditingController();
   bool _isSubmittingRating = false;
   Duration _playbackPosition = Duration.zero;
   Duration _playbackDuration = Duration.zero;
@@ -47,7 +45,8 @@ class _ServiceRequestDetailsScreenState
   StreamSubscription? _playerStateSubscription;
 
   bool get _isInvoicePdf {
-    if (_request.invoiceUrl == null || _request.invoiceUrl!.isEmpty) return false;
+    if (_request.invoiceUrl == null || _request.invoiceUrl!.isEmpty)
+      return false;
     final urlWithoutQuery = _request.invoiceUrl!.split('?').first.toLowerCase();
     return urlWithoutQuery.endsWith('.pdf');
   }
@@ -74,8 +73,9 @@ class _ServiceRequestDetailsScreenState
       }
     });
 
-    _playerStateSubscription =
-        _audioPlayer.onPlayerStateChanged.listen((state) {
+    _playerStateSubscription = _audioPlayer.onPlayerStateChanged.listen((
+      state,
+    ) {
       if (mounted) {
         setState(() {
           _isPlaying = state == PlayerState.playing;
@@ -164,7 +164,7 @@ class _ServiceRequestDetailsScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error playing audio: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorPlayingAudio(e.toString()))),
         );
       }
     }
@@ -192,13 +192,17 @@ class _ServiceRequestDetailsScreenState
       if (mounted) {
         setState(() => _request = updated);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.ratingSubmitted)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.ratingSubmitted),
+          ),
         );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to submit rating. Please try again.')),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.failedToSubmitRating),
+          ),
         );
       }
     } finally {
@@ -331,9 +335,7 @@ class _ServiceRequestDetailsScreenState
   void _openImage(String url) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => FullScreenImageScreen(imageUrl: url),
-      ),
+      MaterialPageRoute(builder: (_) => FullScreenImageScreen(imageUrl: url)),
     );
   }
 
@@ -343,9 +345,9 @@ class _ServiceRequestDetailsScreenState
       case 'VERIFIED':
         return l10n.statusVerified;
       case 'CLOSED':
-        return l10n.statusClosed;
+        return l10n.statusClosedByTechnician;
       case 'CLOSED_BY_ADMIN':
-        return 'Closed By Admin';
+        return l10n.statusClosed;
       case 'RESOLVED':
         return l10n.statusResolved;
       case 'IN_PROGRESS':
@@ -371,7 +373,7 @@ class _ServiceRequestDetailsScreenState
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
+        preferredSize: const Size.fromHeight(110),
         child: Container(
           decoration: BoxDecoration(
             color: primary,
@@ -388,8 +390,7 @@ class _ServiceRequestDetailsScreenState
           ),
           child: SafeArea(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               child: Row(
                 children: [
                   GestureDetector(
@@ -437,9 +438,11 @@ class _ServiceRequestDetailsScreenState
                   else
                     IconButton(
                       onPressed: _refreshRequest,
-                      icon: const Icon(Icons.refresh_rounded,
-                          color: Colors.white),
-                      tooltip: 'Refresh',
+                      icon: const Icon(
+                        Icons.refresh_rounded,
+                        color: Colors.white,
+                      ),
+                      tooltip: l10n.refresh,
                     ),
                 ],
               ),
@@ -460,7 +463,8 @@ class _ServiceRequestDetailsScreenState
               Card(
                 elevation: 2,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -471,12 +475,16 @@ class _ServiceRequestDetailsScreenState
                           Text(
                             l10n.typeLabel,
                             style: TextStyle(
-                                color: Colors.grey.shade600, fontSize: 12),
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(10),
@@ -484,7 +492,7 @@ class _ServiceRequestDetailsScreenState
                             child: Text(
                               _request.type == 'INSTALLATION'
                                   ? l10n.installationTab
-                                  : 'Service/Complaint',
+                                  : l10n.serviceComplaintTab,
                               style: TextStyle(
                                 color: primary,
                                 fontWeight: FontWeight.bold,
@@ -494,24 +502,34 @@ class _ServiceRequestDetailsScreenState
                         ],
                       ),
                       Container(
-                          width: 1, height: 40, color: Colors.grey.shade200),
+                        width: 1,
+                        height: 40,
+                        color: Colors.grey.shade200,
+                      ),
                       Column(
                         children: [
                           Text(
                             l10n.statusLabel,
                             style: TextStyle(
-                                color: Colors.grey.shade600, fontSize: 12),
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: statusColor.withOpacity(0.12),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
-                              _getLocalizedStatusLabel(context, _request.status),
+                              _getLocalizedStatusLabel(
+                                context,
+                                _request.status,
+                              ),
                               style: TextStyle(
                                 color: statusColor,
                                 fontWeight: FontWeight.bold,
@@ -529,7 +547,8 @@ class _ServiceRequestDetailsScreenState
               Card(
                 elevation: 2,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -565,18 +584,18 @@ class _ServiceRequestDetailsScreenState
                       _infoRow(
                         icon: Icons.location_on_rounded,
                         label: l10n.areaLabel,
-                        value:
-                            _request.area.isNotEmpty ? _request.area : '—',
+                        value: _request.area.isNotEmpty ? _request.area : '—',
                       ),
                       if (_request.hasAssignedTechnician) ...[
                         const SizedBox(height: 12),
                         _infoRow(
                           icon: Icons.engineering_rounded,
                           label: l10n.technicianLabel,
-                          value: (_request.assignedTechnicianName != null &&
+                          value:
+                              (_request.assignedTechnicianName != null &&
                                   _request.assignedTechnicianName!.isNotEmpty)
                               ? _request.assignedTechnicianName!
-                              : 'Assigned',
+                              : l10n.statusAssigned,
                         ),
                         if (_technicianPhone != null &&
                             _technicianPhone!.isNotEmpty) ...[
@@ -603,9 +622,7 @@ class _ServiceRequestDetailsScreenState
                 _buildSectionCard(
                   title: l10n.submittedPhotos,
                   icon: Icons.photo_library_rounded,
-                  children: [
-                    _buildImageGallery(_request.imageUrls),
-                  ],
+                  children: [_buildImageGallery(_request.imageUrls)],
                 ),
                 const SizedBox(height: 14),
               ],
@@ -643,10 +660,15 @@ class _ServiceRequestDetailsScreenState
                         runSpacing: 8,
                         children: [
                           if (_request.serviceDone)
-                            _buildDoneChip(l10n.serviceDone, Icons.build_rounded),
+                            _buildDoneChip(
+                              l10n.serviceDone,
+                              Icons.build_rounded,
+                            ),
                           if (_request.cleaningDone)
                             _buildDoneChip(
-                                l10n.cleaningDone, Icons.cleaning_services_rounded),
+                              l10n.cleaningDone,
+                              Icons.cleaning_services_rounded,
+                            ),
                         ],
                       ),
                     ],
@@ -668,8 +690,11 @@ class _ServiceRequestDetailsScreenState
                             color: Colors.green.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.currency_rupee_rounded,
-                              color: Colors.green, size: 28),
+                          child: const Icon(
+                            Icons.currency_rupee_rounded,
+                            color: Colors.green,
+                            size: 28,
+                          ),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -684,7 +709,12 @@ class _ServiceRequestDetailsScreenState
                                 ),
                               ),
                               Text(
-                                l10n.paidVia(_request.paymentMode ?? '—'),
+                                _request.paymentMode?.toUpperCase() == 'CASH'
+                                    ? l10n.paidByCash
+                                    : _request.paymentMode?.toUpperCase() ==
+                                          'UPI'
+                                    ? l10n.paidByUpi
+                                    : l10n.paidVia(_request.paymentMode ?? '—'),
                                 style: TextStyle(
                                   color: Colors.grey.shade600,
                                   fontSize: 13,
@@ -698,7 +728,7 @@ class _ServiceRequestDetailsScreenState
                     if (_request.paymentReceiptImageUrl != null &&
                         _request.paymentReceiptImageUrl!.isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      _buildImageSectionLabel(l10n.submittedPhotos),
+                      _buildImageSectionLabel(l10n.paymentScreenshot),
                       const SizedBox(height: 8),
                       _buildImageGallery([_request.paymentReceiptImageUrl!]),
                     ],
@@ -828,16 +858,17 @@ class _ServiceRequestDetailsScreenState
                       GestureDetector(
                         onTap: () {
                           Clipboard.setData(
-                              ClipboardData(text: _request.happyCode!));
+                            ClipboardData(text: _request.happyCode!),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content:
-                                    Text(l10n.happyCodeCopied)),
+                            SnackBar(content: Text(l10n.happyCodeCopied)),
                           );
                         },
                         child: Container(
-                           padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(14),
@@ -864,7 +895,9 @@ class _ServiceRequestDetailsScreenState
                       Text(
                         l10n.tapToCopy,
                         style: TextStyle(
-                            color: Colors.grey.shade500, fontSize: 12),
+                          color: Colors.grey.shade500,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -951,8 +984,10 @@ class _ServiceRequestDetailsScreenState
                 width: 90,
                 height: 90,
                 color: Colors.grey.shade200,
-                child: Icon(Icons.broken_image_rounded,
-                    color: Colors.grey.shade400),
+                child: Icon(
+                  Icons.broken_image_rounded,
+                  color: Colors.grey.shade400,
+                ),
               ),
             ),
           ),
@@ -997,7 +1032,7 @@ class _ServiceRequestDetailsScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Recorded Voice Note',
+              AppLocalizations.of(context)!.voiceNoteTitle,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -1026,9 +1061,11 @@ class _ServiceRequestDetailsScreenState
                       SliderTheme(
                         data: SliderTheme.of(context).copyWith(
                           thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 6),
+                            enabledThumbRadius: 6,
+                          ),
                           overlayShape: const RoundSliderOverlayShape(
-                              overlayRadius: 14),
+                            overlayRadius: 14,
+                          ),
                           activeTrackColor: primaryColor,
                           inactiveTrackColor: Colors.grey.shade200,
                           thumbColor: primaryColor,
@@ -1044,14 +1081,14 @@ class _ServiceRequestDetailsScreenState
                               .clamp(
                                 0.0,
                                 _playbackDuration.inMilliseconds.toDouble() > 0
-                                    ? _playbackDuration
-                                        .inMilliseconds
-                                        .toDouble()
+                                    ? _playbackDuration.inMilliseconds
+                                          .toDouble()
                                     : 1.0,
                               ),
                           onChanged: (val) async {
-                            await _audioPlayer
-                                .seek(Duration(milliseconds: val.toInt()));
+                            await _audioPlayer.seek(
+                              Duration(milliseconds: val.toInt()),
+                            );
                           },
                         ),
                       ),
@@ -1063,12 +1100,16 @@ class _ServiceRequestDetailsScreenState
                             Text(
                               _formatDuration(_playbackPosition),
                               style: TextStyle(
-                                  fontSize: 10, color: Colors.grey.shade600),
+                                fontSize: 10,
+                                color: Colors.grey.shade600,
+                              ),
                             ),
                             Text(
                               _formatDuration(_playbackDuration),
                               style: TextStyle(
-                                  fontSize: 10, color: Colors.grey.shade600),
+                                fontSize: 10,
+                                color: Colors.grey.shade600,
+                              ),
                             ),
                           ],
                         ),
@@ -1091,8 +1132,9 @@ class _ServiceRequestDetailsScreenState
     bool multiline = false,
   }) {
     return Row(
-      crossAxisAlignment:
-          multiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+      crossAxisAlignment: multiline
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
         Icon(icon, size: 18, color: Colors.grey.shade500),
         const SizedBox(width: 10),
@@ -1100,19 +1142,13 @@ class _ServiceRequestDetailsScreenState
           width: 90,
           child: Text(
             label,
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
         ),
       ],
@@ -1130,11 +1166,8 @@ class _ServiceRequestDetailsScreenState
         SizedBox(
           width: 90,
           child: Text(
-            'Contact',
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 13,
-            ),
+            AppLocalizations.of(context)!.contact,
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
           ),
         ),
         Expanded(

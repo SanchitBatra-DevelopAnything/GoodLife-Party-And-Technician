@@ -27,11 +27,10 @@ class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
   }
 
   Future<void> _loadRequests() async {
-    final partyName =
-        context.read<AuthProvider>().distributorName;
-    await context
-        .read<ServiceRequestProvider>()
-        .fetchServiceRequests(partyName);
+    final partyName = context.read<AuthProvider>().distributorName;
+    await context.read<ServiceRequestProvider>().fetchServiceRequests(
+      partyName,
+    );
   }
 
   @override
@@ -39,7 +38,7 @@ class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
+        preferredSize: const Size.fromHeight(110),
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
@@ -48,8 +47,7 @@ class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
             ),
             boxShadow: [
               BoxShadow(
-                color:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.18),
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.18),
                 blurRadius: 14,
                 offset: const Offset(0, 6),
               ),
@@ -57,10 +55,7 @@ class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
           ),
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 14,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               child: Row(
                 children: [
                   GestureDetector(
@@ -120,7 +115,7 @@ class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
               segments: [
                 ButtonSegment<String>(
                   value: 'SERVICE',
-                  label: const Text('Service/Complaint'),
+                  label: Text(l10n.serviceComplaintTab),
                   icon: const Icon(Icons.build_rounded),
                 ),
                 ButtonSegment<String>(
@@ -151,8 +146,11 @@ class _MyServiceRequestsScreenState extends State<MyServiceRequestsScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.error_outline_rounded,
-                              size: 64, color: Colors.grey.shade400),
+                          Icon(
+                            Icons.error_outline_rounded,
+                            size: 64,
+                            color: Colors.grey.shade400,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             provider.fetchError!,
@@ -253,13 +251,34 @@ class _ServiceRequestCard extends StatelessWidget {
   final ServiceRequestModel request;
   final VoidCallback onTap;
 
-  const _ServiceRequestCard({
-    required this.request,
-    required this.onTap,
-  });
+  const _ServiceRequestCard({required this.request, required this.onTap});
+
+  String _getLocalizedStatusLabel(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toUpperCase()) {
+      case 'VERIFIED':
+        return l10n.statusVerified;
+      case 'CLOSED':
+        return l10n.statusClosedByTechnician;
+      case 'CLOSED_BY_ADMIN':
+        return l10n.statusClosed;
+      case 'RESOLVED':
+        return l10n.statusResolved;
+      case 'IN_PROGRESS':
+        return l10n.statusInProgress;
+      case 'TECHNICIAN_ASSIGNED':
+        return l10n.statusAssigned;
+      case 'APPROVED':
+        return l10n.statusApproved;
+      case 'PENDING':
+      default:
+        return l10n.statusPending;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final color = ServiceRequestStatusHelper.color(request.status);
     final machines = request.machineNames.isNotEmpty
         ? request.machineNames.join(', ')
@@ -283,18 +302,19 @@ class _ServiceRequestCard extends StatelessWidget {
                   // Type badge
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       request.type == 'INSTALLATION'
-                          ? 'Installation'
-                          : 'Service',
+                          ? l10n.installationTab
+                          : l10n.serviceComplaintTab,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
@@ -305,13 +325,15 @@ class _ServiceRequestCard extends StatelessWidget {
                   // Status badge
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: color.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      ServiceRequestStatusHelper.label(request.status),
+                      _getLocalizedStatusLabel(context, request.status),
                       style: TextStyle(
                         color: color,
                         fontWeight: FontWeight.bold,
@@ -325,8 +347,11 @@ class _ServiceRequestCard extends StatelessWidget {
               if (machines.isNotEmpty) ...[
                 Row(
                   children: [
-                    Icon(Icons.precision_manufacturing_rounded,
-                        size: 15, color: Colors.grey.shade600),
+                    Icon(
+                      Icons.precision_manufacturing_rounded,
+                      size: 15,
+                      color: Colors.grey.shade600,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -347,28 +372,28 @@ class _ServiceRequestCard extends StatelessWidget {
                   request.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
                 ),
                 const SizedBox(height: 8),
               ],
               Row(
                 children: [
-                  Icon(Icons.calendar_today_rounded,
-                      size: 13, color: Colors.grey.shade500),
+                  Icon(
+                    Icons.calendar_today_rounded,
+                    size: 13,
+                    color: Colors.grey.shade500,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     '${request.requestDate}  •  ${request.requestTime}',
-                    style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                   ),
                   const Spacer(),
-                  const Icon(Icons.arrow_forward_ios_rounded,
-                      size: 13, color: Colors.grey),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 13,
+                    color: Colors.grey,
+                  ),
                 ],
               ),
             ],

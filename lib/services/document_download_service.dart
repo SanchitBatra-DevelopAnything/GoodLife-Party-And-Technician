@@ -9,8 +9,18 @@ class DocumentDownloadService {
     final directory =
         await getApplicationDocumentsDirectory();
 
+    String ext = '';
+    try {
+      final decodedPath = Uri.decodeComponent(Uri.parse(url).path);
+      if (decodedPath.contains('.')) {
+        ext = '.${decodedPath.split('.').last}';
+      }
+    } catch (e) {
+      // ignore
+    }
+
     final fileName =
-        '${DateTime.now().millisecondsSinceEpoch}';
+        '${DateTime.now().millisecondsSinceEpoch}$ext';
 
     final savePath =
         '${directory.path}/$fileName';

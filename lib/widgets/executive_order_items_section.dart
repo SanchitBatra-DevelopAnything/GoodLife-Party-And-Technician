@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/executive_delivery_order.dart';
+import '../l10n/app_localizations.dart';
 
 class ExecutiveOrderItemsSection extends StatelessWidget {
   final List<ExecutiveDeliveryItem> items;
@@ -11,6 +12,7 @@ class ExecutiveOrderItemsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -29,7 +31,7 @@ class ExecutiveOrderItemsSection extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Items (${items.length})',
+                  l10n.itemsCountLabel(items.length),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -104,7 +106,7 @@ class ExecutiveOrderItemsSection extends StatelessWidget {
                                     ),
                                   ),
                                   child: Text(
-                                    'Qty ${item.quantity}',
+                                    l10n.qty(item.quantity),
                                     style: TextStyle(
                                       color:
                                           Colors.blue.shade700,
@@ -131,7 +133,7 @@ class ExecutiveOrderItemsSection extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '₹${item.price} each',
+                                l10n.priceEach(item.price.toString()),
                                 style: TextStyle(
                                   color:
                                       Colors.grey.shade600,

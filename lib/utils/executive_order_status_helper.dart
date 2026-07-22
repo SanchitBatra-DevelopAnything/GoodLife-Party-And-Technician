@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 
 import '../models/executive_delivery_order.dart';
+import '../l10n/app_localizations.dart';
 
 class ExecutiveOrderStatusHelper {
   static String getStatusText(
     ExecutiveDeliveryOrder order,
+    AppLocalizations l10n,
   ) {
     if (order.status == 'PENDING') {
-      return 'Payment Rejected';
+      return l10n.paymentRejectedStatus;
     }
 
     if (order.status ==
         'PAYMENT_VERIFICATION') {
-      return 'Payment Verification In Progress';
+      return l10n.paymentVerificationStatus;
     }
 
     if (order.status ==
             'PAYMENT_VERIFIED' &&
         order.dispatchedOn == null) {
-      return 'Payment Verified';
+      return l10n.paymentVerifiedStatus;
     }
 
     if ((order.status ==
@@ -26,7 +28,7 @@ class ExecutiveOrderStatusHelper {
             order.status ==
                 'DISPATCHED') &&
         order.dispatchedOn != null) {
-      return 'Order Dispatched';
+      return l10n.orderDispatchedStatus;
     }
 
     return order.status;

@@ -9,6 +9,7 @@ import 'package:goodlife_party/services/storage_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import '../l10n/app_localizations.dart';
 
 class PaymentOptionBottomSheet extends StatefulWidget {
   final double grandTotal;
@@ -55,7 +56,7 @@ class PaymentOptionBottomSheetState extends State<PaymentOptionBottomSheet> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Failed to place order: $e')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.submissionFailed(e.toString()))));
     } finally {
       if (mounted) {
         setState(() {
@@ -67,6 +68,7 @@ class PaymentOptionBottomSheetState extends State<PaymentOptionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
@@ -79,8 +81,8 @@ class PaymentOptionBottomSheetState extends State<PaymentOptionBottomSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Choose Payment Option',
+            Text(
+              l10n.choosePaymentOption,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
@@ -92,9 +94,9 @@ class PaymentOptionBottomSheetState extends State<PaymentOptionBottomSheet> {
                 color: Colors.orange.shade50,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Text(
-                'Your order will be processed only after the payment is received and verified.\n\nPlease make sure to attach the payment screenshot after completing the payment.',
-                style: TextStyle(fontSize: 14, height: 1.5),
+              child: Text(
+                l10n.paymentProcessingWarning,
+                style: const TextStyle(fontSize: 14, height: 1.5),
               ),
             ),
 
@@ -120,7 +122,7 @@ class PaymentOptionBottomSheetState extends State<PaymentOptionBottomSheet> {
                     },
                   );
                 },
-                child: const Text('Pay Now'),
+                child: Text(l10n.payNow),
               ),
             ),
 
@@ -238,7 +240,7 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.uploadFailed(e.toString()))));
 
       return null;
     } finally {
@@ -280,7 +282,7 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Failed to place order: $e')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.submissionFailed(e.toString()))));
     }
   }
 
@@ -301,6 +303,7 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<OrderProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return SafeArea(
       child: Padding(
@@ -314,8 +317,8 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Select Payment Method',
+            Text(
+              l10n.selectPaymentMethod,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
@@ -324,7 +327,7 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.qr_code),
-              title: const Text('QR Code'),
+              title: Text(l10n.qrCode),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
               onTap: () {
                 Navigator.push(
@@ -339,7 +342,7 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.account_balance),
-              title: const Text('Bank Transfer'),
+              title: Text(l10n.bankTransfer),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
               onTap: () {
                 Navigator.push(
@@ -353,8 +356,8 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
 
             const SizedBox(height: 24),
 
-            const Text(
-              'Attach Payment Screenshot',
+            Text(
+              l10n.attachPaymentScreenshot,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
 
@@ -376,10 +379,10 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                 child: paymentScreenshot == null
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.upload_file, size: 34),
                           SizedBox(height: 10),
-                          Text('Upload Screenshot'),
+                          Text(l10n.uploadScreenshotHint),
                         ],
                       )
                     : ClipRRect(
@@ -394,8 +397,8 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
 
             if (showScreenshotValidationError) ...[
               const SizedBox(height: 8),
-              const Text(
-                'Please attach payment screenshot',
+              Text(
+                l10n.pleaseAttachPaymentScreenshot,
                 style: TextStyle(color: Colors.red, fontSize: 13),
               ),
             ],
@@ -434,11 +437,11 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
                           const SizedBox(height: 6),
 
                           Text(
-                            '${uploadProgress.toStringAsFixed(0)}% Uploading',
+                            l10n.uploadingProgress(uploadProgress.toStringAsFixed(0)),
                           ),
                         ],
                       )
-                    : const Text('Submit Payment'),
+                    : Text(l10n.submitPaymentBtn),
               ),
             ),
           ],
@@ -454,10 +457,11 @@ class QRCodeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QR Code Payment'),
+        title: Text(l10n.scanQrCodeToPay),
       ),
       body: SafeArea(
         child: Center(
@@ -466,8 +470,8 @@ class QRCodeScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Scan QR Code to Pay',
+                Text(
+                  l10n.scanQrCodeToPay,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -518,8 +522,8 @@ class QRCodeScreen extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                const Text(
-                  'Scan using PhonePe, Google Pay, Paytm, BHIM or any UPI app',
+                Text(
+                  l10n.scanUpiHint,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -536,9 +540,10 @@ class BankTransferScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bank Transfer'),
+        title: Text(l10n.bankTransfer),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -547,45 +552,45 @@ class BankTransferScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              children: const [
+              children: [
                 _InfoTile(
-                  title: 'Account Name',
+                  title: l10n.accountName,
                   value: 'GOOD LIFE TECHNOLOGIES PVT LTD',
                 ),
                 Divider(),
 
                 _InfoTile(
-                  title: 'Bank Name',
+                  title: l10n.bankName,
                   value: 'Federal Bank',
                 ),
                 Divider(),
 
                 _InfoTile(
-                  title: 'Branch',
+                  title: l10n.branch,
                   value: 'Noida',
                 ),
                 Divider(),
 
                 _InfoTile(
-                  title: 'Account Number',
+                  title: l10n.accountNumber,
                   value: '134020200032461',
                 ),
                 Divider(),
 
                 _InfoTile(
-                  title: 'IFSC Code',
+                  title: l10n.ifscCode,
                   value: 'FDRL0001340',
                 ),
                 Divider(),
 
                 _InfoTile(
-                  title: 'Account Type',
+                  title: l10n.accountType,
                   value: 'Current',
                 ),
                 Divider(),
 
                 _InfoTile(
-                  title: 'SWIFT Code',
+                  title: l10n.swiftCode,
                   value: 'FDRLINBBIBD',
                 ),
               ],

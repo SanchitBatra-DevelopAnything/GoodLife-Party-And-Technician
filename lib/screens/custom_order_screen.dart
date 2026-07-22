@@ -212,15 +212,17 @@ class CustomOrderScreenState
     final orderProvider =
         context.watch<OrderProvider>();
 
-    return Stack(
-      children: [
-        Scaffold(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Stack(
+        children: [
+          Scaffold(
           backgroundColor:
               Colors.grey.shade50,
 
           appBar: PreferredSize(
             preferredSize:
-                const Size.fromHeight(90),
+                const Size.fromHeight(110),
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context)
@@ -296,7 +298,7 @@ class CustomOrderScreenState
                         width: 16,
                       ),
 
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           mainAxisAlignment:
                               MainAxisAlignment
@@ -306,9 +308,9 @@ class CustomOrderScreenState
                                   .start,
                           children: [
                             Text(
-                              'Custom Inquiry',
+                              AppLocalizations.of(context)!.customInquiry,
                               style:
-                                  TextStyle(
+                                  const TextStyle(
                                 color:
                                     Colors.white,
                                 fontSize:
@@ -323,7 +325,7 @@ class CustomOrderScreenState
                             ),
 
                             Text(
-                              'Upload product photos or details',
+                              AppLocalizations.of(context)!.uploadProductPhotosDetails,
                               style:
                                   TextStyle(
                                 color:
@@ -536,9 +538,9 @@ class CustomOrderScreenState
                       minLines: 5,
                       maxLines: 8,
                       decoration:
-                          const InputDecoration(
+                          InputDecoration(
                         hintText:
-                            'Describe the product, quantity, size, brand or any other details...',
+                            AppLocalizations.of(context)!.describeProductHint,
                         border:
                             InputBorder
                                 .none,
@@ -617,6 +619,7 @@ class CustomOrderScreenState
                     .inquiryProgressMessage,
           ),
       ],
+    ),
     );
   }
 }

@@ -10,6 +10,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../l10n/app_localizations.dart';
+
 
 class CustomOrderPaymentBottomSheet extends StatefulWidget {
   final String firebaseOrderId;
@@ -106,7 +108,7 @@ class CustomOrderPaymentBottomSheetState
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.uploadFailed(e.toString()))));
 
       return null;
     } finally {
@@ -135,8 +137,8 @@ class CustomOrderPaymentBottomSheetState
       Navigator.pop(context , true);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Payment screenshot uploaded successfully'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.paymentScreenshotUploadedSuccess),
         ),
       );
     } catch (e) {
@@ -145,7 +147,7 @@ class CustomOrderPaymentBottomSheetState
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to upload payment screenshot: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.failedToUploadPayment(e.toString()))),
       );
     }
   }
@@ -166,6 +168,7 @@ class CustomOrderPaymentBottomSheetState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final orderProvider = Provider.of<OrderProvider>(context);
 
     return SafeArea(
@@ -180,9 +183,9 @@ class CustomOrderPaymentBottomSheetState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Select Payment Method',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              l10n.selectPaymentMethod,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 20),
@@ -190,7 +193,7 @@ class CustomOrderPaymentBottomSheetState
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.qr_code),
-              title: const Text('QR Code'),
+              title: Text(l10n.qrCode),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
               onTap: () {
                 Navigator.push(
@@ -205,7 +208,7 @@ class CustomOrderPaymentBottomSheetState
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.account_balance),
-              title: const Text('Bank Transfer'),
+              title: Text(l10n.bankTransfer),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
               onTap: () {
                 Navigator.push(
@@ -219,9 +222,9 @@ class CustomOrderPaymentBottomSheetState
 
             const SizedBox(height: 24),
 
-            const Text(
-              'Attach Payment Screenshot',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Text(
+              l10n.attachPaymentScreenshot,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
 
             const SizedBox(height: 14),
@@ -242,10 +245,10 @@ class CustomOrderPaymentBottomSheetState
                 child: paymentScreenshot == null
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.upload_file, size: 34),
-                          SizedBox(height: 10),
-                          Text('Upload Screenshot'),
+                        children: [
+                          const Icon(Icons.upload_file, size: 34),
+                          const SizedBox(height: 10),
+                          Text(l10n.uploadScreenshotHint),
                         ],
                       )
                     : ClipRRect(
@@ -260,9 +263,9 @@ class CustomOrderPaymentBottomSheetState
 
             if (showScreenshotValidationError) ...[
               const SizedBox(height: 8),
-              const Text(
-                'Please attach payment screenshot',
-                style: TextStyle(color: Colors.red, fontSize: 13),
+              Text(
+                l10n.pleaseAttachPaymentScreenshot,
+                style: const TextStyle(color: Colors.red, fontSize: 13),
               ),
             ],
 
@@ -300,11 +303,11 @@ class CustomOrderPaymentBottomSheetState
                           const SizedBox(height: 6),
 
                           Text(
-                            '${uploadProgress.toStringAsFixed(0)}% Uploading',
+                            l10n.uploadingProgress(uploadProgress.toStringAsFixed(0)),
                           ),
                         ],
                       )
-                    : const Text('Submit Payment'),
+                    : Text(l10n.submitPaymentBtn),
               ),
             ),
           ],
@@ -322,7 +325,7 @@ class QRCodeScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('QR Code Payment')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.qrCodePayment)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -330,9 +333,9 @@ class QRCodeScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Scan QR Code to Pay',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.of(context)!.scanQrCodeToPay,
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 20),
@@ -376,8 +379,8 @@ class QRCodeScreen extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                const Text(
-                  'Scan using PhonePe, Google Pay, Paytm, BHIM or any UPI app',
+                Text(
+                  AppLocalizations.of(context)!.scanUpiHint,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -395,7 +398,7 @@ class BankTransferScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Bank Transfer')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.bankTransfer)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Card(
@@ -403,29 +406,29 @@ class BankTransferScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              children: const [
+              children: [
                 _InfoTile(
-                  title: 'Account Name',
+                  title: AppLocalizations.of(context)!.accountName,
                   value: 'GOOD LIFE TECHNOLOGIES PVT LTD',
                 ),
-                Divider(),
+                const Divider(),
 
-                _InfoTile(title: 'Bank Name', value: 'Federal Bank'),
-                Divider(),
+                _InfoTile(title: AppLocalizations.of(context)!.bankName, value: 'Federal Bank'),
+                const Divider(),
 
-                _InfoTile(title: 'Branch', value: 'Noida'),
-                Divider(),
+                _InfoTile(title: AppLocalizations.of(context)!.branch, value: 'Noida'),
+                const Divider(),
 
-                _InfoTile(title: 'Account Number', value: '134020200032461'),
-                Divider(),
+                _InfoTile(title: AppLocalizations.of(context)!.accountNumber, value: '134020200032461'),
+                const Divider(),
 
-                _InfoTile(title: 'IFSC Code', value: 'FDRL0001340'),
-                Divider(),
+                _InfoTile(title: AppLocalizations.of(context)!.ifscCode, value: 'FDRL0001340'),
+                const Divider(),
 
-                _InfoTile(title: 'Account Type', value: 'Current'),
-                Divider(),
+                _InfoTile(title: AppLocalizations.of(context)!.accountType, value: 'Current'),
+                const Divider(),
 
-                _InfoTile(title: 'SWIFT Code', value: 'FDRLINBBIBD'),
+                _InfoTile(title: AppLocalizations.of(context)!.swiftCode, value: 'FDRLINBBIBD'),
               ],
             ),
           ),

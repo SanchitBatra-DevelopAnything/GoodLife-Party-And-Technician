@@ -44,7 +44,7 @@ class SalesScreen extends StatelessWidget {
       backgroundColor: Colors.grey.shade50,
 
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
+        preferredSize: const Size.fromHeight(110),
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,

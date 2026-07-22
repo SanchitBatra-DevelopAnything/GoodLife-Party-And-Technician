@@ -26,7 +26,7 @@ class LanguageDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
     final isIOS = Platform.isIOS;
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     if (isIOS) {
       return CupertinoButton(

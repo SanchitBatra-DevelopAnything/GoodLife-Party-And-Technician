@@ -55,7 +55,7 @@ class SparePartsOrdersScreenState
     return Scaffold(
       appBar: PreferredSize(
         preferredSize:
-            const Size.fromHeight(90),
+            const Size.fromHeight(110),
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(
@@ -442,7 +442,7 @@ class SparePartsOrdersScreenState
                         height: 8,
                       ),
                       Text(
-                        'Your express delivery orders will appear here.',
+                        l10n.expressDeliveryOrdersHere,
                         textAlign:
                             TextAlign
                                 .center,

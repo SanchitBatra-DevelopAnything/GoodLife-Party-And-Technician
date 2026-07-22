@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/document_download_service.dart';
+import '../l10n/app_localizations.dart';
 
 class ExecutiveOrderDocumentsSection
     extends StatelessWidget {
@@ -13,6 +14,7 @@ class ExecutiveOrderDocumentsSection
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (documents.isEmpty) {
       return const SizedBox();
     }
@@ -25,9 +27,9 @@ class ExecutiveOrderDocumentsSection
           crossAxisAlignment:
               CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Documents',
-              style: TextStyle(
+            Text(
+              l10n.documentsText,
+              style: const TextStyle(
                 fontWeight:
                     FontWeight.bold,
                 fontSize: 18,
@@ -53,7 +55,7 @@ class ExecutiveOrderDocumentsSection
                       ),
                       Expanded(
                         child: Text(
-                          'Document ${entry.key + 1}',
+                          l10n.documentNumber(entry.key + 1),
                         ),
                       ),
                       ElevatedButton(
@@ -63,8 +65,8 @@ class ExecutiveOrderDocumentsSection
                             entry.value,
                           );
                         },
-                        child: const Text(
-                          'Open',
+                        child: Text(
+                          l10n.openText,
                         ),
                       ),
                     ],
