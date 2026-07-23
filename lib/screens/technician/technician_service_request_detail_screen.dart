@@ -337,7 +337,10 @@ class _TechnicianServiceRequestDetailScreenState
     final primary = Theme.of(context).colorScheme.primary;
     final statusColor = _statusColor(_request.status);
 
-    return Stack(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      behavior: HitTestBehavior.translucent,
+      child: Stack(
       children: [
         Scaffold(
           backgroundColor: Colors.grey.shade50,
@@ -526,7 +529,8 @@ class _TechnicianServiceRequestDetailScreenState
         message: _progressMessage,
       ),
     ],
-  );
+  ),
+);
 }
 
   Widget _buildStatusCard(Color primary, Color statusColor) {
