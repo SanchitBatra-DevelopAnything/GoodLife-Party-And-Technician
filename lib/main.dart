@@ -33,12 +33,20 @@ void main() async {
   await Hive.initFlutter();
   await Firebase.initializeApp();
 
+  // Initialize notifications BEFORE loading saved sessions so APNs/FCM tokens are ready
+  await NotificationService().initialize();
+
   final authProvider = AuthProvider();
+  NotificationService().addTokenRefreshListener(
+    (token) => authProvider.syncDeviceToken(token),
+  );
   await authProvider.loadSavedContext();
 
   final technicianAuthProvider = TechnicianAuthProvider();
+  NotificationService().addTokenRefreshListener(
+    (token) => technicianAuthProvider.syncDeviceToken(token),
+  );
   await technicianAuthProvider.loadSavedContext();
-  await NotificationService().initialize();
 
   // Start real-time outstanding balance listener if party is already logged in
   final outstandingBalanceProvider = OutstandingBalanceProvider();

@@ -38,11 +38,7 @@ class AuthProvider extends ChangeNotifier {
 
       _loginContext = context;
 
-      // Update FCM token to backend
-      final token = await NotificationService().getToken();
-      if (token != null) {
-        authService.updateDeviceToken(mobile, token);
-      }
+      await syncDeviceToken();
     } catch (e) {
       rethrow;
     } finally {
@@ -63,13 +59,29 @@ class AuthProvider extends ChangeNotifier {
 
         final token = await NotificationService().getToken();
         if (token != null) {
-          authService.updateDeviceToken(mobile, token);
+          await syncDeviceToken(token);
         }
       }
       notifyListeners();
     } catch (_) {
       // ignore cache errors
     }
+  }
+
+  Future<void> syncDeviceToken([String? token]) async {
+    if (!isLoggedIn || mobile.isEmpty) return;
+
+    final fcmToken = token ?? await NotificationService().getToken();
+    if (fcmToken == null) return;
+
+    await authService.updateDeviceToken(mobile, fcmToken);
+
+    final updatedContext = _loginContext!.copyWith(
+      distributorDetails:
+          _loginContext!.distributorDetails.copyWith(deviceToken: fcmToken),
+    );
+    _loginContext = updatedContext;
+    await LocalStorageService.saveLoginContext(updatedContext);
   }
 
   Future<bool> validateSession() async {

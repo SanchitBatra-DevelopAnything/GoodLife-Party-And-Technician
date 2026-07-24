@@ -27,6 +27,12 @@ class NotificationService {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
+  final List<Future<void> Function(String token)> _tokenRefreshCallbacks = [];
+
+  void addTokenRefreshListener(Future<void> Function(String token) callback) {
+    _tokenRefreshCallbacks.add(callback);
+  }
+
   Future<void> initialize() async {
     // Request permission for iOS/Android
     NotificationSettings settings = await _fcm.requestPermission(
@@ -35,8 +41,11 @@ class NotificationService {
       sound: true,
     );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+        settings.authorizationStatus == AuthorizationStatus.provisional) {
       print('User granted permission for notifications');
+    } else {
+      print('User denied notification permission: ${settings.authorizationStatus}');
     }
 
     // iOS pe foreground mein notification banner/sound/badge dikhane ke liye zaroori hai
@@ -45,6 +54,18 @@ class NotificationService {
       badge: true,
       sound: true,
     );
+
+    // Sync refreshed FCM tokens to backend
+    _fcm.onTokenRefresh.listen((token) async {
+      print('🔔 FCM Token refreshed: $token');
+      for (final callback in _tokenRefreshCallbacks) {
+        try {
+          await callback(token);
+        } catch (e) {
+          print('Token refresh callback failed: $e');
+        }
+      }
+    });
 
     // Set background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -90,6 +111,9 @@ class NotificationService {
       final RemoteNotification? notification = message.notification;
 
       if (notification != null) {
+        // iOS foreground alerts are handled by AppDelegate + FCM presentation options
+        if (Platform.isIOS) return;
+
         _localNotificationsPlugin.show(
           id: notification.hashCode,
           title: notification.title,
@@ -145,7 +169,7 @@ class NotificationService {
         // Real device: APNS token ka wait karo FCM token se pehle.
         // Bina iske [firebase_messaging/apns-token-not-set] error aata hai.
         String? apnsToken;
-        for (int attempt = 0; attempt < 3; attempt++) {
+        for (int attempt = 0; attempt < 10; attempt++) {
           apnsToken = await _fcm.getAPNSToken();
           if (apnsToken != null) break;
           await Future.delayed(const Duration(seconds: 1));

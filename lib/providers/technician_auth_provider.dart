@@ -22,17 +22,19 @@ class TechnicianAuthProvider extends ChangeNotifier {
   String get phone => technician?.phone ?? '';
   String? get photoUrl => technician?.photoUrl;
 
-  Future<void> _syncDeviceToken() async {
+  Future<void> _syncDeviceToken([String? token]) async {
     if (technicianId.isEmpty) return;
 
-    final token = await NotificationService().getToken();
-    if (token != null) {
+    final fcmToken = token ?? await NotificationService().getToken();
+    if (fcmToken != null) {
       await _authService.updateDeviceToken(
         technicianId: technicianId,
-        token: token,
+        token: fcmToken,
       );
     }
   }
+
+  Future<void> syncDeviceToken([String? token]) => _syncDeviceToken(token);
 
   Future<void> login({
     required String mobile,

@@ -26,6 +26,13 @@ class LoginContext {
       'areaDetails': areaDetails.toJson(),
     };
   }
+
+  LoginContext copyWith({DistributorDetails? distributorDetails}) {
+    return LoginContext(
+      distributorDetails: distributorDetails ?? this.distributorDetails,
+      areaDetails: areaDetails,
+    );
+  }
 }
 
 class DistributorDetails {
@@ -71,6 +78,18 @@ class DistributorDetails {
       'distributorName': distributorName,
       'machineIds': machineIds,
     };
+  }
+
+  DistributorDetails copyWith({String? deviceToken}) {
+    return DistributorDetails(
+      allowPayLater: allowPayLater,
+      area: area,
+      address: address,
+      contact: contact,
+      deviceToken: deviceToken ?? this.deviceToken,
+      distributorName: distributorName,
+      machineIds: machineIds,
+    );
   }
 }
 
