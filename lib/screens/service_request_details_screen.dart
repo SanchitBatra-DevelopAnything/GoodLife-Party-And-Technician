@@ -468,75 +468,83 @@ class _ServiceRequestDetailsScreenState
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Column(
-                        children: [
-                          Text(
-                            l10n.typeLabel,
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              _request.type == 'INSTALLATION'
-                                  ? l10n.installationTab
-                                  : l10n.serviceComplaintTab,
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              l10n.typeLabel,
                               style: TextStyle(
-                                color: primary,
-                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                _request.type == 'INSTALLATION'
+                                    ? l10n.installationTab
+                                    : l10n.serviceComplaintTab,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       Container(
                         width: 1,
                         height: 40,
                         color: Colors.grey.shade200,
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
                       ),
-                      Column(
-                        children: [
-                          Text(
-                            l10n.statusLabel,
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: statusColor.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              _getLocalizedStatusLabel(
-                                context,
-                                _request.status,
-                              ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              l10n.statusLabel,
                               style: TextStyle(
-                                color: statusColor,
-                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: statusColor.withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                _getLocalizedStatusLabel(
+                                  context,
+                                  _request.status,
+                                ),
+                                textAlign: TextAlign.center,
+                                softWrap: true,
+                                style: TextStyle(
+                                  color: statusColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

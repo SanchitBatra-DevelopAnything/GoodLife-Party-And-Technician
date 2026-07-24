@@ -39,6 +39,13 @@ class NotificationService {
       print('User granted permission for notifications');
     }
 
+    // iOS pe foreground mein notification banner/sound/badge dikhane ke liye zaroori hai
+    await _fcm.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     // Set background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -96,6 +103,12 @@ class NotificationService {
               priority: Priority.high,
               importance: Importance.max,
               playSound: true,
+            ),
+            // iOS foreground notification ke liye zaroori — bina iske iOS pe nahi dikhti
+            iOS: const DarwinNotificationDetails(
+              presentAlert: true,
+              presentBadge: true,
+              presentSound: true,
             ),
           ),
           payload: jsonEncode(message.data),
