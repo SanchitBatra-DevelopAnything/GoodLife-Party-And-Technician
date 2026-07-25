@@ -11,6 +11,7 @@ import 'package:goodlife_party/widgets/whats_new_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
+import 'package:upgrader/upgrader.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -100,8 +101,13 @@ class InventoryScreenState extends State<InventoryScreen> {
           SystemNavigator.pop();
         }
       },
-      child: Scaffold(
-        backgroundColor: Colors.grey.shade50,
+      child: UpgradeAlert(
+        upgrader: Upgrader(
+          durationUntilAlertAgain: const Duration(hours: 1),
+          dialogStyle: UpgradeDialogStyle.material,
+        ),
+        child: Scaffold(
+          backgroundColor: Colors.grey.shade50,
 
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(110),
