@@ -6,7 +6,7 @@ import '../l10n/app_localizations.dart';
 class WhatsAppMoreInfoNote extends StatelessWidget {
   const WhatsAppMoreInfoNote({super.key});
 
-  static const String _whatsAppPhone = '919999999999';
+  static const String _whatsAppPhone = '919870361004';
 
   @override
   Widget build(BuildContext context) {
