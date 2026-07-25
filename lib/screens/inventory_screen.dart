@@ -104,8 +104,8 @@ class InventoryScreenState extends State<InventoryScreen> {
       child: UpgradeAlert(
         upgrader: Upgrader(
           durationUntilAlertAgain: const Duration(hours: 1),
-          dialogStyle: UpgradeDialogStyle.material,
         ),
+        dialogStyle: UpgradeDialogStyle.material,
         child: Scaffold(
           backgroundColor: Colors.grey.shade50,
 
@@ -260,6 +260,7 @@ class InventoryScreenState extends State<InventoryScreen> {
           currentIndex: 0,
         ),
       ),
-    );
+    ),
+  );
   }
 }
