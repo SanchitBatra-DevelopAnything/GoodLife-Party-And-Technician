@@ -16,7 +16,10 @@ class ImagePickerWidgetState extends State<ImagePickerWidget> {
   final ImagePicker picker = ImagePicker();
 
   Future<void> pickImage(ImageSource source) async {
-    final picked = await picker.pickImage(source: source);
+    final picked = await picker.pickImage(
+      source: source,
+      imageQuality: 50,
+    );
 
     if (picked != null) {
       final file = File(picked.path);

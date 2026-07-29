@@ -289,7 +289,7 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
   Future<void> pickImage() async {
     final pickedFile = await imagePicker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 70,
+      imageQuality: 50,
     );
 
     if (pickedFile != null) {

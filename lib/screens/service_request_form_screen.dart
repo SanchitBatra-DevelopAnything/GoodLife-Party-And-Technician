@@ -54,7 +54,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
 
     final XFile? image = await imagePicker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80,
+      imageQuality: 50,
     );
 
     if (image != null) {

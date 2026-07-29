@@ -36,14 +36,19 @@ class _TechnicianUploadDocumentScreenState
   Future<void> _pickImages(ImageSource source) async {
     try {
       if (source == ImageSource.gallery) {
-        final List<XFile> images = await _picker.pickMultiImage();
+        final List<XFile> images = await _picker.pickMultiImage(
+          imageQuality: 50,
+        );
         if (images.isNotEmpty) {
           setState(() {
             _selectedImages.addAll(images.map((e) => File(e.path)));
           });
         }
       } else {
-        final XFile? image = await _picker.pickImage(source: source);
+        final XFile? image = await _picker.pickImage(
+          source: source,
+          imageQuality: 50,
+        );
         if (image != null) {
           setState(() {
             _selectedImages.add(File(image.path));
