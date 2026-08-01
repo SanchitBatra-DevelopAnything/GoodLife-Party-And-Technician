@@ -35,4 +35,11 @@ import UserNotifications
       completionHandler([.alert, .badge, .sound])
     }
   }
+
+  override func application(
+    _ application: UIApplication,
+    didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+  ) {
+    super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+  }
 }

@@ -55,7 +55,9 @@ class ImageUploadGrid extends StatelessWidget {
 
     final picked = await ImagePicker().pickImage(
       source: source,
-      imageQuality: 50,
+      imageQuality: 70,
+      maxWidth: 800,
+      maxHeight: 800,
     );
     if (picked != null) {
       onImageAdded(File(picked.path));

@@ -38,6 +38,11 @@ String? customOrdersError;
   final StorageService _storageService =
     StorageService();
 
+  /// Starts uploading a custom-order image immediately in the background.
+  Future<String> uploadCustomImageEarly(File file) {
+    return _storageService.uploadCustomOrderImageWithProgress(file, (_) {});
+  }
+
 String _inquiryProgressMessage = '';
 
 String get inquiryProgressMessage =>
@@ -162,6 +167,7 @@ String get inquiryProgressMessage =>
 
 Future<void> placeInquiryOrder({
   required List<File> images,
+  Map<File, Future<String>>? preUploadedFutures,
   required String? message,
   File? audio,
 }) async {
@@ -218,11 +224,14 @@ Future<void> placeInquiryOrder({
 
       notifyListeners();
 
-      final imageUrl =
-          await _storageService.uploadCustomOrderImageWithProgress(
-        images[i],
-        (progress) {},
-      );
+      final file = images[i];
+      final preUploaded = preUploadedFutures?[file];
+      final imageUrl = preUploaded != null
+          ? await preUploaded
+          : await _storageService.uploadCustomOrderImageWithProgress(
+              file,
+              (progress) {},
+            );
 
       photoUrls.add(imageUrl);
     }

@@ -13,6 +13,17 @@ class ServiceRequestProvider with ChangeNotifier {
   final ServiceRequestService _serviceRequestService = ServiceRequestService();
   final StorageService _storageService = StorageService();
 
+  /// Starts uploading an image immediately in the background.
+  /// Returns a Future<String> of the download URL.
+  Future<String> uploadImageEarly(File file) {
+    return _storageService.uploadServiceRequestMedia(
+      file: file,
+      fileType: 'image',
+      extension: 'jpg',
+      onProgress: (_) {},
+    );
+  }
+
   // ── Submit state ──────────────────────────────────────────────────────────
   bool _isSubmitting = false;
   bool get isSubmitting => _isSubmitting;
@@ -54,6 +65,7 @@ class ServiceRequestProvider with ChangeNotifier {
     required List<String> machineIds,
     required List<String> machineNames,
     required List<File> images,
+    Map<File, Future<String>>? preUploadedFutures,
     required File? audio,
     required String type, // 'SERVICE' or 'INSTALLATION'
     required String description,
@@ -86,16 +98,20 @@ class ServiceRequestProvider with ChangeNotifier {
       final List<String> imageUrls = [];
       String? audioUrl;
 
-      // 1. Upload Images
+      // 1. Upload Images – await pre-started futures if available, else upload now
       for (int i = 0; i < images.length; i++) {
         _progressMessage = 'Uploading image ${i + 1} of ${images.length}...';
         notifyListeners();
-        final imageUrl = await _storageService.uploadServiceRequestMedia(
-          file: images[i],
-          fileType: 'image',
-          extension: 'jpg',
-          onProgress: (progress) {},
-        );
+        final file = images[i];
+        final preUploaded = preUploadedFutures?[file];
+        final imageUrl = preUploaded != null
+            ? await preUploaded
+            : await _storageService.uploadServiceRequestMedia(
+                file: file,
+                fileType: 'image',
+                extension: 'jpg',
+                onProgress: (progress) {},
+              );
         imageUrls.add(imageUrl);
       }
 

@@ -29,6 +29,8 @@ class _TechnicianUploadDocumentScreenState
   final TechnicianDocumentService _documentService = TechnicianDocumentService();
 
   List<File> _selectedImages = [];
+  // Pre-upload: start uploading each image the moment it is picked
+  final Map<File, Future<Map<String, String>>> _preUploadFutures = {};
   bool _isUploading = false;
   int _uploadProgress = 0;
   int _totalToUpload = 0;
@@ -37,22 +39,44 @@ class _TechnicianUploadDocumentScreenState
     try {
       if (source == ImageSource.gallery) {
         final List<XFile> images = await _picker.pickMultiImage(
-          imageQuality: 50,
+          imageQuality: 70,
+          maxWidth: 800,
+          maxHeight: 800,
         );
         if (images.isNotEmpty) {
+          final newFiles = images.map((e) => File(e.path)).toList();
           setState(() {
-            _selectedImages.addAll(images.map((e) => File(e.path)));
+            _selectedImages.addAll(newFiles);
           });
+          // Kick off uploads immediately in the background
+          final techId = context.read<TechnicianAuthProvider>().technicianId;
+          for (final f in newFiles) {
+            _preUploadFutures[f] = _storageService.uploadPartyDocument(
+              file: f,
+              partyId: widget.partyId,
+              technicianId: techId,
+            );
+          }
         }
       } else {
         final XFile? image = await _picker.pickImage(
           source: source,
-          imageQuality: 50,
+          imageQuality: 70,
+          maxWidth: 800,
+          maxHeight: 800,
         );
         if (image != null) {
+          final file = File(image.path);
           setState(() {
-            _selectedImages.add(File(image.path));
+            _selectedImages.add(file);
           });
+          // Kick off upload immediately in the background
+          final techId = context.read<TechnicianAuthProvider>().technicianId;
+          _preUploadFutures[file] = _storageService.uploadPartyDocument(
+            file: file,
+            partyId: widget.partyId,
+            technicianId: techId,
+          );
         }
       }
     } catch (e) {
@@ -83,18 +107,14 @@ class _TechnicianUploadDocumentScreenState
 
     int successCount = 0;
 
-    for (int i = 0; i < _selectedImages.length; i++) {
-      setState(() {
-        _uploadProgress = i + 1;
-      });
-
+    final uploadTasks = _selectedImages.map((file) async {
       try {
-        final file = _selectedImages[i];
-        final uploadResult = await _storageService.uploadPartyDocument(
-          file: file,
-          partyId: widget.partyId,
-          technicianId: techId,
-        );
+        final uploadResult = await (_preUploadFutures[file] ??
+            _storageService.uploadPartyDocument(
+              file: file,
+              partyId: widget.partyId,
+              technicianId: techId,
+            ));
 
         await _documentService.saveDocumentMetadata(
           partyId: widget.partyId,
@@ -104,16 +124,22 @@ class _TechnicianUploadDocumentScreenState
           type: 'image/jpeg',
         );
 
-        successCount++;
+        if (mounted) {
+          setState(() {
+            _uploadProgress++;
+            successCount++;
+          });
+        }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Failed to upload image ${i + 1}: $e')),
+            SnackBar(content: Text('Failed to upload image: $e')),
           );
         }
       }
-    }
+    }).toList();
+
+    await Future.wait(uploadTasks);
 
     if (!mounted) return;
 

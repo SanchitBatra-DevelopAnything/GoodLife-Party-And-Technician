@@ -88,19 +88,7 @@ class PaymentOptionBottomSheetState extends State<PaymentOptionBottomSheet> {
 
             const SizedBox(height: 16),
 
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Text(
-                l10n.paymentProcessingWarning,
-                style: const TextStyle(fontSize: 14, height: 1.5),
-              ),
-            ),
 
-            const SizedBox(height: 24),
 
             SizedBox(
               width: double.infinity,
@@ -174,6 +162,9 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
 
   final ImagePicker imagePicker = ImagePicker();
 
+  // Pre-upload: the future starts as soon as the image is picked
+  Future<String>? _preUploadFuture;
+
   Future<String?> uploadPaymentScreenshot() async {
     if (paymentScreenshot == null) {
       setState(() {
@@ -189,40 +180,30 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
         uploadProgress = 0;
       });
 
-      final paymentUuid = const Uuid().v4();
-
-      final now = DateTime.now();
-
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-
-      final storagePath = StorageService.buildDateBasedStoragePath(
-        category: 'sparePartPayments',
-        fileName: fileName,
-        intermediateSegments: [paymentUuid],
-        dateTime: now,
-      );
-
-      final firebaseStorage = FirebaseStorage.instance;
-
-      final uploadTask = firebaseStorage
-          .ref(storagePath)
-          .putFile(paymentScreenshot!);
-
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        final progress = snapshot.bytesTransferred / snapshot.totalBytes;
-
-        if (!mounted) {
-          return;
-        }
-
-        setState(() {
-          uploadProgress = progress * 100;
+      // Use the pre-started upload if available, otherwise upload now
+      final String downloadUrl;
+      if (_preUploadFuture != null) {
+        downloadUrl = await _preUploadFuture!;
+      } else {
+        final paymentUuid = const Uuid().v4();
+        final now = DateTime.now();
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final storagePath = StorageService.buildDateBasedStoragePath(
+          category: 'sparePartPayments',
+          fileName: fileName,
+          intermediateSegments: [paymentUuid],
+          dateTime: now,
+        );
+        final firebaseStorage = FirebaseStorage.instance;
+        final uploadTask = firebaseStorage.ref(storagePath).putFile(paymentScreenshot!);
+        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+          final progress = snapshot.bytesTransferred / snapshot.totalBytes;
+          if (!mounted) return;
+          setState(() { uploadProgress = progress * 100; });
         });
-      });
-
-      final snapshot = await uploadTask;
-
-      final downloadUrl = await snapshot.ref.getDownloadURL();
+        final snapshot = await uploadTask;
+        downloadUrl = await snapshot.ref.getDownloadURL();
+      }
 
       if (!mounted) {
         return null;
@@ -289,14 +270,31 @@ class PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
   Future<void> pickImage() async {
     final pickedFile = await imagePicker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 50,
+      imageQuality: 70,
+      maxWidth: 800,
+      maxHeight: 800,
     );
 
     if (pickedFile != null) {
+      final file = File(pickedFile.path);
       setState(() {
-        paymentScreenshot = File(pickedFile.path);
+        paymentScreenshot = file;
         showScreenshotValidationError = false;
       });
+      // Start uploading immediately in the background
+      final paymentUuid = const Uuid().v4();
+      final now = DateTime.now();
+      final fileName = '${now.millisecondsSinceEpoch}.jpg';
+      final storagePath = StorageService.buildDateBasedStoragePath(
+        category: 'sparePartPayments',
+        fileName: fileName,
+        intermediateSegments: [paymentUuid],
+        dateTime: now,
+      );
+      _preUploadFuture = FirebaseStorage.instance
+          .ref(storagePath)
+          .putFile(file)
+          .then((snapshot) => snapshot.ref.getDownloadURL());
     }
   }
 

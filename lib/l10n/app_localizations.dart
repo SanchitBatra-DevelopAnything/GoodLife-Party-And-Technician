@@ -231,7 +231,7 @@ class AppLocalizations {
   String get openText => _translate('openText');
   String itemsCountLabel(int count) => _translate('itemsCountLabel', {'count': count.toString()});
   String qty(int count) => _translate('qty', {'count': count.toString()});
-  String priceEach(String p) => _translate('priceEach', {'p': p});
+  String priceEach(String p) => _translate('priceEach', {'price': p});
   String get paymentRejectedStatus => _translate('paymentRejectedStatus');
   String get paymentVerificationStatus => _translate('paymentVerificationStatus');
   String get paymentVerifiedStatus => _translate('paymentVerifiedStatus');

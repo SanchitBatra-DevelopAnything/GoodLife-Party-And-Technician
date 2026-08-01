@@ -27,6 +27,8 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
 
   String selectedType = 'SERVICE'; // 'SERVICE' or 'INSTALLATION'
   final List<File> selectedImages = [];
+  // Pre-upload: maps each picked File to its in-progress upload Future
+  final Map<File, Future<String>> _uploadFutures = {};
   File? selectedAudio;
 
   // Multi-machine selection
@@ -54,13 +56,20 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
 
     final XFile? image = await imagePicker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 50,
+      imageQuality: 70,
+      maxWidth: 800,
+      maxHeight: 800,
     );
 
     if (image != null) {
+      final file = File(image.path);
       setState(() {
-        selectedImages.add(File(image.path));
+        selectedImages.add(file);
       });
+      // Start uploading immediately in the background
+      _uploadFutures[file] = context
+          .read<ServiceRequestProvider>()
+          .uploadImageEarly(file);
     }
   }
 
@@ -86,6 +95,7 @@ class _ServiceRequestFormScreenState extends State<ServiceRequestFormScreen> {
             machineIds: selectedMachines.map((m) => m.id).toList(),
             machineNames: selectedMachines.map((m) => m.name).toList(),
             images: selectedImages,
+            preUploadedFutures: _uploadFutures,
             audio: selectedAudio,
             type: selectedType,
             description: description,

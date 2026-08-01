@@ -29,6 +29,8 @@ class CustomOrderScreenState
       ImagePicker();
 
   final List<File> selectedImages = [];
+  // Pre-upload: maps each picked File to its in-progress upload Future
+  final Map<File, Future<String>> _uploadFutures = {};
   File? selectedAudio;
 
   Future<void> pickImage() async {
@@ -47,18 +49,23 @@ class CustomOrderScreenState
     final XFile? image =
         await imagePicker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 50,
+      imageQuality: 70,
+      maxWidth: 800,
+      maxHeight: 800,
     );
 
     if (image == null) {
       return;
     }
 
+    final file = File(image.path);
     setState(() {
-      selectedImages.add(
-        File(image.path),
-      );
+      selectedImages.add(file);
     });
+    // Start uploading immediately in the background
+    _uploadFutures[file] = context
+        .read<OrderProvider>()
+        .uploadCustomImageEarly(file);
   }
 
   Future<void> submitInquiry() async {
@@ -84,6 +91,7 @@ class CustomOrderScreenState
           .read<OrderProvider>()
           .placeInquiryOrder(
             images: selectedImages,
+            preUploadedFutures: _uploadFutures,
             message: message,
             audio: selectedAudio,
           );

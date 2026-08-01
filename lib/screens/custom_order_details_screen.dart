@@ -36,11 +36,7 @@ class CustomOrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             if (order.requestedItems.isNotEmpty) ...[
-              _buildSectionTitle(l10n.requestedItems),
-
-              const SizedBox(height: 12),
-
-              _buildRequestedItems(context),
+              _buildRequestedItems(context, l10n),
 
               const SizedBox(height: 24),
             ],
@@ -235,41 +231,75 @@ class CustomOrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRequestedItems(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: order.requestedItems.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemBuilder: (_, index) {
-        final image = order.requestedItems[index];
-
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => FullScreenImageScreen(imageUrl: image),
-              ),
-            );
-          },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: CachedNetworkImage(
-              imageUrl: image,
-              fit: BoxFit.cover,
-              placeholder: (context, url) =>
-                  const Center(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) =>
-                  const Center(child: Icon(Icons.broken_image_outlined)),
+  Widget _buildRequestedItems(BuildContext context, AppLocalizations l10n) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.photo_library_rounded, size: 20, color: Colors.grey.shade700),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.requestedItems,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+              ],
             ),
-          ),
-        );
-      },
+            const Divider(height: 20),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: order.requestedItems.map((image) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => FullScreenImageScreen(imageUrl: image),
+                      ),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: image,
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        width: 90,
+                        height: 90,
+                        color: Colors.grey.shade200,
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        width: 90,
+                        height: 90,
+                        color: Colors.grey.shade200,
+                        child: Icon(
+                          Icons.broken_image_rounded,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

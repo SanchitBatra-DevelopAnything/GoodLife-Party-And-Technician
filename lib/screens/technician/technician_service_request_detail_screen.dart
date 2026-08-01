@@ -145,16 +145,6 @@ class _TechnicianServiceRequestDetailScreenState
     return '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
   }
 
-  Future<List<String>> _uploadFiles(List<File> files, String prefix) async {
-    final provider = context.read<TechnicianServiceRequestProvider>();
-    final urls = <String>[];
-    for (int i = 0; i < files.length; i++) {
-      setState(() => _progressMessage = 'Uploading $prefix ${i + 1} of ${files.length}...');
-      urls.add(await provider.uploadImage(files[i]));
-    }
-    return urls;
-  }
-
   bool get _hasPreWorkImages =>
       _preWorkRemote.isNotEmpty || _preWorkLocal.isNotEmpty;
 
@@ -203,31 +193,45 @@ class _TechnicianServiceRequestDetailScreenState
   Future<ServiceRequestModel> _buildUpdatedRequest({
     String? statusOverride,
   }) async {
+    setState(() => _progressMessage = 'Uploading documents...');
+    
+    final provider = context.read<TechnicianServiceRequestProvider>();
+    
+    Future<List<String>> uploadList(List<File> files) {
+      if (files.isEmpty) return Future.value(<String>[]);
+      return Future.wait(files.map((f) => provider.uploadImage(f)));
+    }
+
+    final results = await Future.wait([
+      uploadList(_preWorkLocal),
+      uploadList(_postWorkLocal),
+      uploadList(_serviceReportLocal),
+      uploadList(_googleReviewLocal),
+      uploadList(_paymentReceiptLocal),
+    ]);
+
     final preUrls = [
       ..._preWorkRemote,
-      ...await _uploadFiles(_preWorkLocal, 'pre-work image'),
+      ...results[0],
     ];
     final postUrls = [
       ..._postWorkRemote,
-      ...await _uploadFiles(_postWorkLocal, 'post-work image'),
+      ...results[1],
     ];
 
     String? reportUrl = _serviceReportRemote;
     if (_serviceReportLocal.isNotEmpty) {
-      final uploaded = await _uploadFiles(_serviceReportLocal, 'service report');
-      reportUrl = uploaded.first;
+      reportUrl = results[2].first;
     }
 
     String? reviewUrl = _googleReviewRemote;
     if (_googleReviewLocal.isNotEmpty) {
-      final uploaded = await _uploadFiles(_googleReviewLocal, 'review image');
-      reviewUrl = uploaded.first;
+      reviewUrl = results[3].first;
     }
 
     String? receiptUrl = _paymentReceiptRemote;
     if (_paymentReceiptLocal.isNotEmpty) {
-      final uploaded = await _uploadFiles(_paymentReceiptLocal, 'payment receipt');
-      receiptUrl = uploaded.first;
+      receiptUrl = results[4].first;
     }
 
     final amount = double.tryParse(_amountController.text.trim());
